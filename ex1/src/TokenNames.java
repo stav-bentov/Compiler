@@ -1,5 +1,6 @@
 public interface TokenNames {
   /* terminals */
+  public static final int EOF = 0;
   public static final int LPAREN = 1;
   public static final int RPAREN = 2;
   public static final int LBRACK = 3;

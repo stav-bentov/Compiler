@@ -125,7 +125,7 @@ STRING          = "[a-z|A-Z]*"
 "new"			    { return symbol(TokenNames.NEW);}
 {INTEGER}			{
                         int n = new Integer(yytext());
-                        if (n < math.pow(2, 15)) return symbol(TokenNames.INT, n);
+                        if (n < Math.pow(2, 15)) return symbol(TokenNames.INT, n);
                     }
 {STRING}			{ return symbol(TokenNames.STRING, new String(yytext()));}
 {ID}				{ return symbol(TokenNames.ID, new String(yytext()));}
