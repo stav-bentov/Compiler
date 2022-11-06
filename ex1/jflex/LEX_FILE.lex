@@ -6,6 +6,7 @@
 /* USER CODE */
 /*************/
 import java_cup.runtime.*;
+import java.lang.Math;
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -73,7 +74,8 @@ import java_cup.runtime.*;
 LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t]
 INTEGER			= 0 | [1-9][0-9]*
-ID				= [a-z]+
+ID				= [a-z|A-Z]+[0-9|a-z|A-Z]*
+STRING          = "[a-z|A-Z]*"
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -93,14 +95,40 @@ ID				= [a-z]+
 
 <YYINITIAL> {
 
-"+"					{ return symbol(TokenNames.PLUS);}
-"-"					{ return symbol(TokenNames.MINUS);}
-"PPP"				{ return symbol(TokenNames.TIMES);}
-"/"					{ return symbol(TokenNames.DIVIDE);}
 "("					{ return symbol(TokenNames.LPAREN);}
 ")"					{ return symbol(TokenNames.RPAREN);}
-{INTEGER}			{ return symbol(TokenNames.NUMBER, new Integer(yytext()));}
-{ID}				{ return symbol(TokenNames.ID,     new String( yytext()));}   
+"["                 { return symbol(TokenNames.LBRACK);}
+"]"                 { return symbol(TokenNames.RBRACK);}
+"{"                 { return symbol(TokenNames.LBRACE);}
+"}"                 { return symbol(TokenNames.RBRACE);}
+"nil"               { return symbol(TokenNames.NIL);}
+"+"					{ return symbol(TokenNames.PLUS);}
+"-"					{ return symbol(TokenNames.MINUS);}
+"*"				    { return symbol(TokenNames.TIMES);}
+"/"					{ return symbol(TokenNames.DIVIDE);}
+","					{ return symbol(TokenNames.COMMA);}
+"."                 { return symbol(TokenNames.DOT);}
+";"					{ return symbol(TokenNames.SEMICOLON);}
+"int"		    	{ return symbol(TokenNames.TYPE_INT);}
+"string"            { return symbol(TokenNames.TYPE_STRING);}
+"void"				{ return symbol(TokenNames.TYPE_VOID);}
+":="			    { return symbol(TokenNames.ASSIGN);}
+"=="			    { return symbol(TokenNames.EQ);}
+"<"			        { return symbol(TokenNames.LT);}
+">"		    	    { return symbol(TokenNames.GT);}
+"array"			    { return symbol(TokenNames.ARRAY);}
+"class"			    { return symbol(TokenNames.CLASS);}
+"extends"			{ return symbol(TokenNames.EXTENDS);}
+"return"			{ return symbol(TokenNames.RETURN);}
+"while"			    { return symbol(TokenNames.WHILE);}
+"if"			    { return symbol(TokenNames.IF);}
+"new"			    { return symbol(TokenNames.NEW);}
+{INTEGER}			{
+                        int n = new Integer(yytext());
+                        if (n < math.pow(2, 15)) return symbol(TokenNames.INT, n);
+                    }
+{STRING}			{ return symbol(TokenNames.STRING, new String(yytext()));}
+{ID}				{ return symbol(TokenNames.ID, new String(yytext()));}
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF);}
 }
