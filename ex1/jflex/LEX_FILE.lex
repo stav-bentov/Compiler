@@ -136,7 +136,6 @@ VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!]
     "if"			    { return symbol(TokenNames.IF);}
     "new"			    { return symbol(TokenNames.NEW);}
     {INTEGER}			{
-                            System.out.print(yytext());
                             if((yytext().charAt(0) != '0' || yytext().length() == 1) && yytext().length() <= 5){
                                 int n = new Integer(yytext());
                                 if (n < Math.pow(2, 15)) return symbol(TokenNames.INT, n);
