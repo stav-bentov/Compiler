@@ -75,15 +75,23 @@ LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t]
 INTEGER			= [0-9]+
 ID				= [a-z|A-Z]+[0-9|a-z|A-Z]*
-STRING          = "[a-z|A-Z]*"
+STRING          = \"[a-z|A-Z]*\"
 START_COMMENT_TYPE_1    = "//"
 START_COMMENT_TYPE_2    = "/*"
-VALID_COMMENT           = [\(\)\{\}\[\]+\-/;.?!]
+END_COMMENT_TYPE_2    = "*/"
+VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!]
+
+/**********************/
+/* STATE DECLARATIONS */
+/**********************/
+
+%state COMMENT_TYPE_1
+%state COMMENT_TYPE_2
+
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
 /******************************/
-%state COMMENT_TYPE_1
 
 %%
 
@@ -99,54 +107,64 @@ VALID_COMMENT           = [\(\)\{\}\[\]+\-/;.?!]
 
 <YYINITIAL> {
 
-"("					{ return symbol(TokenNames.LPAREN);}
-")"					{ return symbol(TokenNames.RPAREN);}
-"["                 { return symbol(TokenNames.LBRACK);}
-"]"                 { return symbol(TokenNames.RBRACK);}
-"{"                 { return symbol(TokenNames.LBRACE);}
-"}"                 { return symbol(TokenNames.RBRACE);}
-"nil"               { return symbol(TokenNames.NIL);}
-"+"					{ return symbol(TokenNames.PLUS);}
-"-"					{ return symbol(TokenNames.MINUS);}
-"*"				    { return symbol(TokenNames.TIMES);}
-"/"					{ return symbol(TokenNames.DIVIDE);}
-","					{ return symbol(TokenNames.COMMA);}
-"."                 { return symbol(TokenNames.DOT);}
-";"					{ return symbol(TokenNames.SEMICOLON);}
-"int"		    	{ return symbol(TokenNames.TYPE_INT);}
-"string"            { return symbol(TokenNames.TYPE_STRING);}
-"void"				{ return symbol(TokenNames.TYPE_VOID);}
-":="			    { return symbol(TokenNames.ASSIGN);}
-"=="			    { return symbol(TokenNames.EQ);}
-"<"			        { return symbol(TokenNames.LT);}
-">"		    	    { return symbol(TokenNames.GT);}
-"array"			    { return symbol(TokenNames.ARRAY);}
-"class"			    { return symbol(TokenNames.CLASS);}
-"extends"			{ return symbol(TokenNames.EXTENDS);}
-"return"			{ return symbol(TokenNames.RETURN);}
-"while"			    { return symbol(TokenNames.WHILE);}
-"if"			    { return symbol(TokenNames.IF);}
-"new"			    { return symbol(TokenNames.NEW);}
-{INTEGER}			{
-				        System.out.print(yytext());
-                        if((yytext().charAt(0) != '0' || yytext().length() == 1) && yytext().length() <= 5){
-                            int n = new Integer(yytext());
-                            if (n < Math.pow(2, 15)) return symbol(TokenNames.INT, n);
+    "("					{ return symbol(TokenNames.LPAREN);}
+    ")"					{ return symbol(TokenNames.RPAREN);}
+    "["                 { return symbol(TokenNames.LBRACK);}
+    "]"                 { return symbol(TokenNames.RBRACK);}
+    "{"                 { return symbol(TokenNames.LBRACE);}
+    "}"                 { return symbol(TokenNames.RBRACE);}
+    "nil"               { return symbol(TokenNames.NIL);}
+    "+"					{ return symbol(TokenNames.PLUS);}
+    "-"					{ return symbol(TokenNames.MINUS);}
+    "*"				    { return symbol(TokenNames.TIMES);}
+    "/"					{ return symbol(TokenNames.DIVIDE);}
+    ","					{ return symbol(TokenNames.COMMA);}
+    "."                 { return symbol(TokenNames.DOT);}
+    ";"					{ return symbol(TokenNames.SEMICOLON);}
+    "int"		    	{ return symbol(TokenNames.TYPE_INT);}
+    "string"            { return symbol(TokenNames.TYPE_STRING);}
+    "void"				{ return symbol(TokenNames.TYPE_VOID);}
+    ":="			    { return symbol(TokenNames.ASSIGN);}
+    "=="			    { return symbol(TokenNames.EQ);}
+    "<"			        { return symbol(TokenNames.LT);}
+    ">"		    	    { return symbol(TokenNames.GT);}
+    "array"			    { return symbol(TokenNames.ARRAY);}
+    "class"			    { return symbol(TokenNames.CLASS);}
+    "extends"			{ return symbol(TokenNames.EXTENDS);}
+    "return"			{ return symbol(TokenNames.RETURN);}
+    "while"			    { return symbol(TokenNames.WHILE);}
+    "if"			    { return symbol(TokenNames.IF);}
+    "new"			    { return symbol(TokenNames.NEW);}
+    {INTEGER}			{
+                            System.out.print(yytext());
+                            if((yytext().charAt(0) != '0' || yytext().length() == 1) && yytext().length() <= 5){
+                                int n = new Integer(yytext());
+                                if (n < Math.pow(2, 15)) return symbol(TokenNames.INT, n);
+                            }
+                            throw new Error("Error: could not match input");
                         }
-                        throw new Error("Error: could not match input");
-                    }
-{STRING}			{ return symbol(TokenNames.STRING, new String(yytext()));}
-{ID}				{ return symbol(TokenNames.ID, new String(yytext()));}
-{WhiteSpace}		{ /* just skip what was found, do nothing */ }
+    {STRING}			{ return symbol(TokenNames.STRING, new String(yytext()));}
+    {ID}				{ return symbol(TokenNames.ID, new String(yytext()));}
+    {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 
-{START_COMMENT_TYPE_1} { System.out.print("FOUND COMMENT"); yybegin(COMMENT_TYPE_1);}
+    {START_COMMENT_TYPE_1} { yybegin(COMMENT_TYPE_1);}
+    {START_COMMENT_TYPE_2} { yybegin(COMMENT_TYPE_2);}
 
-<<EOF>>				{ return symbol(TokenNames.EOF);}
+    <<EOF>>				{ return symbol(TokenNames.EOF);}
 }
 
-<COMMENT_TYPE_1>{
-{LineTerminator}                { yybegin(YYINITIAL);}
-<<EOF>>				{ System.out.print("FOUND EOF"); return symbol(TokenNames.EOF);}
-{VALID_COMMENT}     { System.out.print("VALID COMMENT"); }
-[^]                 { System.out.print("^^^^^^^^^^^^^^^^^^^^^^"); throw new Error("Error: could not match input");}
+<COMMENT_TYPE_1> {
+    {LineTerminator}    { yybegin(YYINITIAL);}
+    {VALID_COMMENT}     { /* ignore */ }
+    <<EOF>>				{ return symbol(TokenNames.EOF);}
+    [^]                 { throw new Error("Error: could not match input");}
 }
+
+<COMMENT_TYPE_2> {
+    { END_COMMENT_TYPE_2} { yybegin(YYINITIAL);}
+    {VALID_COMMENT}     { /* ignore */ }
+    <<EOF>>				{ return symbol(TokenNames.EOF);}
+    [^]                 { throw new Error("Error: could not match input");}
+}
+
+
