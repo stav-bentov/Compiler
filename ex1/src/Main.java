@@ -50,7 +50,7 @@ public class Main
 				System.out.print(",");
 				System.out.print(l.getTokenStartPosition());
 				System.out.print("]:");
-				System.out.print(s.value);
+				System.out.print(s.sym + " " + s.value);
 				System.out.print("\n");
 				
 				/*********************/
@@ -58,7 +58,7 @@ public class Main
 				/*********************/
 				file_writer.print(l.getLine());
 				file_writer.print(": ");
-				file_writer.print(s.value);
+				file_writer.print(s.sym);
 				file_writer.print("\n");
 				
 				/***********************/

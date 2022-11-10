@@ -73,13 +73,17 @@ import java.lang.Math;
 /***********************/
 LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t]
-INTEGER			= 0 | [1-9][0-9]*
+INTEGER			= [0-9]+
 ID				= [a-z|A-Z]+[0-9|a-z|A-Z]*
 STRING          = "[a-z|A-Z]*"
+START_COMMENT_TYPE_1    = "//"
+START_COMMENT_TYPE_2    = "/*"
+VALID_COMMENT           = [\(\)\{\}\[\]+\-/;.?!]
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
 /******************************/
+%state COMMENT_TYPE_1
 
 %%
 
@@ -124,11 +128,25 @@ STRING          = "[a-z|A-Z]*"
 "if"			    { return symbol(TokenNames.IF);}
 "new"			    { return symbol(TokenNames.NEW);}
 {INTEGER}			{
-                        int n = new Integer(yytext());
-                        if (n < Math.pow(2, 15)) return symbol(TokenNames.INT, n);
+				        System.out.print(yytext());
+                        if((yytext().charAt(0) != '0' || yytext().length() == 1) && yytext().length() <= 5){
+                            int n = new Integer(yytext());
+                            if (n < Math.pow(2, 15)) return symbol(TokenNames.INT, n);
+                        }
+                        throw new Error("Error: could not match input");
                     }
 {STRING}			{ return symbol(TokenNames.STRING, new String(yytext()));}
 {ID}				{ return symbol(TokenNames.ID, new String(yytext()));}
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
+
+{START_COMMENT_TYPE_1} { System.out.print("FOUND COMMENT"); yybegin(COMMENT_TYPE_1);}
+
 <<EOF>>				{ return symbol(TokenNames.EOF);}
+}
+
+<COMMENT_TYPE_1>{
+{LineTerminator}                { yybegin(YYINITIAL);}
+<<EOF>>				{ System.out.print("FOUND EOF"); return symbol(TokenNames.EOF);}
+{VALID_COMMENT}     { System.out.print("VALID COMMENT"); }
+[^]                 { System.out.print("^^^^^^^^^^^^^^^^^^^^^^"); throw new Error("Error: could not match input");}
 }
