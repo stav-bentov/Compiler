@@ -79,7 +79,7 @@ STRING          = \"[a-z|A-Z]*\"
 START_COMMENT_TYPE_1    = "//"
 START_COMMENT_TYPE_2    = "/*"
 END_COMMENT_TYPE_2    = "*/"
-VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!]
+VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!] | [a-zA-Z] | [0-9] | [ \t]
 
 /**********************/
 /* STATE DECLARATIONS */
@@ -125,7 +125,7 @@ VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!]
     "string"            { return symbol(TokenNames.TYPE_STRING);}
     "void"				{ return symbol(TokenNames.TYPE_VOID);}
     ":="			    { return symbol(TokenNames.ASSIGN);}
-    "=="			    { return symbol(TokenNames.EQ);}
+    "="			        { return symbol(TokenNames.EQ);}
     "<"			        { return symbol(TokenNames.LT);}
     ">"		    	    { return symbol(TokenNames.GT);}
     "array"			    { return symbol(TokenNames.ARRAY);}
@@ -160,10 +160,10 @@ VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!]
 }
 
 <COMMENT_TYPE_2> {
-    { END_COMMENT_TYPE_2} { yybegin(YYINITIAL);}
-    {VALID_COMMENT}     { /* ignore */ }
-    <<EOF>>				{ return symbol(TokenNames.EOF);}
-    [^]                 { throw new Error("Error: could not match input");}
+    {END_COMMENT_TYPE_2}    { yybegin(YYINITIAL);}
+    {VALID_COMMENT}         { /* ignore */ }
+    <<EOF>>                 { return symbol(TokenNames.EOF);}
+    [^]                     { throw new Error("Error: could not match input");}
 }
 
 
