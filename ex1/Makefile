@@ -5,7 +5,7 @@ BASEDIR           = $(shell pwd)
 JFlex_DIR         = ${BASEDIR}/jflex
 SRC_DIR           = ${BASEDIR}/src
 BIN_DIR           = ${BASEDIR}/bin
-INPUT_DIR         = ${BASEDIR}/input
+INPUT_DIR         = ${BASEDIR}/tests
 OUTPUT_DIR        = ${BASEDIR}/output
 EXTERNAL_JARS_DIR = ${BASEDIR}/external_jars
 MANIFEST_DIR      = ${BASEDIR}/manifest
@@ -30,7 +30,7 @@ JFlex_FILE     = ${JFlex_DIR}/LEX_FILE.lex
 ########################
 # DEFINITIONS :: LEXER #
 ########################
-INPUT    = ${INPUT_DIR}/Input.txt
+INPUT    = ${INPUT_DIR}/input_1.txt
 OUTPUT   = ${OUTPUT_DIR}/OutputTokens.txt
 
 all:

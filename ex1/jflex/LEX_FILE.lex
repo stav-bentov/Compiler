@@ -160,10 +160,10 @@ VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!] | [a-zA-Z] | [0-9] | [ \t]
 }
 
 <COMMENT_TYPE_2> {
-    {END_COMMENT_TYPE_2}    { yybegin(YYINITIAL);}
-    {VALID_COMMENT}         { /* ignore */ }
-    <<EOF>>                 { return symbol(TokenNames.EOF);}
-    [^]                     { throw new Error("Error: could not match input");}
+    {END_COMMENT_TYPE_2}                    { yybegin(YYINITIAL);}
+    {VALID_COMMENT} | {LineTerminator}      { /* ignore */ }
+    <<EOF>>                                 { return symbol(TokenNames.EOF);}
+    [^]                                     { throw new Error("Error: could not match input");}
 }
 
 
