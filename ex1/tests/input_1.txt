@@ -1,0 +1,21 @@
+/*void ex134()
+{
+    else
+}
+
+void ex135()
+{
+    int n;
+    for
+    {
+        for
+        {
+            for
+            {
+                for
+                {
+                }
+            }
+        }
+    }
+}*/

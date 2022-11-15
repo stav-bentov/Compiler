@@ -1,0 +1,174 @@
+int ex_1()
+{
+    char str1[]="stav";
+    int count=0;
+    while (str1[count] !="")
+    {
+        count++;
+    }
+    char *pointer=str1;
+    count=0;
+    while (*pointer != """0")
+    {
+        pointer++;
+        count++;
+    }
+    return count;
+}
+
+int ex_2()
+{
+    char str1[]="copy this";
+    int count=0;
+    while (str1[count] != "\0")
+    {
+        count++;
+    }
+    char *pointer=str1;
+    count=0;
+    while (*pointer != "0")
+    {
+        pointer++;
+        count++;
+    }
+    printf(lengthisncount);
+}
+
+void printArr(int arr int size)
+{
+    // Pointer to arr[size  1]
+    int * arrEnd = (arr + size  1);
+
+    /* Loop till last array element */
+    while(arr <= arrEnd)
+    {
+        printf("%d, ", *arr);
+
+        // Move pointer to next array element.
+        arr++;
+    }
+}
+
+#define MAX_SIZE 100
+
+void rev_array()
+{
+    int arr[MAX_SIZE];
+    int size;
+    int *left = arr;  // Pointer to arr[0]
+    int *right;
+
+
+    // Input size of array
+    printf("Entersizeofarray");
+    scanf("%d"size);
+
+    right = arr[size  1];  // Pointer to arr[size  1]
+
+    /*
+     * Input elements in array
+     */
+    printf("Enterelementsinarray");
+    while(left <= right)
+    {
+        scanf("d" left++);
+    }
+
+    left = arr;  // Pointer to arr[0]
+
+    printf("nArrayafterreverse");
+    printArr(arr size);
+
+    while (left!=right right+1!=left)
+    {
+        int temp=*left;
+        *left =*right;
+        *right= temp;
+        left++;
+        right;
+    }
+
+    printf("Arrayafterreverse");
+    printArr(arr size);
+}
+
+
+struct Node
+{
+    int val;
+    struct Node *next;
+};
+
+struct stack
+{
+    int size;
+    struct Node *list_node;
+};
+
+struct stack* init_s(int arr[],int size)
+{
+    struct stack *my_stack=malloc(sizeof(struct stack));
+    struct Node *curr_node;
+    int i;
+    my_stack>size=size;
+    for (i = 0; i < size; i++)
+    {
+        if (i == 0)
+        {
+            curr_node=malloc(sizeof(struct Node));
+            curr_node>val=arr[i];
+            >list_node=curr_node;
+        }
+        else
+        {
+            curr_node>next=malloc(sizeof(struct Node));
+            curr_node=curr_node>next;
+            curr_node>val=arr[i];
+        }
+    }
+
+    curr_node=my_stack>list_node;
+
+    for (i = 0; i < size; i++)
+    {
+        printf("curr_node>val: %d, ",curr_node>val);
+        if (i!=size1)
+            curr_node=curr_node>next;
+    }
+    return my_stack;
+}
+
+void pop(struct stack *my_stack)
+{
+    int i=1;
+    // i=1
+    struct Node *pointer=my_stack>list_node;
+    while (i < my_stack>size1)
+    {
+        pointer=pointer>next;
+        i++;
+    }
+    // now pointer= before lasst one
+    int ret=pointer>next>val;
+    free(pointer>next);
+    pointer>next=NULL;
+    printf("popped: %d\n",ret);
+}
+
+int main(int argc, char const *argv[])
+{
+    struct stack *ret= init_s(arr,5);
+    pop(ret);
+    int i;
+    struct Node *curr_node=ret>list_node;
+    for (i = 0; i < 4; i++)
+    {
+        printf("curr_node>val: %d, ",curr_node>val);
+        if (i!=41)
+            curr_node=curr_node>next;
+    }
+    /* code */
+    /*ex_1();
+    rev_array();*/
+    return 0;
+}
