@@ -48,7 +48,7 @@ public class Main
 					result += getFormat(s, l);
 
 					/***********************/
-					/* [8] Read next token */
+					/* [6] Read next token */
 					/***********************/
 					s = l.next_token();
 
@@ -57,11 +57,6 @@ public class Main
 					}
 				}
 
-				/************************/
-				/* [6] Print to console */
-				/************************/
-				System.out.println(result);
-
 				/*********************/
 				/* [7] Print to file */
 				/*********************/
@@ -69,17 +64,16 @@ public class Main
 			}
 
 			catch (Error e) {
-				System.out.println("ERROR");
 				file_writer.write("ERROR");
 			}
 			
 			/******************************/
-			/* [9] Close lexer input file */
+			/* [8] Close lexer input file */
 			/******************************/
 			l.yyclose();
 
 			/**************************/
-			/* [10] Close output file */
+			/* [9] Close output file */
 			/**************************/
 			file_writer.close();
     	}
