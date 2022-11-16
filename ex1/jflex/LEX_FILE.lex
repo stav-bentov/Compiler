@@ -74,8 +74,8 @@ import java.lang.Math;
 LINE_TERMINATOR	= \r|\n|\r\n
 WHITE_SPACE		= {LINE_TERMINATOR} | [ \t]
 INTEGER			= [0-9]+
-ID				= [a-z|A-Z]+[0-9|a-z|A-Z]*
-STRING          = \"[a-z|A-Z]*\"
+ID				= [a-zA-Z]+[0-9a-zA-Z]*
+STRING          = \"[a-zA-Z]*\"
 START_COMMENT_TYPE_1    = "//"
 START_COMMENT_TYPE_2    = "/*"
 END_COMMENT_TYPE_2    = "*/"
@@ -153,7 +153,7 @@ VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!] | [a-zA-Z] | [0-9] | [ \t]
 }
 
 <COMMENT_TYPE_1> {
-    {LINE_TERMINATOR}    { yybegin(YYINITIAL);}
+    {LINE_TERMINATOR}   { yybegin(YYINITIAL);}
     {VALID_COMMENT}     { /* ignore */ }
     <<EOF>>				{ return symbol(TokenNames.EOF);}
     [^]                 { throw new Error("Error: could not match input");}
@@ -161,8 +161,8 @@ VALID_COMMENT           = [\(\)\{\}\[\]+\-*/;.?!] | [a-zA-Z] | [0-9] | [ \t]
 
 <COMMENT_TYPE_2> {
     {END_COMMENT_TYPE_2}                    { yybegin(YYINITIAL);}
-    {VALID_COMMENT} | {LINE_TERMINATOR}      { /* ignore */ }
-    <<EOF>>                                 { return symbol(TokenNames.EOF);}
+    {VALID_COMMENT} | {LINE_TERMINATOR}     { /* ignore */ }
+    <<EOF>>                                 { throw new Error("Error: could not match input");}
     [^]                                     { throw new Error("Error: could not match input");}
 }
 
