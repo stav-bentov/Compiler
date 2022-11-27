@@ -1,0 +1,3 @@
+array IntArray = int[];
+int a :=;
+array IntArray = int[];

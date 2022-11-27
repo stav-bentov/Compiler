@@ -1,0 +1,2 @@
+AVROOM := 55 + GIDI;
+JACOB.sons[11] := JOSEF;
