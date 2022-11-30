@@ -45,15 +45,11 @@ CUP_FLAGS =                                \
 -parser  ${CUP_GENERATED_PARSER_NAME}      \
 -symbols ${CUP_GENERATED_SYMBOLS_FILENAME} 
 
-#########################
-# DEFINITIONS :: PARSER #
-#########################
-INPUT    = ${INPUT_DIR}/Input.txt
-OUTPUT   = ${OUTPUT_DIR}/ParseStatus.txt
-
 ##########
 # TARGET #
 ##########
+LIST = ${shell ls input/}
+
 all:
 	clear
 	@echo "* [0] Remove PARSER program *"
@@ -75,11 +71,13 @@ all:
 	jar cfm PARSER ${MANIFEST_FILE} -C ${BIN_DIR} .
 	@echo "\n"
 	@echo "* [6] Run resulting program *"
-	java -jar PARSER ${INPUT} ${OUTPUT}
-	@echo "\n"
+	for file in $(LIST); do \
+            java -jar PARSER ${INPUT_DIR}/$${file} ${OUTPUT_DIR}/$${file}; \
+        done
+	@echo "\n skipping step:"
 	@echo "* [7] Create a jpeg AST visualization *"
-	dot -Tjpeg -o${OUTPUT_DIR}/AST.jpeg ${OUTPUT_DIR}/AST_IN_GRAPHVIZ_DOT_FORMAT.txt
-	@echo "\n"
+	#dot -Tjpeg -o${OUTPUT_DIR}/AST.jpeg ${OUTPUT_DIR}/AST_IN_GRAPHVIZ_DOT_FORMAT.txt
+	@echo "\n skipping step:"
 	@echo "* [8] Open the jpeg AST visualization with eog *"
-	eog ${OUTPUT_DIR}/AST.jpeg &
+	#eog ${OUTPUT_DIR}/AST.jpeg &
 
