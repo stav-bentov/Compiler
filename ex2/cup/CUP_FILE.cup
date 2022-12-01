@@ -52,28 +52,40 @@ scan with
 /*************/
 /* TERMINALS */
 /*************/
-terminal IF;
-terminal EQ;
+terminal TYPE_INT;
+terminal TYPE_STRING;
+terminal TYPE_VOID;
+terminal ARRAY;
+terminal ASSIGN;
+terminal COMMA;
+terminal EXTENDS;
 terminal DOT;
+terminal NIL;
+terminal RETURN
+terminal IF;
+terminal WHILE;
+terminal NEW;
 terminal PLUS;
 terminal MINUS;
 terminal TIMES;
-terminal WHILE;
 terminal DIVIDE;
-terminal LPAREN;
+terminal LT;
+terminal GT;
+terminal EQ;
+terminal LPAREN;//TODO: check that all terminals below are indeed needed
 terminal RPAREN;
 terminal LBRACK;
 terminal RBRACK;
 terminal LBRACE;
 terminal RBRACE;
 terminal SEMICOLON;
-terminal ASSIGN;
 
 /*************/
 /* TERMINALS */
 /*************/
 terminal Integer INT;
 terminal String ID;
+terminal String STRING;//TODO: check this
 
 /*****************/
 /* NON TERMINALS */
