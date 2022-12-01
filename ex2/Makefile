@@ -45,39 +45,97 @@ CUP_FLAGS =                                \
 -parser  ${CUP_GENERATED_PARSER_NAME}      \
 -symbols ${CUP_GENERATED_SYMBOLS_FILENAME} 
 
+#########################
+# DEFINITIONS :: PARSER #
+#########################
+INPUT    = ${INPUT_DIR}/Input.txt
+OUTPUT   = ${OUTPUT_DIR}/ParseStatus.txt
+
 ##########
 # TARGET #
 ##########
-LIST = ${shell ls input/}
-
 all:
 	clear
+	@echo "*****************************"
+	@echo "*                           *"
+	@echo "*                           *"
 	@echo "* [0] Remove PARSER program *"
+	@echo "*                           *"
+	@echo "*                           *"
+	@echo "*****************************"
 	rm -rf PARSER
 	@echo "\n"
-	@echo "* [1] Remove *.class files and JFlex-CUP generated files   *"
+	@echo "************************************************************"
+	@echo "*                                                          *"
+	@echo "*                                                          *"
+	@echo "* [1] Remove *.class files and JFlex-CUP generated files:  *"
+	@echo "*                                                          *"
+	@echo "*     Lexer.java                                           *"
+	@echo "*     Parser.java                                          *"
+	@echo "*     TokenNames.java                                      *"
+	@echo "*                                                          *"
+	@echo "************************************************************"
 	rm -rf ${JFlex_CUP_GENERATED_FILES} ${BIN_DIR}/*.class ${BIN_DIR}/AST/*.class
 	@echo "\n"
+	@echo "************************************************************"
+	@echo "*                                                          *"
+	@echo "*                                                          *"
 	@echo "* [2] Use JFlex to synthesize Lexer.java from LEX_FILE.lex *"
+	@echo "*                                                          *"
+	@echo "*                                                          *"
+	@echo "************************************************************"
 	$(JFlex_PROGRAM) ${JFlex_FLAGS} -d ${JFlex_DEST_DIR} ${JFlex_FILE}
 	@echo "\n"
+	@echo "*******************************************************************************"
+	@echo "*                                                                             *"
+	@echo "*                                                                             *"
 	@echo "* [3] Use CUP to synthesize Parser.java and TokenNames.java from CUP_FILE.cup *"
+	@echo "*                                                                             *"
+	@echo "*                                                                             *"
+	@echo "*******************************************************************************"
 	$(CUP_PROGRAM) ${CUP_FLAGS} -destdir ${SRC_DIR} ${CUP_FILE}
 	@echo "\n"
+	@echo "********************************************************"
+	@echo "*                                                      *"
+	@echo "*                                                      *"
 	@echo "* [4] Create *.class files from *.java files + CUP JAR *"
+	@echo "*                                                      *"
+	@echo "*                                                      *"
+	@echo "********************************************************"
 	javac -cp ${EXTERNAL_JAR_FILES} -d ${BIN_DIR} ${SRC_FILES}
 	@echo "\n"
+	@echo "***********************************************************"
+	@echo "*                                                         *"
+	@echo "*                                                         *"
 	@echo "* [5] Create a JAR file from from *.class files + CUP JAR *"
+	@echo "*                                                         *"
+	@echo "*                                                         *"
+	@echo "***********************************************************"
 	jar cfm PARSER ${MANIFEST_FILE} -C ${BIN_DIR} .
 	@echo "\n"
+	@echo "*****************************"
+	@echo "*                           *"
+	@echo "*                           *"
 	@echo "* [6] Run resulting program *"
-	for file in $(LIST); do \
-            java -jar PARSER ${INPUT_DIR}/$${file} ${OUTPUT_DIR}/$${file}; \
-        done
-	@echo "\n skipping step:"
+	@echo "*                           *"
+	@echo "*                           *"
+	@echo "*****************************"
+	java -jar PARSER ${INPUT} ${OUTPUT}
+	@echo "\n"
+	@echo "***************************************"
+	@echo "*                                     *"
+	@echo "*                                     *"
 	@echo "* [7] Create a jpeg AST visualization *"
-	#dot -Tjpeg -o${OUTPUT_DIR}/AST.jpeg ${OUTPUT_DIR}/AST_IN_GRAPHVIZ_DOT_FORMAT.txt
-	@echo "\n skipping step:"
+	@echo "*                                     *"
+	@echo "*                                     *"
+	@echo "***************************************"
+	dot -Tjpeg -o${OUTPUT_DIR}/AST.jpeg ${OUTPUT_DIR}/AST_IN_GRAPHVIZ_DOT_FORMAT.txt
+	@echo "\n"
+	@echo "************************************************"
+	@echo "*                                              *"
+	@echo "*                                              *"
 	@echo "* [8] Open the jpeg AST visualization with eog *"
-	#eog ${OUTPUT_DIR}/AST.jpeg &
-
+	@echo "*                                              *"
+	@echo "*                                              *"
+	@echo "************************************************"
+	eog ${OUTPUT_DIR}/AST.jpeg &
