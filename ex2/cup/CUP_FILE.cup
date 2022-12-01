@@ -90,6 +90,7 @@ terminal String STRING;//TODO: check this
 /*****************/
 /* NON TERMINALS */
 /*****************/
+non terminal AST_PROGRAM Program;
 non terminal AST_EXP exp;
 non terminal AST_VAR var;
 non terminal AST_STMT stmt;

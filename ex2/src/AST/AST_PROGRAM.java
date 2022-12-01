@@ -5,13 +5,13 @@ public class AST_STMT_LIST extends AST_Node
 	/****************/
 	/* DATA MEMBERS */
 	/****************/
-	public AST_STMT head;
-	public AST_STMT_LIST tail;
+	public AST_DEC head;
+	public AST_PROGRAM tail;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_STMT_LIST(AST_STMT head,AST_STMT_LIST tail)
+	public AST_PROGRAM(AST_DEC head,AST_PROGRAM tail)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
