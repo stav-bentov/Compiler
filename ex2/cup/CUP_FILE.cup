@@ -94,7 +94,10 @@ non terminal AST_PROGRAM Program;
 non terminal AST_EXP exp;
 non terminal AST_VAR var;
 non terminal AST_STMT stmt;
-non terminal AST_STMT_LIST stmtList;
+non terminal AST_LIST<AST_STMT> stmtList;
+non terminal AST_LIST<AST_EXP> commaExpList;
+non terminal AST_NEW_EXP;
+non terminal AST_CFIELD;
 
 /***********************/
 /* OPERATOR PRECEDENCE */
