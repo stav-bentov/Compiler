@@ -72,7 +72,7 @@ terminal DIVIDE;
 terminal LT;
 terminal GT;
 terminal EQ;
-terminal LPAREN;//TODO: check that all terminals below are indeed needed
+terminal LPAREN;
 terminal RPAREN;
 terminal LBRACK;
 terminal RBRACK;
@@ -85,7 +85,7 @@ terminal SEMICOLON;
 /*************/
 terminal Integer INT;
 terminal String ID;
-terminal String STRING;//TODO: check this
+terminal String STRING;
 
 /*****************/
 /* NON TERMINALS */
@@ -114,9 +114,9 @@ precedence left TIMES;
 precedence left DIVIDE;
 
 /************************/
-/* START WITH: stmtList */
+/* START WITH: Program */
 /************************/
-start with stmtList;
+start with Program;
 
 /********************/
 /* DERIVATION RULES */
@@ -147,8 +147,8 @@ varDec       ::= type:type ID:id  SEMICOLON                      {:RESULT = new 
                 | type:type ID:id ASSIGN newExp:newExp SEMICOLON {:RESULT = new AST_VARDEC(type, id, null, newExp);:}
                 ;
 
-funcDec     ::= type:type ID:id LPAREN RPAREN LBRACE stmtList:stmtList RBRACE                         {:RESULT = new AST_FUNCDEC(type, id, null, stmtList);:}
-                | type:type ID:id LPAREN argumentsList:argList RPAREN LBRACE stmtList:stmtList RBRACE {:RESULT = new AST_FUNCDEC(type, id, argList, stmtList);:}
+funcDec     ::= type:type ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE                         {:RESULT = new AST_FUNCDEC(type, id, null, l);:}
+                | type:type ID:id LPAREN argumentsList:argList RPAREN LBRACE stmtList:stmtList RBRACE {:RESULT = new AST_FUNCDEC(type, id, argList, l);:}
                 ;
 
 argument      ::= type:type ID:id                      {:RESULT = new AST_ARGUMENT(type, id);:};
