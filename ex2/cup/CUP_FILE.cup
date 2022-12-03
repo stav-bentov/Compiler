@@ -61,7 +61,7 @@ terminal COMMA;
 terminal EXTENDS;
 terminal DOT;
 terminal NIL;
-terminal RETURN
+terminal RETURN;
 terminal IF;
 terminal WHILE;
 terminal NEW;
@@ -90,11 +90,12 @@ terminal String STRING;//TODO: check this
 /*****************/
 /* NON TERMINALS */
 /*****************/
-non terminal AST_PROGRAM Program;
-non terminal AST_EXP exp;
-non terminal AST_VAR var;
-non terminal AST_STMT stmt;
-non terminal AST_STMT_LIST stmtList;
+nonterminal AST_PROGRAM Program;
+nonterminal AST_EXP exp;
+nonterminal AST_VAR var;
+nonterminal AST_STMT stmt;
+nonterminal AST_STMT_LIST stmtList;
+nonterminal AST_DEC;
 
 /***********************/
 /* OPERATOR PRECEDENCE */
@@ -115,6 +116,14 @@ start with stmtList;
 
 Program     ::= dec:d Program:p              {:RESULT = new AST_PROGRAM_DEC_LIST(d, p);   :}
                 | dec:d                      {:RESULT = new AST_PROGRAM_DEC_LIST(d, null); :}
+                ;
+
+
+dec         ::= varDec:vd                    {:RESULT = new AST_DEC_VARDEC(vd);:}
+                | funcDec:fd                 {: RESULT = new AST_DEC_FUNCDEC(fd);:}
+                | classDec:cd                {: RESULT = new AST_DEC_CLASSDEC(cd);:}
+                | arrayTypedef:atd           {: RESULT = new AST_DEC_ARRAYTYPEDEF(fd);:}
+                ;
 /*
 stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
 					| stmt:s				{: RESULT = new AST_STMT_LIST(s,null); :}
