@@ -1,4 +1,4 @@
 package AST;
 
-public class AST_NEWEXP {
+public abstract class AST_NEW_EXP extends AST_Node {
 }
