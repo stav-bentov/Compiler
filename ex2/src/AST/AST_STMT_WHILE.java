@@ -1,7 +1,6 @@
 package AST;
 
-public class AST_STMT_WHILE extends AST_STMT
-{
+public class AST_STMT_WHILE extends AST_Node {
 	public AST_EXP cond;
 	public AST_STMT_LIST body;
 

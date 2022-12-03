@@ -1,7 +1,6 @@
 package AST;
 
-public class AST_STMT_ASSIGN extends AST_STMT
-{
+public class AST_STMT_ASSIGN extends AST_Node {
 	/***************/
 	/*  var := exp */
 	/***************/
