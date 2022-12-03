@@ -91,12 +91,20 @@ terminal String STRING;//TODO: check this
 /* NON TERMINALS */
 /*****************/
 nonterminal AST_PROGRAM Program;
+nonterminal AST_LIST<AST_DEC> decList;
 nonterminal AST_EXP exp;
 nonterminal AST_VAR var;
 nonterminal AST_STMT stmt;
 nonterminal AST_STMT_LIST stmtList;
-nonterminal AST_DEC;
-
+nonterminal AST_DEC dec;
+nonterminal AST_TYPE type;
+nonterminal AST_ARRAYTYPEDEF arrayTypedef;
+nonterminal AST_VARDEC varDec;
+nonterminal AST_FUNCDEC funcDec;
+nonterminal AST_ARGUMENT argument;
+nonterminal AST_LIST<AST_ARGUEMENT> arguementList;
+nonterminal AST_CLASSDEC classDec;
+nonterminal AST_LIST<AST_CFIELD> cFieldList;
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
