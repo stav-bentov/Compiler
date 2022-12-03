@@ -17,7 +17,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		/***************************************/
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
-		System.out.format("====================== var -> var DOT ID( %s )\n",id);
+		System.out.format("====================== var -> var DOT ID(%s)\n",id);
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */

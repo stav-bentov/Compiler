@@ -16,7 +16,7 @@ public class AST_EXP_EXP extends AST_EXP
 		/***************************************/
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
-		System.out.print("====================== exp -> ( exp )\n");
+		System.out.print("====================== exp -> (exp)\n");
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */

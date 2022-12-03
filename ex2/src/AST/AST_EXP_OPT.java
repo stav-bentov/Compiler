@@ -22,7 +22,7 @@ public class AST_EXP_OPT extends AST_EXP
 		if (OPT == 0)
 			System.out.print("====================== exp -> [-] INT\n");
 		if (OPT == 1)
-			System.out.print("====================== exp -> [-] STRING\n");
+			System.out.print("====================== exp -> STRING\n");
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */
