@@ -61,7 +61,7 @@ terminal COMMA;
 terminal EXTENDS;
 terminal DOT;
 terminal NIL;
-terminal RETURN
+terminal RETURN;
 terminal IF;
 terminal WHILE;
 terminal NEW;
@@ -115,8 +115,41 @@ start with stmtList;
 
 Program     ::= dec:d Program:p              {:RESULT = new AST_PROGRAM_DEC_LIST(d, p);   :}
                 | dec:d                      {:RESULT = new AST_PROGRAM_DEC_LIST(d, null); :}
+                ;
+
+exp         ::= var:var                      {:RESULT = new ASP_EXP_VAR(var); :}
+                | LPAREN exp:exp RPAREN      {:RESULT = new ASP_EXP_EXP(exp); :}
+
+                | exp:exp_1 PLUS exp:exp_2   {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 0); :}
+                | exp:exp_1 MINUS exp:exp_2  {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 1); :}
+                | exp:exp_1 TIMES exp:exp_2  {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 2); :}
+                | exp:exp_1 DIVIDE exp:exp_2 {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 3); :}
+                | exp:exp_1 LT exp:exp_2     {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 4); :}
+                | exp:exp_1 GT exp:exp_2     {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 5); :}
+                | exp:exp_1 EQ exp:exp_2     {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 6); :}
+
+                | ID:id LPAREN RPAREN                               {:RESULT = new AST_EXP_ID(id, null, null); :}
+                | var:var DOT ID:id LPAREN RPAREN                   {:RESULT = new AST_EXP_ID(id, var, null); :}
+                | ID:id LPAREN commaExpList:l RPAREN                {:RESULT = new AST_EXP_ID(id, null, l); :}
+                | var:var DOT ID:id LPAREN commaExpList:l RPAREN    {:RESULT = new AST_EXP_ID(id, var, l); :}
+
+                | MINUS INT:i                {:RESULT = new AST_EXP_OPT(i, null, 0); :}
+                | INT:i                      {:RESULT = new AST_EXP_OPT(i, null, 0); :}
+                | MINUS STRING:s             {:RESULT = new AST_EXP_OPT(null, s, 1); :}
+                | STRING:s                   {:RESULT = new AST_EXP_OPT(null, s, 1); :}
+                | MINUS NIL | NIL
+                ;
+
+commaExpList ::= exp:exp COMMA commaExpList:l {: RESULT = new AST_LIST<AST_EXP>(exp,l);    :}
+                 | exp:exp                    {: RESULT = new AST_LIST<AST_EXP>(exp,null);    :}
+                 ;
+
+var          ::= ID:id {: RESULT = new AST_VAR_ID(id); :}
+                 | var:var DOT ID:id {: RESULT = new AST_VAR_VAR_ID(var, id); :}
+                 | var LBRACE exp:exp RBRACE {: RESULT = new AST_VAR_EXP(var, exp); :}
+                 ;
 /*
-stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
+stmtList	::=		stmt:s stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
 					| stmt:s				{: RESULT = new AST_STMT_LIST(s,null); :}
 					;
 

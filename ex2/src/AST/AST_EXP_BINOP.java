@@ -39,13 +39,33 @@ public class AST_EXP_BINOP extends AST_EXP
 		/*********************************/
 		/* CONVERT OP to a printable sOP */
 		/*********************************/
-		if (OP == 0) {sOP = "+";}
-		if (OP == 1) {sOP = "-";}
-		
+		switch(OP) {
+			case 0:
+				sOP = "+";
+				break;
+			case 1:
+				sOP = "-";
+				break;
+			case 2:
+				sOP = "*";
+				break;
+			case 3:
+				sOP = "/";
+				break;
+			case 4:
+				sOP = "<";
+				break;
+			case 5:
+				sOP = ">";
+				break;
+			case 6:
+				sOP = "=";
+				break;
+		}
 		/*************************************/
 		/* AST NODE TYPE = AST BINOP EXP */
 		/*************************************/
-		System.out.print("AST NODE BINOP EXP\n");
+		System.out.print("AST NODE EXP BINOP\n");
 
 		/**************************************/
 		/* RECURSIVELY PRINT left + right ... */
