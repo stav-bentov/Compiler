@@ -28,9 +28,6 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		} else if (exp instanceof AST_NEW_EXP) {
 			expType = "newExp";
 		}
-		else {
-			// TODO: Add exception
-		}
 
 		String deriveRule = String.format("====================== stmt -> var ASSIGN %s SEMICOLON\n", expType);
 		System.out.print(deriveRule);

@@ -13,7 +13,10 @@ public class AST_STMT_IF extends AST_STMT {
 		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 
-		// TODO: Add print derivation rule
+		/***************************************/
+		/* PRINT CORRESPONDING DERIVATION RULE */
+		/***************************************/
+		System.out.print("====================== stmt -> IF (exp) { stmt [ stmt ]* }\n");
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */

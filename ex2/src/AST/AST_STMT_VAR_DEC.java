@@ -9,7 +9,10 @@ public class AST_STMT_VAR_DEC extends AST_STMT{
         /******************************/
         SerialNumber = AST_Node_Serial_Number.getFresh();
 
-        // TODO: Add print derivation rule
+        /***************************************/
+        /* PRINT CORRESPONDING DERIVATION RULE */
+        /***************************************/
+        System.out.print("====================== stmt -> varDec SEMICOLON }\n");
 
         /*******************************/
         /* COPY INPUT DATA NENBERS ... */

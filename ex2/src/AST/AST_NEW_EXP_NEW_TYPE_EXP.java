@@ -10,7 +10,13 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         /******************************/
         SerialNumber = AST_Node_Serial_Number.getFresh();
 
-        // TODO: Add print derivation rule
+        String addedExp = "";
+        if (exp != null) {
+            addedExp = " [ exp ]";
+        }
+
+        String deriveRule = String.format("====================== newExp -> NEW type%s\n", addedExp);
+        System.out.print(deriveRule);
 
         /*******************************/
         /* COPY INPUT DATA NENBERS ... */

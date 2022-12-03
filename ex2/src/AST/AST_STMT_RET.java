@@ -9,7 +9,16 @@ public class AST_STMT_RET extends AST_STMT {
         /******************************/
         SerialNumber = AST_Node_Serial_Number.getFresh();
 
-        // TODO: Add print derivation rule
+        /***************************************/
+        /* PRINT CORRESPONDING DERIVATION RULE */
+        /***************************************/
+        String addedExp = "";
+        if (exp != null) {
+            addedExp = " exp";
+        }
+
+        String deriveRule = String.format("====================== stmt -> RETURN%s SEMICOLON\n", addedExp);
+        System.out.print(deriveRule);
 
         /*******************************/
         /* COPY INPUT DATA NENBERS ... */

@@ -4,7 +4,7 @@ public class AST_VAR_DEC extends AST_Node{
     public AST_TYPE type;
     public String name;
     public AST_EXP exp;
-    public AST_NEWEXP newExp;
+    public AST_NEW_EXP newExp;
 
     public AST_VAR_DEC(AST_TYPE type, String name){
         this.type = type;
@@ -21,7 +21,7 @@ public class AST_VAR_DEC extends AST_Node{
         System.out.format("====================== varDec -> %s ID(%s) := exp\n", type.type, name);
     }
 
-    public AST_VAR_DEC(AST_TYPE type, String name, AST_EXP exp, AST_NEWEXP newExp){
+    public AST_VAR_DEC(AST_TYPE type, String name, AST_EXP exp, AST_NEW_EXP newExp){
         this.type = type;
         this.name = name;
         this.exp = exp;

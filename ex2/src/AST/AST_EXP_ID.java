@@ -18,14 +18,14 @@ public class AST_EXP_ID extends AST_EXP
 		/***************************************/
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
-		if (var != null and l != null)
-			System.out.print("====================== exp ->  [ var DOT ] ID(%s)([ exp [ COMMA exp ]*])", id);
-		if (var != null and l = null)
-			System.out.print("====================== exp ->  [ var DOT ] ID(%s)()", id);
-		if (var = null and l != null)
-			System.out.print("====================== exp ->  [ var DOT ] ID(%s)([ exp [ COMMA exp ]*])", id);
-		if (var = null and l = null)
-			System.out.print("====================== exp ->  ID(%s)()", id);
+		if (var != null && l != null)
+			System.out.printf("====================== exp ->  [ var DOT ] ID(%s)([ exp [ COMMA exp ]*])", id);
+		else if (var != null)
+			System.out.printf("====================== exp ->  [ var DOT ] ID(%s)()", id);
+		else if (l != null)
+			System.out.printf("====================== exp ->  [ var DOT ] ID(%s)([ exp [ COMMA exp ]*])", id);
+		else
+			System.out.printf("====================== exp ->  ID(%s)()", id);
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */
