@@ -149,6 +149,33 @@ cField      ::=     varDec:v    {: RESULT = new AST_CFIELD_DEC<AST_VAR_DEC>(v); 
                     | funcDec:f {: RESULT = new AST_CFIELD_DEC<AST_FUNC_DEC>(f); :}
                     ;
 
+exp         ::= var:v                                               {:RESULT = new ASP_EXP_VAR(v); :}
+                | LPAREN exp:e RPAREN                               {:RESULT = new ASP_EXP_EXP(e); :}
+
+                | exp:e1 PLUS exp:e2                                {:RESULT = new AST_EXP_BINOP(e1, e2, 0); :}
+                | exp:e1 MINUS exp:e2                               {:RESULT = new AST_EXP_BINOP(e1, e2, 1); :}
+                | exp:e1 TIMES exp:e2                               {:RESULT = new AST_EXP_BINOP(e1, e2, 2); :}
+                | exp:e1 DIVIDE exp:e2                              {:RESULT = new AST_EXP_BINOP(e1, e2, 3); :}
+                | exp:e1 LT exp:e2                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 4); :}
+                | exp:e1 GT exp:e2                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 5); :}
+                | exp:e1 EQ exp:e2                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 6); :}
+
+                | ID:id LPAREN RPAREN                               {:RESULT = new AST_EXP_ID(id, null, null); :}
+                | var:v DOT ID:id LPAREN RPAREN                     {:RESULT = new AST_EXP_ID(id, v, null); :}
+                | ID:id LPAREN commaExpList:l RPAREN                {:RESULT = new AST_EXP_ID(id, null, l); :}
+                | var:v DOT ID:id LPAREN commaExpList:l RPAREN      {:RESULT = new AST_EXP_ID(id, v, l); :}
+
+                | MINUS INT:i                                       {:RESULT = new AST_EXP_OPT(i, null, 0); :}
+                | INT:i                                             {:RESULT = new AST_EXP_OPT(i, null, 0); :}
+                | STRING:s                                          {:RESULT = new AST_EXP_OPT(null, s, 1); :}
+                | NIL
+                ;
+
+var          ::= ID:id                                              {: RESULT = new AST_VAR_ID(id); :}
+                 | var:v DOT ID:id                                  {: RESULT = new AST_VAR_VAR_ID(v, id); :}
+                 | var:v LBRACK exp:e RBRACK                        {: RESULT = new AST_VAR_EXP(v, e); :}
+                 ;
+
 /*
 
 
