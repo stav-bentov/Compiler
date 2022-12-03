@@ -115,10 +115,39 @@ start with stmtList;
 
 Program     ::= dec:d Program:p              {:RESULT = new AST_PROGRAM_DEC_LIST(d, p);   :}
                 | dec:d                      {:RESULT = new AST_PROGRAM_DEC_LIST(d, null); :}
-/*
-stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
-					| stmt:s				{: RESULT = new AST_STMT_LIST(s,null); :}
+                ;
+
+stmt        ::=     varDec:v                                                    {: RESULT = new AST_STMT_VAR_DEC(v); :}
+                    | var:v ASSIGN exp:e SEMICOLON                              {: RESULT = new AST_STMT_ASSIGN<AST_EXP>(v, e); :}
+                    | var:v ASSIGN newExp:e SEMICOLON                           {: RESULT = new AST_STMT_ASSIGN<AST_NEW_EXP>(v, e); :}
+                    | RETURN SEMICOLON                                          {: RESULT = new AST_STMT_RET(null); :}
+                    | RETURN exp:e SEMICOLON                                    {: RESULT = new AST_STMT_RET(e); :}
+                    | IF LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE           {: RESULT = new AST_STMT_IF(e, l); :}
+                    | WHILE LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE        {: RESULT = new AST_STMT_WHILE(e, l); :}
+                    | ID:id LPAREN RPAREN SEMICOLON                             {: RESULT = new AST_STMT_ID_VAR_EXP(null, id, null); :}
+                    | ID:id LPAREN commaExpList:l RPAREN SEMICOLON              {: RESULT = new AST_STMT_ID_VAR_EXP(null, id, l); :}
+                    | var:v DOT ID:id LPAREN RPAREN SEMICOLON                   {: RESULT = new AST_STMT_ID_VAR_EXP(v, id, null); :}
+                    | var:v DOT ID:id LPAREN commaExpList:l RPAREN SEMICOLON    {: RESULT = new AST_STMT_ID_VAR_EXP(v, id, l); :}
+                    ;
+
+stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_LIST<AST_STMT>(s, l);    :}
+					| stmt:s				{: RESULT = new AST_LIST<AST_STMT>(s, null); :}
 					;
+
+commaExpList ::=     exp:e COMMA commaExpList:l   {: RESULT = new AST_LIST<AST_EXP>(e, l); :}
+                    | exp:e                       {: RESULT = new AST_LIST<AST_EXP>(e, null); :}
+                    ;
+
+newExp      ::=     NEW type:t                          {: RESULT = new AST_NEW_EXP_NEW_TYPE_EXP(t, null); :}
+                    | NEW type:t LBRACK exp:e RBRACK     {: RESULT = new AST_NEW_EXP_NEW_TYPE_EXP(t, e); :}
+                    ;
+
+cField      ::=     varDec:v    {: RESULT = new AST_CFIELD_DEC<AST_VAR_DEC>(v); :}
+                    | funcDec:f {: RESULT = new AST_CFIELD_DEC<AST_FUNC_DEC>(f); :}
+                    ;
+
+/*
+
 
 var			::=		ID:name								{: RESULT = new AST_VAR_SIMPLE(name);       :}
 					| var:v DOT ID:fieldName			{: RESULT = new AST_VAR_FIELD(v,fieldName); :} 
