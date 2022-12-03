@@ -1,6 +1,6 @@
 package AST;
 
-public class AST_VAR_FIELD extends AST_VAR
+public class AST_VAR_VAR_ID extends AST_VAR
 {
 	public AST_VAR var;
 	public String id;
@@ -8,7 +8,7 @@ public class AST_VAR_FIELD extends AST_VAR
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_VAR_FIELD(AST_VAR var,String id) {
+	public AST_VAR_VAR_ID(AST_VAR var, String id) {
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
