@@ -119,10 +119,10 @@ Program     ::= dec:d Program:p              {:RESULT = new AST_PROGRAM_DEC_LIST
                 ;
 
 
-dec         ::= varDec:vardec                    {:RESULT = new AST_DEC_VARDEC(vardec);:}
-                | funcDec:funcdec                {: RESULT = new AST_DEC_FUNCDEC(funcdec);:}
-                | classDec:classdec              {: RESULT = new AST_DEC_CLASSDEC(classdec);:}
-                | arrayTypedef:arraytypedef      {: RESULT = new AST_DEC_ARRAYTYPEDEF(arraytypedef);:}
+dec         ::= varDec:vardec                    {:RESULT = new AST_DEC(vardec, null, null, null);:}
+                | funcDec:funcdec                {: RESULT = new AST_DEC(null, funcdec, null, null);:}
+                | classDec:classdec              {: RESULT = new AST_DEC(null, null, classdec, null);:}
+                | arrayTypedef:arraytypedef      {: RESULT = new AST_DEC(null, null, null, arraytypedef);:}
                 ;
 
 type        ::= TYPE_INT                     {:RESULT = new AST_TYPE('int', null);:}
@@ -133,10 +133,29 @@ type        ::= TYPE_INT                     {:RESULT = new AST_TYPE('int', null
 
 arrayTypedef ::= ARRAY ID:idValue ASSIGN type:type LBRACK RBRACK SEMICOLON {:RESULT = new AST_ARRAYTYPEDEF(idvalue, type);:};
 
-varDec       ::= type:type ID:idValue                       {:RESULT = new AST_VARDEC_ID(type, id);:}
-                | type:type ID:idValue ASSIGN exp:exp       {:RESULT = new AST_VARDEC_ID_ASSIGN(type, id, exp);:}
-                | type:type ID:idValue ASSIGN newExp:newExp {:RESULT = new AST_VARDEC_ASSIGN_NEW(type, id, newExp);:}
+varDec       ::= type:type ID:idValue                       {:RESULT = new AST_VARDEC(type, id, null, null);:}
+                | type:type ID:idValue ASSIGN exp:exp       {:RESULT = new AST_VARDEC(type, id, exp, null);:}
+                | type:type ID:idValue ASSIGN newExp:newExp {:RESULT = new AST_VARDEC(type, id, null, newExp);:}
                 ;
+
+funcDec     ::= type:type ID:idValue LPAREN RPAREN LBRACE stmtList:stmtList RBRACE                         {:RESULT = new AST_FUNCDEC(type, idValue, null, stmtList);:}
+                | type:type ID:idValue LPAREN argumentsList:argList RPAREN LBRACE stmtList:stmtList RBRACE {:RESULT = new AST_FUNCDEC(type, idValue, argList, stmtList);:}
+                ;
+
+argument      ::= type:type ID:idValue                      {:RESULT = new AST_ARGUMENT(type, idValue);:};
+
+arguementList ::= argument:arg                              {:RESULT = new AST_LIST<AST_ARGUMENT>(arg, null);:}
+                  | argument:arg COMMA argumentList:argList {:RESULT = new AST_LIST<AST_ARGUMENT>(arg, argList);:}
+                  ;
+
+classDec    ::= CLASS ID:idValue LBRACE cFieldList:list RBRACE                              {:RESULT = new AST_CLASSDEC(idValue, null, list);:}
+                | CLASS ID:classIdValue EXTENDS ID:extendsIdValue LBRACE cFieldList RBRACE  {:RESULT = new AST_CLASSDEC(classIdValue, extendsIdValue, list);:}
+                ;
+
+cFieldList  ::= cField:cField                         {:RESULT = new AST_LIST<AST_CFIELD>(cField, null);:}
+                | cField:cField cFieldList:cFieldList {:RESULT = new AST_LIST<AST_CFIELD>(cField, cFieldList);:}
+                ;
+
 /*
 stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
 					| stmt:s				{: RESULT = new AST_STMT_LIST(s,null); :}
