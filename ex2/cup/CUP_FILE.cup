@@ -138,9 +138,9 @@ type        ::= TYPE_INT                                                        
 
 arrayTypedef ::= ARRAY ID:id ASSIGN type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAYTYPEDEF(id, t);:};
 
-varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC(t, id);:}
-                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VAR_DEC(t, id, e);:}
-                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VAR_DEC(t, id, null, ne);:}
+varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id);:}
+                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, e);:}
+                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VAR_DEC<AST_NEW_EXP>(t, id, null, ne);:}
                 ;
 
 funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE                     {:RESULT = new AST_FUNC_DEC(t, id, null, l);:}
