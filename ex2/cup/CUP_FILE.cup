@@ -119,18 +119,24 @@ Program     ::= dec:d Program:p              {:RESULT = new AST_PROGRAM_DEC_LIST
                 ;
 
 
-dec         ::= varDec:vd                    {:RESULT = new AST_DEC_VARDEC(vd);:}
-                | funcDec:fd                 {: RESULT = new AST_DEC_FUNCDEC(fd);:}
-                | classDec:cd                {: RESULT = new AST_DEC_CLASSDEC(cd);:}
-                | arrayTypedef:atd           {: RESULT = new AST_DEC_ARRAYTYPEDEF(fd);:}
+dec         ::= varDec:vardec                    {:RESULT = new AST_DEC_VARDEC(vardec);:}
+                | funcDec:funcdec                {: RESULT = new AST_DEC_FUNCDEC(funcdec);:}
+                | classDec:classdec              {: RESULT = new AST_DEC_CLASSDEC(classdec);:}
+                | arrayTypedef:arraytypedef      {: RESULT = new AST_DEC_ARRAYTYPEDEF(arraytypedef);:}
                 ;
 
 type        ::= TYPE_INT                     {:RESULT = new AST_TYPE('int', null);:}
                 | TYPE_STRING                {:RESULT = new AST_TYPE('string', null);:}
                 | TYPE_VOID                  {:RESULT = new AST_TYPE('void', null);:}
-                | ID:value                   {:RESULT = new AST_TYPE('id', value);:}
+                | ID:idValue                 {:RESULT = new AST_TYPE('id', idvalue);:}
                 ;
 
+arrayTypedef ::= ARRAY ID:idValue ASSIGN type:type LBRACK RBRACK SEMICOLON {:RESULT = new AST_ARRAYTYPEDEF(idvalue, type);:};
+
+varDec       ::= type:type ID:idValue                       {:RESULT = new AST_VARDEC_ID(type, id);:}
+                | type:type ID:idValue ASSIGN exp:exp       {:RESULT = new AST_VARDEC_ID_ASSIGN(type, id, exp);:}
+                | type:type ID:idValue ASSIGN newExp:newExp {:RESULT = new AST_VARDEC_ASSIGN_NEW(type, id, newExp);:}
+                ;
 /*
 stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
 					| stmt:s				{: RESULT = new AST_STMT_LIST(s,null); :}
