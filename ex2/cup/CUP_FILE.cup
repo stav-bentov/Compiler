@@ -138,13 +138,13 @@ type        ::= TYPE_INT                                                        
 
 arrayTypedef ::= ARRAY ID:id ASSIGN type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAYTYPEDEF(id, t);:};
 
-varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VARDEC(t, id);:}
-                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VARDEC(t, id, e);:}
-                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VARDEC(t, id, null, ne);:}
+varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC(t, id);:}
+                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VAR_DEC(t, id, e);:}
+                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VAR_DEC(t, id, null, ne);:}
                 ;
 
-funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE                     {:RESULT = new AST_FUNCDEC(t, id, null, l);:}
-                | type:t ID:id LPAREN argumentsList:al RPAREN LBRACE stmtList:sl RBRACE {:RESULT = new AST_FUNCDEC(t, id, al, sl);:}
+funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE                     {:RESULT = new AST_FUNC_DEC(t, id, null, l);:}
+                | type:t ID:id LPAREN argumentsList:al RPAREN LBRACE stmtList:sl RBRACE {:RESULT = new AST_FUNC_DEC(t, id, al, sl);:}
                 ;
 
 argument      ::= type:t ID:id                                                          {:RESULT = new AST_ARGUMENT(t, id);:};
@@ -153,8 +153,8 @@ arguementList ::= argument:a                                                    
                   | argument:a COMMA argumentList:al                                    {:RESULT = new AST_LIST<AST_ARGUMENT>(a, al);:}
                   ;
 
-classDec    ::= CLASS ID:id LBRACE cFieldList:l RBRACE                                  {:RESULT = new AST_CLASSDEC(id, null, l);:}
-                | CLASS ID:cId EXTENDS ID:eId LBRACE cFieldList:l RBRACE                {:RESULT = new AST_CLASSDEC(cId, eId, l);:}
+classDec    ::= CLASS ID:id LBRACE cFieldList:l RBRACE                                  {:RESULT = new AST_CLASS_DEC(id, l);:}
+                | CLASS ID:cId EXTENDS ID:eId LBRACE cFieldList:l RBRACE                {:RESULT = new AST_CLASS_DEC(cId, eId, l);:}
                 ;
 
 cFieldList  ::= cField:c                                                                {:RESULT = new AST_LIST<AST_CFIELD>(c, null);:}
