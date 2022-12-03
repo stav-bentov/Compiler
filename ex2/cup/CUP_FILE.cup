@@ -124,6 +124,13 @@ dec         ::= varDec:vd                    {:RESULT = new AST_DEC_VARDEC(vd);:
                 | classDec:cd                {: RESULT = new AST_DEC_CLASSDEC(cd);:}
                 | arrayTypedef:atd           {: RESULT = new AST_DEC_ARRAYTYPEDEF(fd);:}
                 ;
+
+type        ::= TYPE_INT                     {:RESULT = new AST_TYPE('int', null);:}
+                | TYPE_STRING                {:RESULT = new AST_TYPE('string', null);:}
+                | TYPE_VOID                  {:RESULT = new AST_TYPE('void', null);:}
+                | ID:value                   {:RESULT = new AST_TYPE('id', value);:}
+                ;
+
 /*
 stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
 					| stmt:s				{: RESULT = new AST_STMT_LIST(s,null); :}
