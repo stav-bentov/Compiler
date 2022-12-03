@@ -134,16 +134,16 @@ dec         ::= varDec:vd                                                       
                 | arrayTypedef:atd                                                      {: RESULT = new AST_DEC(atd);:}
                 ;
 
-type        ::= TYPE_INT                                                                {:RESULT = new AST_TYPE('int', null);:}
-                | TYPE_STRING                                                           {:RESULT = new AST_TYPE('string', null);:}
-                | TYPE_VOID                                                             {:RESULT = new AST_TYPE('void', null);:}
+type        ::= TYPE_INT                                                                {:RESULT = new AST_TYPE('int');:}
+                | TYPE_STRING                                                           {:RESULT = new AST_TYPE('string');:}
+                | TYPE_VOID                                                             {:RESULT = new AST_TYPE('void');:}
                 | ID:id                                                                 {:RESULT = new AST_TYPE('id', id);:}
                 ;
 
 arrayTypedef ::= ARRAY ID:id ASSIGN type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAYTYPEDEF(id, t);:};
 
-varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VARDEC(t, id, null, null);:}
-                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VARDEC(t, id, e, null);:}
+varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VARDEC(t, id);:}
+                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VARDEC(t, id, e);:}
                 | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VARDEC(t, id, null, ne);:}
                 ;
 
