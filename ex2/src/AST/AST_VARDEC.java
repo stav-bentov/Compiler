@@ -27,6 +27,6 @@ public class AST_VARDEC extends AST_Node{
         this.exp = exp;
         this.newExp = newExp;
         SerialNumber = AST_Node_Serial_Number.getFresh();
-
+        System.out.format("====================== varDec -> %s ID(%s) := newExp\n", type.type, name);
     }
 }
