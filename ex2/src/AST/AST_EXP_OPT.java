@@ -4,13 +4,13 @@ public class AST_EXP_OPT extends AST_EXP
 {
 	public Integer i;
 	public String s;
-	int OPT;
+	public int OPT;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_OPT(Integer i, String s,int OPT)
-	{
+	public AST_EXP_OPT(Integer i, String s, int OPT) {
+
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
@@ -35,8 +35,7 @@ public class AST_EXP_OPT extends AST_EXP
 	/*************************************************/
 	/* The printing message for a binop exp AST node */
 	/*************************************************/
-	public void PrintMe()
-	{
+	public void PrintMe() {
 		String sOPT="";
 		
 		/*********************************/

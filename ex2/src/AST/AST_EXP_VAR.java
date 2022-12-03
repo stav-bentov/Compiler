@@ -7,8 +7,7 @@ public class AST_EXP_VAR extends AST_EXP
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_VAR(AST_VAR var)
-	{
+	public AST_EXP_VAR(AST_VAR var) {
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
@@ -28,8 +27,7 @@ public class AST_EXP_VAR extends AST_EXP
 	/***********************************************/
 	/* The default message for an exp var AST node */
 	/***********************************************/
-	public void PrintMe()
-	{
+	public void PrintMe() {
 		/************************************/
 		/* AST NODE TYPE = EXP VAR AST NODE */
 		/************************************/

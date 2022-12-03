@@ -96,6 +96,10 @@ non terminal AST_VAR var;
 non terminal AST_STMT stmt;
 non terminal AST_STMT_LIST stmtList;
 
+non terminal AST_EXP exp;
+non terminal AST_VAR var;
+non terminal AST_LIST commaExpList;
+
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
@@ -113,40 +117,39 @@ start with stmtList;
 /* DERIVATION RULES */
 /********************/
 
-Program     ::= dec:d Program:p              {:RESULT = new AST_PROGRAM_DEC_LIST(d, p);   :}
-                | dec:d                      {:RESULT = new AST_PROGRAM_DEC_LIST(d, null); :}
+Program     ::= dec:d Program:p                                     {:RESULT = new AST_PROGRAM_DEC_LIST(d, p);   :}
+                | dec:d                                             {:RESULT = new AST_PROGRAM_DEC_LIST(d, null); :}
                 ;
 
-exp         ::= var:var                      {:RESULT = new ASP_EXP_VAR(var); :}
-                | LPAREN exp:exp RPAREN      {:RESULT = new ASP_EXP_EXP(exp); :}
+exp         ::= var:v                                               {:RESULT = new ASP_EXP_VAR(v); :}
+                | LPAREN exp:e RPAREN                               {:RESULT = new ASP_EXP_EXP(e); :}
 
-                | exp:exp_1 PLUS exp:exp_2   {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 0); :}
-                | exp:exp_1 MINUS exp:exp_2  {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 1); :}
-                | exp:exp_1 TIMES exp:exp_2  {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 2); :}
-                | exp:exp_1 DIVIDE exp:exp_2 {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 3); :}
-                | exp:exp_1 LT exp:exp_2     {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 4); :}
-                | exp:exp_1 GT exp:exp_2     {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 5); :}
-                | exp:exp_1 EQ exp:exp_2     {:RESULT = new AST_EXP_BINOP(exp_1, exp_2, 6); :}
+                | exp:e1 PLUS exp:e2                                {:RESULT = new AST_EXP_BINOP(e1, e2, 0); :}
+                | exp:e1 MINUS exp:e2                               {:RESULT = new AST_EXP_BINOP(e1, e2, 1); :}
+                | exp:e1 TIMES exp:e2                               {:RESULT = new AST_EXP_BINOP(e1, e2, 2); :}
+                | exp:e1 DIVIDE exp:e2                              {:RESULT = new AST_EXP_BINOP(e1, e2, 3); :}
+                | exp:e1 LT exp:e2                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 4); :}
+                | exp:e1 GT exp:e2                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 5); :}
+                | exp:e1 EQ exp:e2                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 6); :}
 
                 | ID:id LPAREN RPAREN                               {:RESULT = new AST_EXP_ID(id, null, null); :}
-                | var:var DOT ID:id LPAREN RPAREN                   {:RESULT = new AST_EXP_ID(id, var, null); :}
+                | var:v DOT ID:id LPAREN RPAREN                     {:RESULT = new AST_EXP_ID(id, v, null); :}
                 | ID:id LPAREN commaExpList:l RPAREN                {:RESULT = new AST_EXP_ID(id, null, l); :}
-                | var:var DOT ID:id LPAREN commaExpList:l RPAREN    {:RESULT = new AST_EXP_ID(id, var, l); :}
+                | var:v DOT ID:id LPAREN commaExpList:l RPAREN      {:RESULT = new AST_EXP_ID(id, v, l); :}
 
-                | MINUS INT:i                {:RESULT = new AST_EXP_OPT(i, null, 0); :}
-                | INT:i                      {:RESULT = new AST_EXP_OPT(i, null, 0); :}
-                | MINUS STRING:s             {:RESULT = new AST_EXP_OPT(null, s, 1); :}
-                | STRING:s                   {:RESULT = new AST_EXP_OPT(null, s, 1); :}
-                | MINUS NIL | NIL
+                | MINUS INT:i                                       {:RESULT = new AST_EXP_OPT(i, null, 0); :}
+                | INT:i                                             {:RESULT = new AST_EXP_OPT(i, null, 0); :}
+                | STRING:s                                          {:RESULT = new AST_EXP_OPT(null, s, 1); :}
+                | NIL
                 ;
 
-commaExpList ::= exp:exp COMMA commaExpList:l {: RESULT = new AST_LIST<AST_EXP>(exp,l);    :}
-                 | exp:exp                    {: RESULT = new AST_LIST<AST_EXP>(exp,null);    :}
+commaExpList ::= exp:e COMMA commaExpList:l                         {: RESULT = new AST_LIST<AST_EXP>(e,l);    :}
+                 | exp:e                                            {: RESULT = new AST_LIST<AST_EXP>(e,null);    :}
                  ;
 
-var          ::= ID:id {: RESULT = new AST_VAR_ID(id); :}
-                 | var:var DOT ID:id {: RESULT = new AST_VAR_VAR_ID(var, id); :}
-                 | var LBRACE exp:exp RBRACE {: RESULT = new AST_VAR_EXP(var, exp); :}
+var          ::= ID:id                                              {: RESULT = new AST_VAR_ID(id); :}
+                 | var:v DOT ID:id                                  {: RESULT = new AST_VAR_VAR_ID(v, id); :}
+                 | var:v LBRACK exp:e RBRACK                        {: RESULT = new AST_VAR_EXP(v, e); :}
                  ;
 /*
 stmtList	::=		stmt:s stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}

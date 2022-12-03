@@ -7,8 +7,7 @@ public class AST_VAR_ID extends AST_VAR
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_VAR_ID(String id)
-	{
+	public AST_VAR_ID(String id) {
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
@@ -28,8 +27,7 @@ public class AST_VAR_ID extends AST_VAR
 	/*************************************************/
 	/* The printing message for a field var AST node */
 	/*************************************************/
-	public void PrintMe()
-	{
+	public void PrintMe() {
 		/*********************************/
 		/* AST NODE TYPE = AST ID VAR */
 		/*********************************/

@@ -4,13 +4,12 @@ public class AST_EXP_ID extends AST_EXP
 {
 	public String id;
 	public AST_VAR var;
-	AST_LIST<AST_EXP> l;
+	public AST_LIST<AST_EXP> l;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_ID(String id, AST_VAR var, AST_LIST<AST_EXP> l)
-	{
+	public AST_EXP_ID(String id, AST_VAR var, AST_LIST<AST_EXP> l) {
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
@@ -32,8 +31,7 @@ public class AST_EXP_ID extends AST_EXP
 	/***********************************************/
 	/* The default message for an exp var AST node */
 	/***********************************************/
-	public void PrintMe()
-	{
+	public void PrintMe() {
 		/************************************/
 		/* AST NODE TYPE = EXP VAR AST NODE */
 		/************************************/

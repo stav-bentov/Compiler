@@ -9,8 +9,7 @@ public class AST_EXP_BINOP extends AST_EXP
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_BINOP(AST_EXP left,AST_EXP right,int OP)
-	{
+	public AST_EXP_BINOP(AST_EXP left, AST_EXP right, int OP) {
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
@@ -32,8 +31,7 @@ public class AST_EXP_BINOP extends AST_EXP
 	/*************************************************/
 	/* The printing message for a binop exp AST node */
 	/*************************************************/
-	public void PrintMe()
-	{
+	public void PrintMe() {
 		String sOP="";
 		
 		/*********************************/
