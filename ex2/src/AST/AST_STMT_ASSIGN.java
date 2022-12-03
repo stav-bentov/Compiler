@@ -1,16 +1,18 @@
 package AST;
 
-public class AST_STMT_ASSIGN extends AST_Node {
+public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
+{
+	// TODO: Add an abstract class the newExp and exp extends, to enforce T to be only of these two types
 	/***************/
 	/*  var := exp */
 	/***************/
 	public AST_VAR var;
-	public AST_EXP exp;
+	public T exp;
 
 	/*******************/
 	/*  CONSTRUCTOR(S) */
 	/*******************/
-	public AST_STMT_ASSIGN(AST_VAR var,AST_EXP exp)
+	public AST_STMT_ASSIGN(AST_VAR var,T exp)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -20,7 +22,18 @@ public class AST_STMT_ASSIGN extends AST_Node {
 		/***************************************/
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
-		System.out.print("====================== stmt -> var ASSIGN exp SEMICOLON\n");
+		String expType = "";
+		if (exp instanceof AST_EXP) {
+			expType = "exp";
+		} else if (exp instanceof AST_NEW_EXP) {
+			expType = "newExp";
+		}
+		else {
+			// TODO: Add exception
+		}
+
+		String deriveRule = String.format("====================== stmt -> var ASSIGN %s SEMICOLON\n", expType);
+		System.out.print(deriveRule);
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */
