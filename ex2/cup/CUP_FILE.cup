@@ -133,9 +133,9 @@ type        ::= TYPE_INT                     {:RESULT = new AST_TYPE('int', null
 
 arrayTypedef ::= ARRAY ID:idValue ASSIGN type:type LBRACK RBRACK SEMICOLON {:RESULT = new AST_ARRAYTYPEDEF(idvalue, type);:};
 
-varDec       ::= type:type ID:idValue                       {:RESULT = new AST_VARDEC(type, id, null, null);:}
-                | type:type ID:idValue ASSIGN exp:exp       {:RESULT = new AST_VARDEC(type, id, exp, null);:}
-                | type:type ID:idValue ASSIGN newExp:newExp {:RESULT = new AST_VARDEC(type, id, null, newExp);:}
+varDec       ::= type:type ID:idValue  SEMICOLON                      {:RESULT = new AST_VARDEC(type, id, null, null);:}
+                | type:type ID:idValue ASSIGN exp:exp SEMICOLON       {:RESULT = new AST_VARDEC(type, id, exp, null);:}
+                | type:type ID:idValue ASSIGN newExp:newExp SEMICOLON {:RESULT = new AST_VARDEC(type, id, null, newExp);:}
                 ;
 
 funcDec     ::= type:type ID:idValue LPAREN RPAREN LBRACE stmtList:stmtList RBRACE                         {:RESULT = new AST_FUNCDEC(type, idValue, null, stmtList);:}

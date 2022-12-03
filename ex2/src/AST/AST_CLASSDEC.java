@@ -9,6 +9,8 @@ public class AST_CLASSDEC extends AST_Node{
         this.className = className;
         this.extendsName = extendsName;
         this.cFieldList = cFieldList;
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+
     }
 
 }

@@ -7,5 +7,7 @@ public class AST_ARRAYTYPEDEF extends AST_Node{
     public AST_ARRAYTYPEDEF(String name, AST_TYPE type){
         this.name = name;
         this.type = type;
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+
     }
 }

@@ -1,6 +1,6 @@
 package AST;
 
-public class AST_VARDEC {
+public class AST_VARDEC extends AST_Node{
     public AST_TYPE type;
     public String name;
     public AST_EXP exp;
@@ -11,5 +11,7 @@ public class AST_VARDEC {
         this.name = name;
         this.exp = exp;
         this.newExp = newExp;
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+
     }
 }

@@ -12,6 +12,7 @@ public class AST_DEC extends AST_Node
 		this.funcdec = funcdec;
 		this.classdec = classdec;
 		this.arraytypedef = arraytypedef;
+		SerialNumber = AST_Node_Serial_Number.getFresh();
 	}
 
 }

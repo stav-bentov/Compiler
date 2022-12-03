@@ -11,6 +11,8 @@ public class AST_FUNCDEC extends AST_Node{
         this.name = name;
         this.argList = argList;
         this.stmtList = stmtList;
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+
     }
 
 
