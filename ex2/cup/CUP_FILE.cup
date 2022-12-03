@@ -113,8 +113,9 @@ start with stmtList;
 /********************/
 /* DERIVATION RULES */
 /********************/
+Program     ::= decList:declist {:RESULT = new AST_PROGRAM(declist);:};
 
-Program     ::= dec:d decList:declist        {:RESULT = new AST_LIST<AST_DEC>(d, declist);:}
+decList     ::= dec:d decList:declist        {:RESULT = new AST_LIST<AST_DEC>(d, declist);:}
                 | dec:d                      {:RESULT = new AST_LIST<AST_DEC>(d, null); :}
                 ;
 
