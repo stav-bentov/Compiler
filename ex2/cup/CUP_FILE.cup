@@ -128,10 +128,10 @@ decList     ::= dec:d decList:dl                                                
                 ;
 
 
-dec         ::= varDec:vd                                                               {:RESULT = new AST_DEC(vd, null, null, null);:}
-                | funcDec:fd                                                            {: RESULT = new AST_DEC(null, fd, null, null);:}
-                | classDec:cd                                                           {: RESULT = new AST_DEC(null, null, cd, null);:}
-                | arrayTypedef:atd                                                      {: RESULT = new AST_DEC(null, null, null, atd);:}
+dec         ::= varDec:vd                                                               {:RESULT = new AST_DEC(vd);:}
+                | funcDec:fd                                                            {: RESULT = new AST_DEC(fd);:}
+                | classDec:cd                                                           {: RESULT = new AST_DEC(cd);:}
+                | arrayTypedef:atd                                                      {: RESULT = new AST_DEC(atd);:}
                 ;
 
 type        ::= TYPE_INT                                                                {:RESULT = new AST_TYPE('int', null);:}
