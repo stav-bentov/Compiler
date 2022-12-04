@@ -38,7 +38,6 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         /* RECURSIVELY PRINT VAR, then FIELD NAME ... */
         /**********************************************/
         if(dec != null) dec.PrintMe();
-        System.out.format("CFIELD_DEC\n");
 
         /***************************************/
         /* PRINT Node to AST GRAPHVIZ DOT file */
