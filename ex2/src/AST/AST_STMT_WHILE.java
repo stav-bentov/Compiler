@@ -24,4 +24,24 @@ public class AST_STMT_WHILE extends AST_STMT {
 		this.cond = cond;
 		this.body = body;
 	}
+	public void PrintMe() {
+		System.out.print("AST_STMT_WHILE");
+
+		/*****************************/
+		/* RECURSIVELY PRINT var ... */
+		/*****************************/
+		cond.PrintMe();
+		body.PrintMe();
+
+		/*********************************/
+		/* Print to AST GRAPHIZ DOT file */
+		/*********************************/
+		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "while stmt\n");
+
+		/****************************************/
+		/* PRINT Edges to AST GRAPHVIZ DOT file */
+		/****************************************/
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cond.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, body.SerialNumber);
+	}
 }
