@@ -43,9 +43,9 @@ public class AST_EXP_OPT extends AST_EXP
 		/*********************************/
 		switch(OPT) {
 			case 0:
-				sOPT = String.format("%f",i)
+				sOPT = String.format("%f",i);
 			case 1:
-				sOPT = String.format("%s",s)
+				sOPT = String.format("%s",s);
 		}
 		/*************************************/
 		/* AST NODE TYPE = AST EXP OPT*/
@@ -57,6 +57,6 @@ public class AST_EXP_OPT extends AST_EXP
 		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("%s",output));
+			String.format("%s", sOPT));
 	}
 }

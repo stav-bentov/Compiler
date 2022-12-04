@@ -5,7 +5,7 @@ public class AST_DEC extends AST_Node
 	public AST_VAR_DEC vardec;
 	public AST_FUNC_DEC funcdec;
 	public AST_CLASS_DEC classdec;
-	public AST_ARRAYTYPEDEF arraytypedef;
+	public AST_ARRAY_TYPEDEF arraytypedef;
 
 	public AST_DEC(AST_VAR_DEC vardec){
 		this.vardec = vardec;
@@ -25,7 +25,7 @@ public class AST_DEC extends AST_Node
 		System.out.format("====================== dec -> classDec\n");
 	}
 
-	public AST_DEC(AST_ARRAYTYPEDEF arraytypedef){
+	public AST_DEC(AST_ARRAY_TYPEDEF arraytypedef){
 		this.arraytypedef = arraytypedef;
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		System.out.format("====================== dec -> arrayTypedef\n");

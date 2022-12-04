@@ -1,8 +1,9 @@
-   
+
 import java.io.*;
 import java.io.PrintWriter;
-import java_cup.runtime.Symbol;
+import java_cup.runtime.*;
 import AST.*;
+import jdk.nashorn.internal.parser.*;
 
 public class Main
 {
@@ -16,7 +17,7 @@ public class Main
 		PrintWriter file_writer;
 		String inputFilename = argv[0];
 		String outputFilename = argv[1];
-		
+
 		try
 		{
 			/********************************/
@@ -28,12 +29,12 @@ public class Main
 			/* [2] Initialize a file writer */
 			/********************************/
 			file_writer = new PrintWriter(outputFilename);
-			
+
 			/******************************/
 			/* [3] Initialize a new lexer */
 			/******************************/
 			l = new Lexer(file_reader);
-			
+
 			/*******************************/
 			/* [4] Initialize a new parser */
 			/*******************************/
@@ -43,23 +44,23 @@ public class Main
 			/* [5] 3 ... 2 ... 1 ... Parse !!! */
 			/***********************************/
 			AST = (AST_PROGRAM) p.parse().value;
-			
+
 			/*************************/
 			/* [6] Print the AST ... */
 			/*************************/
 			AST.PrintMe();
-			
+
 			/*************************/
 			/* [7] Close output file */
 			/*************************/
 			file_writer.close();
-			
+
 			/*************************************/
 			/* [8] Finalize AST GRAPHIZ DOT file */
 			/*************************************/
 			AST_GRAPHVIZ.getInstance().finalizeFile();
     	}
-			     
+
 		catch (Exception e)
 		{
 			e.printStackTrace();

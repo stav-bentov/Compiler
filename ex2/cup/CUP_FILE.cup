@@ -79,6 +79,7 @@ terminal RBRACK;
 terminal LBRACE;
 terminal RBRACE;
 terminal SEMICOLON;
+terminal CLASS;
 
 /*************/
 /* TERMINALS */
@@ -94,23 +95,31 @@ non terminal AST_LIST<AST_DEC> Program;
 non terminal AST_EXP exp;
 non terminal AST_VAR var;
 non terminal AST_STMT stmt;
-non terminal AST_STMT_LIST stmtList;
+non terminal AST_LIST<AST_STMT> stmtList;
 non terminal AST_DEC dec;
 non terminal AST_TYPE type;
-non terminal AST_ARRAYTYPEDEF arrayTypedef;
-non terminal AST_VARDEC varDec;
-non terminal AST_FUNCDEC funcDec;
+non terminal AST_ARRAY_TYPEDEF arrayTypedef;
+non terminal AST_VAR_DEC varDec;
+non terminal AST_FUNC_DEC funcDec;
 non terminal AST_ARGUMENT argument;
-non terminal AST_LIST<AST_ARGUEMENT> arguementList;
-non terminal AST_CLASSDEC classDec;
+non terminal AST_LIST<AST_ARGUMENT> argumentsList;
+non terminal AST_CLASS_DEC classDec;
 non terminal AST_LIST<AST_CFIELD> cFieldList;
+non terminal AST_NEW_EXP newExp;
+non terminal AST_CFIELD cField;
+non terminal AST_LIST<AST_EXP> commaExpList;
+
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
-precedence left PLUS;
-precedence left MINUS;
-precedence left TIMES;
-precedence left DIVIDE;
+precedence nonassoc ASSIGN;
+precedence left EQ;
+precedence left GT, LT;
+precedence left PLUS, MINUS;
+precedence left DIVIDE, TIMES;
+precedence nonassoc LBRACK;
+precedence nonassoc LPAREN;
+precedence left DOT;
 
 /************************/
 /* START WITH: Program */
@@ -130,17 +139,17 @@ dec         ::= varDec:vd                                                       
                 | arrayTypedef:atd                                                      {: RESULT = new AST_DEC(atd);:}
                 ;
 
-type        ::= TYPE_INT                                                                {:RESULT = new AST_TYPE('int');:}
-                | TYPE_STRING                                                           {:RESULT = new AST_TYPE('string');:}
-                | TYPE_VOID                                                             {:RESULT = new AST_TYPE('void');:}
-                | ID:id                                                                 {:RESULT = new AST_TYPE('id', id);:}
+type        ::= TYPE_INT                                                                {:RESULT = new AST_TYPE("int");:}
+                | TYPE_STRING                                                           {:RESULT = new AST_TYPE("string");:}
+                | TYPE_VOID                                                             {:RESULT = new AST_TYPE("void");:}
+                | ID:id                                                                 {:RESULT = new AST_TYPE("id", id);:}
                 ;
 
-arrayTypedef ::= ARRAY ID:id ASSIGN type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAYTYPEDEF(id, t);:};
+arrayTypedef ::= ARRAY ID:id ASSIGN type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAY_TYPEDEF(id, t);:};
 
-varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id);:}
+varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, null);:}
                 | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, e);:}
-                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VAR_DEC<AST_NEW_EXP>(t, id, null, ne);:}
+                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VAR_DEC<AST_NEW_EXP>(t, id, ne);:}
                 ;
 
 funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE                     {:RESULT = new AST_FUNC_DEC(t, id, null, l);:}
@@ -149,8 +158,8 @@ funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE             
 
 argument      ::= type:t ID:id                                                          {:RESULT = new AST_ARGUMENT(t, id);:};
 
-arguementList ::= argument:a                                                            {:RESULT = new AST_LIST<AST_ARGUMENT>(a, null);:}
-                  | argument:a COMMA argumentList:al                                    {:RESULT = new AST_LIST<AST_ARGUMENT>(a, al);:}
+argumentsList ::= argument:a                                                            {:RESULT = new AST_LIST<AST_ARGUMENT>(a, null);:}
+                  | argument:a COMMA argumentsList:al                                   {:RESULT = new AST_LIST<AST_ARGUMENT>(a, al);:}
                   ;
 
 classDec    ::= CLASS ID:id LBRACE cFieldList:l RBRACE                                  {:RESULT = new AST_CLASS_DEC(id, l);:}
@@ -168,14 +177,14 @@ stmt        ::=     varDec:v                                                    
                     | RETURN exp:e SEMICOLON                                            {: RESULT = new AST_STMT_RET(e); :}
                     | IF LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE                   {: RESULT = new AST_STMT_IF(e, l); :}
                     | WHILE LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE                {: RESULT = new AST_STMT_WHILE(e, l); :}
-                    | ID:id LPAREN RPAREN SEMICOLON                                     {: RESULT = new AST_STMT_ID_VAR_EXP(null, id, null); :}
-                    | ID:id LPAREN commaExpList:l RPAREN SEMICOLON                      {: RESULT = new AST_STMT_ID_VAR_EXP(null, id, l); :}
-                    | var:v DOT ID:id LPAREN RPAREN SEMICOLON                           {: RESULT = new AST_STMT_ID_VAR_EXP(v, id, null); :}
-                    | var:v DOT ID:id LPAREN commaExpList:l RPAREN SEMICOLON            {: RESULT = new AST_STMT_ID_VAR_EXP(v, id, l); :}
+                    | ID:id LPAREN RPAREN SEMICOLON                                     {: RESULT = new AST_STMT_ID(null, id, null); :}
+                    | ID:id LPAREN commaExpList:l RPAREN SEMICOLON                      {: RESULT = new AST_STMT_ID(null, id, l); :}
+                    | var:v DOT ID:id LPAREN RPAREN SEMICOLON                           {: RESULT = new AST_STMT_ID(v, id, null); :}
+                    | var:v DOT ID:id LPAREN commaExpList:l RPAREN SEMICOLON            {: RESULT = new AST_STMT_ID(v, id, l); :}
                     ;
 
 stmtList	::=		stmt:s	stmtList:l		                                            {: RESULT = new AST_LIST<AST_STMT>(s, l);    :}
-                | stmt:s			                                                	{: RESULT = new AST_LIST<AST_STMT>(s, null); :}
+                    | stmt:s			                                                {: RESULT = new AST_LIST<AST_STMT>(s, null); :}
 					;
 
 commaExpList ::=     exp:e COMMA commaExpList:l                                         {: RESULT = new AST_LIST<AST_EXP>(e, l); :}
@@ -190,8 +199,8 @@ cField      ::=     varDec:v                                                    
                     | funcDec:f                                                         {: RESULT = new AST_CFIELD_DEC<AST_FUNC_DEC>(f); :}
                     ;
 
-exp         ::= var:v                                                                   {:RESULT = new ASP_EXP_VAR(v); :}
-                | LPAREN exp:e RPAREN                                                   {:RESULT = new ASP_EXP_EXP(e); :}
+exp         ::= var:v                                                                   {:RESULT = new AST_EXP_VAR(v); :}
+                | LPAREN exp:e RPAREN                                                   {:RESULT = new AST_EXP_EXP(e); :}
 
                 | exp:e1 PLUS exp:e2                                                    {:RESULT = new AST_EXP_BINOP(e1, e2, 0); :}
                 | exp:e1 MINUS exp:e2                                                   {:RESULT = new AST_EXP_BINOP(e1, e2, 1); :}

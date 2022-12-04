@@ -43,7 +43,7 @@ public class AST_EXP_BINOP extends AST_EXP
 				sOP = "=";
 				break;
 		}
-		System.out.print("====================== exp -> exp %s exp\n", sOP);
+		System.out.print(String.format("====================== exp -> exp %s exp\n", sOP));
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */
