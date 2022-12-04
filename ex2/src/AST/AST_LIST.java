@@ -19,7 +19,7 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
     }
 
     public void PrintMe() {
-        System.out.print("AST_FUNC_DEC\n");
+        System.out.format("AST_LIST<%s>", head.toString());
 
         /*****************************/
         /* RECURSIVELY PRINT var ... */
