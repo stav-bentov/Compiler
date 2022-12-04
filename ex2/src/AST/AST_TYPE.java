@@ -15,4 +15,13 @@ public class AST_TYPE extends AST_Node{
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("====================== dec -> %s\n", type);
     }
+
+    public void PrintMe() {
+        System.out.print("AST_TYPE");
+
+        /*********************************/
+        /* Print to AST GRAPHIZ DOT file */
+        /*********************************/
+        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "type\n");
+    }
 }
