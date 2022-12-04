@@ -8,6 +8,7 @@ public class AST_ARGUMENT extends AST_Node{
         this.type = type;
         this.name = name;
         SerialNumber = AST_Node_Serial_Number.getFresh();
+        System.out.format("===================== argument -> %s %s\n", type.type, this.name);
     }
 
     public void PrintMe() {
@@ -27,7 +28,7 @@ public class AST_ARGUMENT extends AST_Node{
         /***************************************/
         AST_GRAPHVIZ.getInstance().logNode(
                 SerialNumber,
-                String.format("ID\ntype\n...->%s",this.name));
+                String.format("argument: %s",this.name));
 
         /****************************************/
         /* PRINT Edges to AST GRAPHVIZ DOT file */
