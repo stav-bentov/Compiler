@@ -19,4 +19,23 @@ public class AST_STMT_VAR_DEC extends AST_STMT{
         /*******************************/
         this.var = var;
     }
+
+    public void PrintMe() {
+        System.out.print("AST_STMT_VAR_DEC");
+
+        /*****************************/
+        /* RECURSIVELY PRINT var ... */
+        /*****************************/
+        var.PrintMe();
+
+        /*********************************/
+        /* Print to AST GRAPHIZ DOT file */
+        /*********************************/
+        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "dec var\n");
+
+        /****************************************/
+        /* PRINT Edges to AST GRAPHVIZ DOT file */
+        /****************************************/
+        AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, var.SerialNumber);
+    }
 }
