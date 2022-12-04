@@ -15,5 +15,29 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
         /*******************************/
         this.head = head;
         this.tail = tail;
+        System.out.format("====================== AST_LIST -> head: %s\n", head.toString());
+    }
+
+    public void PrintMe() {
+        System.out.print("AST_FUNC_DEC\n");
+
+        /*****************************/
+        /* RECURSIVELY PRINT var ... */
+        /*****************************/
+        head.PrintMe();
+        if (tail != null) tail.PrintMe();
+
+        /*********************************/
+        /* Print to AST GRAPHIZ DOT file */
+        /*********************************/
+        AST_GRAPHVIZ.getInstance().logNode(
+                SerialNumber,
+                String.format("AST_LIST<%s>:\n", tail.toString()));
+
+        /****************************************/
+        /* PRINT Edges to AST GRAPHVIZ DOT file */
+        /****************************************/
+        AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, head.SerialNumber);
+        if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, tail.SerialNumber);
     }
 }
