@@ -145,7 +145,7 @@ type        ::= TYPE_INT                                                        
                 | ID:id                                                                 {:RESULT = new AST_TYPE("id", id);:}
                 ;
 
-arrayTypedef ::= ARRAY ID:id ASSIGN type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAY_TYPEDEF(id, t);:};
+arrayTypedef ::= ARRAY ID:id EQ type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAY_TYPEDEF(id, t);:};
 
 varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, null);:}
                 | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, e);:}
