@@ -30,7 +30,7 @@ public class AST_STMT_IF extends AST_STMT {
 		/********************************************/
 		/* AST NODE TYPE = AST ASSIGNMENT STATEMENT */
 		/********************************************/
-		System.out.print("AST_STMT_ID %s\n");
+		System.out.print("AST_STMT_IF\n");
 
 		/***********************************/
 		/* RECURSIVELY PRINT VAR + EXP ... */
