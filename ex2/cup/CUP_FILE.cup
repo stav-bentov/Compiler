@@ -216,9 +216,9 @@ exp         ::= var:v                                                           
                 | var:v DOT ID:id LPAREN commaExpList:l RPAREN                          {:RESULT = new AST_EXP_ID(id, v, l); :}
 
                 | MINUS INT:i                                                           {:RESULT = new AST_EXP_OPT(i, null, 0); :}
-                | INT:i                                                                 {:RESULT = new AST_EXP_OPT(i, null, 0); :}
-                | STRING:s                                                              {:RESULT = new AST_EXP_OPT(null, s, 1); :}
-                | NIL
+                | INT:i                                                                 {:RESULT = new AST_EXP_OPT(i, null, 1); :}
+                | STRING:s                                                              {:RESULT = new AST_EXP_OPT(null, s, 2); :}
+                | NIL                                                                   {:RESULT = new AST_EXP_OPT(null, null, 3); :}
                 ;
 
 var          ::= ID:id                                                                  {: RESULT = new AST_VAR_ID(id); :}

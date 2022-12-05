@@ -36,13 +36,13 @@ public class AST_VAR_ID extends AST_VAR
 		/**********************************************/
 		/* RECURSIVELY PRINT VAR, then FIELD NAME ... */
 		/**********************************************/
-		System.out.format("ID( %s )\n",id);
+		System.out.format("ID(%s)\n",id);
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
 		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("ID\n...->%s",id));
+			String.format("ID(%s)",id));
 	}
 }

@@ -39,7 +39,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		/* RECURSIVELY PRINT VAR, then FIELD NAME ... */
 		/**********************************************/
 		if (var != null) var.PrintMe();
-		System.out.format("ID( %s )\n",id);
+		System.out.format("ID(%s)\n",id);
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */

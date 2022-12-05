@@ -43,7 +43,7 @@ public class AST_EXP_VAR extends AST_EXP
 		/*********************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			"VAR");
+			"EXP\nVAR");
 
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */

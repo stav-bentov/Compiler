@@ -20,7 +20,7 @@ public class AST_VAR_EXP extends AST_VAR
 		if (exp == null)
 			System.out.format("====================== var -> var\n");
 		else
-			System.out.format("====================== var -> var exp\n");
+			System.out.format("====================== var -> var [exp]\n");
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */

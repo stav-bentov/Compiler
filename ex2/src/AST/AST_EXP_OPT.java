@@ -20,11 +20,13 @@ public class AST_EXP_OPT extends AST_EXP
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
 		if (OPT == 0)
-			System.out.print("====================== exp -> [-] INT\n");
+			System.out.print("====================== exp -> - INT\n");
 		else if (OPT == 1)
 			System.out.print("====================== exp -> INT\n");
 		else if (OPT == 2)
 			System.out.print("====================== exp -> STRING\n");
+		else if (OPT == 3)
+			System.out.print("====================== exp -> NIL\n");
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */
@@ -45,10 +47,15 @@ public class AST_EXP_OPT extends AST_EXP
 		/*********************************/
 		switch(OPT) {
 			case 0:
-				sOPT = String.format("%f",i);
+				sOPT = String.format("- %f",i);
 			case 1:
+				sOPT = String.format("%f",i);
+			case 2:
 				sOPT = String.format("%s",s);
+			case 3:
+				sOPT = "NIL";
 		}
+
 		/*************************************/
 		/* AST NODE TYPE = AST EXP OPT*/
 		/*************************************/
