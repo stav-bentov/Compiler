@@ -8,7 +8,7 @@ public class AST_ARGUMENT extends AST_Node{
         this.type = type;
         this.name = name;
         SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("===================== argument -> %s %s\n", type.type, this.name);
+        System.out.format("===================== argument -> type(%s) ID(%s)\n", type.type, this.name);
     }
 
     public void PrintMe() {
