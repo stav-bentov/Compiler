@@ -8,7 +8,7 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
         this.name = name;
         this.type = type;
         SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("===================== array_typedef -> %s %s\n", type.type, this.name);
+        System.out.format("===================== array_typedef -> type(%s) ID(%s)\n", type.type, this.name);
     }
 
     public void PrintMe() {
