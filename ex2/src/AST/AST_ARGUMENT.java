@@ -15,7 +15,7 @@ public class AST_ARGUMENT extends AST_Node{
         /*********************************/
         /* AST NODE TYPE = AST FIELD VAR */
         /*********************************/
-        System.out.print("AST NODE ID VAR\n");
+        System.out.print("AST_ARGUMENT\n");
 
         /**********************************************/
         /* RECURSIVELY PRINT VAR, then FIELD NAME ... */

@@ -22,6 +22,7 @@ public class AST_TYPE extends AST_Node{
         /*********************************/
         /* Print to AST GRAPHIZ DOT file */
         /*********************************/
-        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "type\n");
+        AST_GRAPHVIZ.getInstance().logNode(SerialNumber,
+                String.format("type %s\n", type));
     }
 }
