@@ -20,7 +20,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     }
 
     public void PrintMe() {
-        System.out.print("AST_VAR_DEC");
+        System.out.format("AST_VAR_DEC<%s>\n", type.type);
 
         /*****************************/
         /* RECURSIVELY PRINT var ... */
