@@ -17,7 +17,7 @@ public class AST_CLASS_DEC extends AST_Node{
         this.className = className;
         this.cFieldList = cFieldList;
         SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("====================== classDec -> CLASS ID(%s) cFieldList\n", className, extendsName);
+        System.out.format("====================== classDec -> CLASS ID(%s) cFieldList\n", className);
     }
 
     public void PrintMe() {
