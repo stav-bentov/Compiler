@@ -26,7 +26,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
     }
 
     public void PrintMe() {
-        System.out.print("AST_NEW_EXP_NEW_TYPE_EXP");
+        System.out.print("AST_NEW_EXP_NEW_TYPE_EXP\n");
 
         /*****************************/
         /* RECURSIVELY PRINT var ... */

@@ -27,7 +27,7 @@ public class AST_STMT_RET extends AST_STMT {
     }
 
     public void PrintMe() {
-        System.out.print("AST_STMT_RET");
+        System.out.print("AST_STMT_RET\n");
 
         /*****************************/
         /* RECURSIVELY PRINT var ... */

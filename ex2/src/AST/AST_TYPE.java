@@ -17,8 +17,7 @@ public class AST_TYPE extends AST_Node{
     }
 
     public void PrintMe() {
-        System.out.print("AST_TYPE");
-
+        System.out.format("AST_TYPE: %s\n", type);
         /*********************************/
         /* Print to AST GRAPHIZ DOT file */
         /*********************************/

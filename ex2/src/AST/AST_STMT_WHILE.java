@@ -25,7 +25,7 @@ public class AST_STMT_WHILE extends AST_STMT {
 		this.body = body;
 	}
 	public void PrintMe() {
-		System.out.print("AST_STMT_WHILE");
+		System.out.print("AST_STMT_WHILE\n");
 
 		/*****************************/
 		/* RECURSIVELY PRINT var ... */

@@ -26,7 +26,7 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
     }
 
     public void PrintMe() {
-        System.out.format("AST_LIST<%s>", type);
+        System.out.format("AST_LIST<%s>\n", type);
 
         /*****************************/
         /* RECURSIVELY PRINT var ... */

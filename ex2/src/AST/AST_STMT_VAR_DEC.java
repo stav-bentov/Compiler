@@ -21,7 +21,7 @@ public class AST_STMT_VAR_DEC extends AST_STMT{
     }
 
     public void PrintMe() {
-        System.out.print("AST_STMT_VAR_DEC");
+        System.out.print("AST_STMT_VAR_DEC\n");
 
         /*****************************/
         /* RECURSIVELY PRINT var ... */
