@@ -31,7 +31,7 @@ public class AST_CLASS_DEC extends AST_Node{
         /**********************************************/
         if(cFieldList != null) cFieldList.PrintMe();
         if (extendsName == null) System.out.format("AST_CLASS_DEC %s\n", className);
-        else System.out.format("AST_CLASS_DEC %s %s\n", className, extendsName);
+        else System.out.format("AST_CLASS_DEC %s extends %s\n", className, extendsName);
 
         /***************************************/
         /* PRINT Node to AST GRAPHVIZ DOT file */

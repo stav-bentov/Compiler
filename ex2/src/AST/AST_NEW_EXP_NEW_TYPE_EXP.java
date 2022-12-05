@@ -37,7 +37,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         /*********************************/
         /* Print to AST GRAPHIZ DOT file */
         /*********************************/
-        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "exp_new_exp:\n");
+        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "exp_new_exp\n");
 
         /****************************************/
         /* PRINT Edges to AST GRAPHVIZ DOT file */

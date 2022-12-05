@@ -31,7 +31,7 @@ public class AST_STMT_VAR_DEC extends AST_STMT{
         /*********************************/
         /* Print to AST GRAPHIZ DOT file */
         /*********************************/
-        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "dec var\n");
+        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "stmt var dec\n");
 
         /****************************************/
         /* PRINT Edges to AST GRAPHVIZ DOT file */
