@@ -11,11 +11,11 @@ public class AST_EXP_OPT extends AST_EXP
 	/******************/
 	public AST_EXP_OPT(Integer i, String s, String opt) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-		System.out.format("====================== exp -> - %s", opt);
+		System.out.format("====================== exp -> %s", opt);
 		if (opt.equals("INT") || opt.equals("MINUS INT"))
-			System.out.format("%d\n", i);
+			System.out.format("(%d)\n", i);
 		if(opt.equals("STRING"))
-			System.out.format("%s\n", s);
+			System.out.format("(%s)\n", s);
 		this.i = i;
 		this.s = s;
 		this.opt = opt;
