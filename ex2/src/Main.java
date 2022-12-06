@@ -17,6 +17,7 @@ public class Main
 		PrintWriter file_writer;
 		String inputFilename = argv[0];
 		String outputFilename = argv[1];
+		String outputText = "";
 
 		try
 		{
@@ -30,42 +31,45 @@ public class Main
 			/********************************/
 			file_writer = new PrintWriter(outputFilename);
 
-			/******************************/
-			/* [3] Initialize a new lexer */
-			/******************************/
-			l = new Lexer(file_reader);
+			try{
+				/******************************/
+				/* [3] Initialize a new lexer */
+				/******************************/
+				l = new Lexer(file_reader);
 
-			/*******************************/
-			/* [4] Initialize a new parser */
-			/*******************************/
-			p = new Parser(l);
+				/*******************************/
+				/* [4] Initialize a new parser */
+				/*******************************/
+				p = new Parser(l, outputFilename);
 
-			/***********************************/
-			/* [5] 3 ... 2 ... 1 ... Parse !!! */
-			/***********************************/
-			AST = (AST_LIST<AST_STMT>) p.parse().value;
+				/***********************************/
+				/* [5] 3 ... 2 ... 1 ... Parse !!! */
+				/***********************************/
+				AST = (AST_LIST<AST_STMT>) p.parse().value;
 
-			/*************************/
-			/* [6] Print the AST ... */
-			/*************************/
-			AST.PrintMe();
+				/*************************/
+				/* [6] Print the AST ... */
+				/*************************/
+				AST.PrintMe();
 
-			/*************************/
-			/* [7] Close output file */
-			/*************************/
+				/*************************************/
+				/* [8] Finalize AST GRAPHIZ DOT file */
+				/*************************************/
+				AST_GRAPHVIZ.getInstance().finalizeFile();
+
+				file_writer.write("OK");
+			}
+			catch (Error e)
+			{
+				file_writer.write("ERROR");
+			}
 			file_writer.close();
 
-			/*************************************/
-			/* [8] Finalize AST GRAPHIZ DOT file */
-			/*************************************/
-			AST_GRAPHVIZ.getInstance().finalizeFile();
     	}
-
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 }
-
 

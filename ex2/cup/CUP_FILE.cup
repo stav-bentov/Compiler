@@ -3,26 +3,32 @@
 /*************/
 import java_cup.runtime.*;
 import AST.*;
+import java.io.*;
 
 parser code 
 {:
 	public Lexer lexer;
+    public String outputFilename;
 
-	public Parser(Lexer lexer)
+	public Parser(Lexer lexer, String outputFilename)
 	{
 		super(lexer);
 		this.lexer = lexer;
+		this.outputFilename = outputFilename;
 	}
 	public void report_error(String message, Object info)
-	{
-		System.out.print("ERROR >> ");		
-		System.out.print("[");
-		System.out.print(lexer.getLine());
-		System.out.print(":");
-		System.out.print(lexer.getCharPos());
-		System.out.print("] ");		
-		System.exit(0);
-	}
+    	{
+    	    PrintWriter file_writer = null;
+            try {
+                file_writer = new PrintWriter(outputFilename);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            String outputText = "ERROR(" + lexer.getLine() + ")";
+            file_writer.write(outputText);
+            file_writer.close();
+            System.exit(0);
+    	}
 :}
 
 /************************/
