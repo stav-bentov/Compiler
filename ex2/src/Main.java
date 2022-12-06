@@ -50,12 +50,12 @@ public class Main
 				/*************************/
 				/* [6] Print the AST ... */
 				/*************************/
-				AST.PrintMe();
+				//AST.PrintMe();
 
 				/*************************************/
 				/* [8] Finalize AST GRAPHIZ DOT file */
 				/*************************************/
-				AST_GRAPHVIZ.getInstance().finalizeFile();
+				//AST_GRAPHVIZ.getInstance().finalizeFile();
 
 				file_writer.write("OK");
 			}

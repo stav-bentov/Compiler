@@ -6,23 +6,15 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
     public AST_LIST<T> tail;
 
     public AST_LIST(T head, AST_LIST<T> tail) {
-        /******************************/
-        /* SET A UNIQUE SERIAL NUMBER */
-        /******************************/
         SerialNumber = AST_Node_Serial_Number.getFresh();
-
         if (head instanceof AST_DEC) type = "AST_DEC";
         if (head instanceof  AST_ARGUMENT) type = "AST_ARGUMENT";
         if (head instanceof AST_CFIELD ) type = "AST_CFIELD";
         if (head instanceof AST_STMT ) type = "AST_STMT";
         if (head instanceof AST_EXP ) type = "AST_EXP";
-
-        /*******************************/
-        /* COPY INPUT DATA MEMBERS ... */
-        /*******************************/
+        System.out.format("====================== AST_LIST -> of type(%s)\n", type);
         this.head = head;
         this.tail = tail;
-        System.out.format("====================== AST_LIST -> of type(%s)\n", type);
     }
 
     public void PrintMe() {

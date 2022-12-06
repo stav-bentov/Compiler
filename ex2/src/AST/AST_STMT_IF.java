@@ -8,19 +8,8 @@ public class AST_STMT_IF extends AST_STMT {
 	/*  CONSTRUCTOR(S) */
 	/*******************/
 	public AST_STMT_IF(AST_EXP cond, AST_LIST<AST_STMT> body) {
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
-		System.out.print("====================== stmt -> IF (exp) { stmt [ stmt ]* }\n");
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
+		System.out.print("====================== stmt -> IF (exp) {stmtList}\n");
 		this.cond = cond;
 		this.body = body;
 	}

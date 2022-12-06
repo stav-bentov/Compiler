@@ -6,18 +6,18 @@ public class AST_CLASS_DEC extends AST_Node{
     public AST_LIST<AST_CFIELD> cFieldList;
 
     public AST_CLASS_DEC(String className, String extendsName, AST_LIST<AST_CFIELD> cFieldList){
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+        System.out.format("====================== classDec -> CLASS ID(%s) extends ID(%s) {cFieldList}\n", className, extendsName);
         this.className = className;
         this.extendsName = extendsName;
         this.cFieldList = cFieldList;
-        SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("====================== classDec -> CLASS ID(%s) extends %s cFieldList\n", className, extendsName);
     }
 
     public AST_CLASS_DEC(String className, AST_LIST<AST_CFIELD> cFieldList){
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+        System.out.format("====================== classDec -> CLASS ID(%s) {cFieldList}\n", className);
         this.className = className;
         this.cFieldList = cFieldList;
-        SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("====================== classDec -> CLASS ID(%s) cFieldList\n", className);
     }
 
     public void PrintMe() {

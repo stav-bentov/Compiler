@@ -5,10 +5,10 @@ public class AST_ARGUMENT extends AST_Node{
     public String id;
 
     public AST_ARGUMENT(AST_TYPE type, String id){
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+        System.out.format("===================== argument -> type(%s) ID(%s)\n", type.type, id);
         this.type = type;
         this.id = id;
-        SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("===================== argument -> type(%s) ID(%s)\n", type.type, this.id);
     }
 
     public void PrintMe() {

@@ -10,15 +10,7 @@ public class AST_EXP_OPT extends AST_EXP
 	/* CONSTRUCTOR(S) */
 	/******************/
 	public AST_EXP_OPT(Integer i, String s, int OPT) {
-
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
 		if (OPT == 0)
 			System.out.print("====================== exp -> - INT\n");
 		else if (OPT == 1)
@@ -27,10 +19,6 @@ public class AST_EXP_OPT extends AST_EXP
 			System.out.print("====================== exp -> STRING\n");
 		else if (OPT == 3)
 			System.out.print("====================== exp -> NIL\n");
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
 		this.i = i;
 		this.s = s;
 		this.OPT = OPT;

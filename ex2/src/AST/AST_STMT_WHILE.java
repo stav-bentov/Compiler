@@ -8,19 +8,8 @@ public class AST_STMT_WHILE extends AST_STMT {
 	/*  CONSTRUCTOR(S) */
 	/*******************/
 	public AST_STMT_WHILE(AST_EXP cond,AST_LIST<AST_STMT> body) {
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
-		System.out.print("====================== stmt -> WHILE (exp) { stmt [ stmt ]* }\n");
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
+		System.out.print("====================== stmt -> WHILE (exp) {stmtList}\n");
 		this.cond = cond;
 		this.body = body;
 	}

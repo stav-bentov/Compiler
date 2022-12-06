@@ -9,22 +9,11 @@ public class AST_VAR_EXP extends AST_VAR
 	/* CONSTRUCTOR(S) */
 	/******************/
 	public AST_VAR_EXP(AST_VAR var, AST_EXP exp) {
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
 		if (exp == null)
 			System.out.format("====================== var -> var\n");
 		else
 			System.out.format("====================== var -> var [exp]\n");
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
 		this.var = var;
 		this.exp = exp;
 	}

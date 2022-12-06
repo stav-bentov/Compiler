@@ -5,10 +5,10 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
     public AST_TYPE type;
 
     public AST_ARRAY_TYPEDEF(String name, AST_TYPE type){
+        SerialNumber = AST_Node_Serial_Number.getFresh();
+        System.out.format("===================== arrayTypedef -> ARRAY ID(%s) ASSIGN type(%s) []\n", type.type, this.name);
         this.name = name;
         this.type = type;
-        SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("===================== array_typedef -> type(%s) ID(%s)\n", type.type, this.name);
     }
 
     public void PrintMe() {

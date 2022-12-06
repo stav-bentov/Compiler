@@ -10,26 +10,15 @@ public class AST_EXP_ID extends AST_EXP
 	/* CONSTRUCTOR(S) */
 	/******************/
 	public AST_EXP_ID(String id, AST_VAR var, AST_LIST<AST_EXP> l) {
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
 		if (var != null && l != null)
-			System.out.printf("====================== exp ->  [ var DOT ] ID(%s)([ exp [ COMMA exp ]*])", id);
+			System.out.printf("====================== exp -> var DOT ID(%s)([commaExpList])", id);
 		else if (var != null)
-			System.out.printf("====================== exp ->  [ var DOT ] ID(%s)()", id);
+			System.out.printf("====================== exp -> var DOT ID(%s)()", id);
 		else if (l != null)
-			System.out.printf("====================== exp ->  [ var DOT ] ID(%s)([ exp [ COMMA exp ]*])", id);
+			System.out.printf("====================== exp -> var DOT ID(%s)([commaExpList])", id);
 		else
-			System.out.printf("====================== exp ->  ID(%s)()", id);
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
+			System.out.printf("====================== exp -> ID(%s)()", id);
 		this.id = id;
 		this.var = var;
 		this.l = l;

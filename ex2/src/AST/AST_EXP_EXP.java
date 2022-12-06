@@ -8,19 +8,8 @@ public class AST_EXP_EXP extends AST_EXP
 	/* CONSTRUCTOR(S) */
 	/******************/
 	public AST_EXP_EXP(AST_EXP exp) {
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
 		System.out.print("====================== exp -> (exp)\n");
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
 		this.exp = exp;
 	}
 	

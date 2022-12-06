@@ -14,27 +14,15 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 	/*******************/
 	public AST_STMT_ASSIGN(AST_VAR var,T exp)
 	{
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
 		String expType = "";
 		if (exp instanceof AST_EXP) {
 			expType = "exp";
 		} else if (exp instanceof AST_NEW_EXP) {
 			expType = "newExp";
 		}
-
 		String deriveRule = String.format("====================== stmt -> var ASSIGN %s SEMICOLON\n", expType);
 		System.out.print(deriveRule);
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
 		this.var = var;
 		this.exp = exp;
 	}

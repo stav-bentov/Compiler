@@ -9,19 +9,8 @@ public class AST_VAR_VAR_ID extends AST_VAR
 	/* CONSTRUCTOR(S) */
 	/******************/
 	public AST_VAR_VAR_ID(AST_VAR var, String id) {
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
 		System.out.format("====================== var -> var DOT ID(%s)\n",id);
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
 		this.var = var;
 		this.id = id;
 	}

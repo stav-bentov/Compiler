@@ -6,15 +6,13 @@ public class AST_DEC<T extends AST_Node> extends AST_Node
 	public T dec;
 
 	public AST_DEC(T dec){
-		this.dec = dec;
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		if(dec instanceof AST_VAR_DEC) type = "AST_VAR_DEC";
-		if(dec instanceof AST_FUNC_DEC) type = "AST_FUNC_DEC";
-		if(dec instanceof AST_CLASS_DEC) type = "AST_CLASS_DEC";
-		if(dec instanceof AST_ARRAY_TYPEDEF) type = "AST_ARRAY_TYPEDEF";
-
+		if(dec instanceof AST_VAR_DEC) type = "varDec";
+		if(dec instanceof AST_FUNC_DEC) type = "funcDec";
+		if(dec instanceof AST_CLASS_DEC) type = "classDec";
+		if(dec instanceof AST_ARRAY_TYPEDEF) type = "arrayTypedef";
 		System.out.format("====================== dec -> %s\n", type);
+		this.dec = dec;
 	}
 
 	public void PrintMe() {
