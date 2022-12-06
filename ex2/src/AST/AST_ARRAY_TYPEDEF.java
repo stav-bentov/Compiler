@@ -6,7 +6,7 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
 
     public AST_ARRAY_TYPEDEF(String name, AST_TYPE type){
         SerialNumber = AST_Node_Serial_Number.getFresh();
-        System.out.format("===================== arrayTypedef -> ARRAY ID(%s) ASSIGN type(%s) []\n", type.type, this.name);
+        System.out.format("===================== arrayTypedef -> ARRAY ID(%s) ASSIGN type(%s) []\n", name, type.type);
         this.name = name;
         this.type = type;
     }
