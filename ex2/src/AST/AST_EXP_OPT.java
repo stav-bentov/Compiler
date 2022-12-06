@@ -4,46 +4,27 @@ public class AST_EXP_OPT extends AST_EXP
 {
 	public Integer i;
 	public String s;
-	public int OPT;
+	public String opt;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_OPT(Integer i, String s, int OPT) {
+	public AST_EXP_OPT(Integer i, String s, String opt) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-		if (OPT == 0)
-			System.out.print("====================== exp -> - INT\n");
-		else if (OPT == 1)
-			System.out.print("====================== exp -> INT\n");
-		else if (OPT == 2)
-			System.out.print("====================== exp -> STRING\n");
-		else if (OPT == 3)
-			System.out.print("====================== exp -> NIL\n");
+		System.out.format("====================== exp -> - %s", opt);
+		if (opt.equals("INT") || opt.equals("MINUS INT"))
+			System.out.format("%d\n", i);
+		if(opt.equals("STRING"))
+			System.out.format("%s\n", s);
 		this.i = i;
 		this.s = s;
-		this.OPT = OPT;
+		this.opt = opt;
 	}
 	
 	/*************************************************/
 	/* The printing message for a binop exp AST node */
 	/*************************************************/
 	public void PrintMe() {
-		String sOPT="";
-		
-		/*********************************/
-		/* CONVERT OP to a printable sOP */
-		/*********************************/
-		switch(OPT) {
-			case 0:
-				sOPT = String.format("- %f",i);
-			case 1:
-				sOPT = String.format("%f",i);
-			case 2:
-				sOPT = String.format("%s",s);
-			case 3:
-				sOPT = "NIL";
-		}
-
 		/*************************************/
 		/* AST NODE TYPE = AST EXP OPT*/
 		/*************************************/
@@ -52,8 +33,6 @@ public class AST_EXP_OPT extends AST_EXP
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
 		/***************************************/
-		AST_GRAPHVIZ.getInstance().logNode(
-			SerialNumber,
-			String.format("%s", sOPT));
+		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, opt);
 	}
 }
