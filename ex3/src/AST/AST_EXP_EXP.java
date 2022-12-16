@@ -1,16 +1,16 @@
 package AST;
 
-public class AST_EXP_VAR extends AST_EXP
+public class AST_EXP_EXP extends AST_EXP
 {
-	public AST_VAR var;
+	public AST_EXP exp;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_VAR(AST_VAR var) {
+	public AST_EXP_EXP(AST_EXP exp) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-		System.out.print("====================== exp -> var\n");
-		this.var = var;
+		System.out.print("====================== exp -> (exp)\n");
+		this.exp = exp;
 	}
 	
 	/***********************************************/
@@ -25,19 +25,19 @@ public class AST_EXP_VAR extends AST_EXP
 		/*****************************/
 		/* RECURSIVELY PRINT var ... */
 		/*****************************/
-		if (var != null) var.PrintMe();
+		if (exp != null) exp.PrintMe();
 		
 		/*********************************/
 		/* Print to AST GRAPHIZ DOT file */
 		/*********************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			"EXP\nVAR");
+			"EXP\nEXP");
 
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
 			
 	}
 }

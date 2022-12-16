@@ -1,33 +1,28 @@
 package AST;
 
-import TYPES.*;
-
-public class AST_STMT_ASSIGN extends AST_STMT
+public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 {
+	// TODO: Add an abstract class the newExp and exp extends, to enforce T to be only of these two types
 	/***************/
 	/*  var := exp */
 	/***************/
-	public AST_EXP_VAR var;
-	public AST_EXP exp;
+	public AST_VAR var;
+	public T exp;
 
 	/*******************/
 	/*  CONSTRUCTOR(S) */
 	/*******************/
-	public AST_STMT_ASSIGN(AST_EXP_VAR var,AST_EXP exp)
+	public AST_STMT_ASSIGN(AST_VAR var,T exp)
 	{
-		/******************************/
-		/* SET A UNIQUE SERIAL NUMBER */
-		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-
-		/***************************************/
-		/* PRINT CORRESPONDING DERIVATION RULE */
-		/***************************************/
-		System.out.print("====================== stmt -> var ASSIGN exp SEMICOLON\n");
-
-		/*******************************/
-		/* COPY INPUT DATA NENBERS ... */
-		/*******************************/
+		String expType = "";
+		if (exp instanceof AST_EXP) {
+			expType = "exp";
+		} else if (exp instanceof AST_NEW_EXP) {
+			expType = "newExp";
+		}
+		String deriveRule = String.format("====================== stmt -> var ASSIGN %s SEMICOLON\n", expType);
+		System.out.print(deriveRule);
 		this.var = var;
 		this.exp = exp;
 	}
@@ -60,19 +55,5 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
-	}
-	public TYPE SemantMe()
-	{
-		TYPE t1 = null;
-		TYPE t2 = null;
-		
-		if (var != null) t1 = var.SemantMe();
-		if (exp != null) t2 = exp.SemantMe();
-		
-		if (t1 != t2)
-		{
-			System.out.format(">> ERROR [%d:%d] type mismatch for var := exp\n",6,6);				
-		}
-		return null;
 	}
 }
