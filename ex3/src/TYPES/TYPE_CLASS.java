@@ -17,10 +17,12 @@ public class TYPE_CLASS extends TYPE
 	/****************/
 	/* CTROR(S) ... */
 	/****************/
-	public TYPE_CLASS(TYPE_CLASS father,String name,TYPE_LIST data_members)
+	public TYPE_CLASS(TYPE_CLASS father, String name, TYPE_LIST data_members)
 	{
 		this.name = name;
 		this.father = father;
-		this.data_members = data_members;
+		this.data_members = data_members;;
+		this.count_fields = 0;
+		this.type = 'class';
 	}
 }
