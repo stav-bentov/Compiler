@@ -70,7 +70,8 @@ public class AST_CLASS_DEC extends AST_Node{
 
             TYPE_CLASS father_type_class = SYMBOL_TABLE.getInstance().find(this.extendsName);
             type_class.father = father_type_class;
-            type_class.data_members = (cFieldList.SemantMe()).Merge(father_type_class.data_members);//TODO: add function Merge to TYPE_LIST
+            type_class.data_members = cFieldList.SemantMe();
+            type_class.data_members.Merge(father_type_class.data_members);
             type_class.count_fields = type_class.data_members.len;//TODO: add len to TYPE_LIST
             SYMBOL_TABLE.getInstance().father_type_class = father_type_class;
         }
