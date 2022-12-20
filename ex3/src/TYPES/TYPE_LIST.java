@@ -7,6 +7,7 @@ public class TYPE_LIST
 	/****************/
 	public TYPE head;
 	public TYPE_LIST tail;
+	public int len;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
