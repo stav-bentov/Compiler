@@ -61,7 +61,7 @@ public class AST_CLASS_DEC extends AST_Node{
         /* [2] Semant Data Members */
         /***************************/
         TYPE_CLASS type_class = new TYPE_CLASS(null, name, null);
-        SYMBOL_TABLE.getInstance().type_class = t;
+        SYMBOL_TABLE.getInstance().type_class = type_class;
 
         if(this.extendsName != null){
             if(!SYMBOL_TABLE.getInstance().isClass(this.extendsName)) {
@@ -71,16 +71,15 @@ public class AST_CLASS_DEC extends AST_Node{
             TYPE_CLASS father_type_class = SYMBOL_TABLE.getInstance().find(this.extendsName);
             type_class.father = father_type_class;
             type_class.data_members = cFieldList.SemantMe();
-            type_class.count_fields = type_class.data_members.len;//TODO: add len to TYPE_LIST
+            type_class.count_fields = type_class.data_members.len;
             SYMBOL_TABLE.getInstance().father_type_class = father_type_class;
         }
 
         else{
             type_class.data_members = SemantMe();
-            type_class.count_fields = type_class.data_members.len;//TODO: add len to TYPE_LIST
+            type_class.count_fields = type_class.data_members.len;
         }
 
-        //TODO: should register methods of class on symbol table?
         /*****************/
         /* [3] End Scope */
         /*****************/
@@ -91,7 +90,7 @@ public class AST_CLASS_DEC extends AST_Node{
         /************************************************/
         /* [4] Enter the Class Type to the Symbol Table */
         /************************************************/
-        SYMBOL_TABLE.getInstance().enter(name,t);//TODO: fix according to implementation of SYMBOL_TABLE.enter
+        SYMBOL_TABLE.getInstance().enter(name, type_class);//TODO: fix according to implementation of SYMBOL_TABLE.enter
 
         /*********************************************************/
         /* [5] Return value is irrelevant for class declarations */
