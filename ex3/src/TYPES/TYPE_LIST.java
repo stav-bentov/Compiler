@@ -17,13 +17,4 @@ public class TYPE_LIST
 		this.head = head;
 		this.tail = tail;
 	}
-
-	public void Merge(TYPE_LIST other){
-		TYPE_LIST curr = this;
-		while(curr.tail != null){
-			curr = curr.tail;
-		}
-
-		curr.tail = other;
-	}
 }
