@@ -1,6 +1,8 @@
 package AST;
 
 import SYMBOL_TABLE.*
+import src.AST.AST_LIST;
+
 public class AST_CLASS_DEC extends AST_Node{
     public String className;
     public String extendsName;
@@ -55,36 +57,27 @@ public class AST_CLASS_DEC extends AST_Node{
         /*************************/
         /* [1] Begin Class Scope */
         /*************************/
-        SYMBOL_TABLE.getInstance().beginScope('class', this.className);
+        TYPE_CLASS type_class = new TYPE_CLASS(null, name, null);
+        SYMBOL_TABLE.getInstance().beginScope('class', type_class);
 
         /***************************/
         /* [2] Semant Data Members */
         /***************************/
-        TYPE_CLASS type_class = new TYPE_CLASS(null, name, null);
-        SYMBOL_TABLE.getInstance().type_class = type_class;
+
 
         if(this.extendsName != null){
-            if(!SYMBOL_TABLE.getInstance().isClass(this.extendsName)) {
+            if(!SYMBOL_TABLE.getInstance().IsClass(this.extendsName)) {//IsClass is in SymbolTable
                 throw new Exception(String.format("%s is not a class and cannot be extended by %s", this.extendsName, this.className));
             }
 
-            TYPE_CLASS father_type_class = SYMBOL_TABLE.getInstance().find(this.extendsName);
-            type_class.father = father_type_class;
-            type_class.data_members = cFieldList.SemantMe();
-            type_class.count_fields = type_class.data_members.len;
-            SYMBOL_TABLE.getInstance().father_type_class = father_type_class;
+            type_class.father = SYMBOL_TABLE.getInstance().find(this.extendsName);
         }
 
-        else{
-            type_class.data_members = SemantMe();
-            type_class.count_fields = type_class.data_members.len;
-        }
+        type_class.data_members = cFieldList.SemantMe();
 
         /*****************/
         /* [3] End Scope */
         /*****************/
-        SYMBOL_TABLE.getInstance().type_class = null;
-        SYMBOL_TABLE.getInstance().father_type_class = null;
         SYMBOL_TABLE.getInstance().endScope();
 
         /************************************************/
