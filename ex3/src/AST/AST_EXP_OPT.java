@@ -35,4 +35,22 @@ public class AST_EXP_OPT extends AST_EXP
 		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, opt);
 	}
+
+	public TYPE SemantMe(){
+		TYPE type;
+		switch this.opt{
+			case "MINUS INT":
+			case "INT":
+				type = new TYPE_INT();
+				break;
+			case "STRING":
+				type = new TYPE_STRING();
+				break;
+			case "NIL":
+				type = new TYPE_NIL();
+				break;
+		}
+
+		return type;
+	}
 }
