@@ -1,4 +1,5 @@
 package AST;
+import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.*;
 
 public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
@@ -40,6 +41,14 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
 
     public TYPE SemantMe() throws SemanticException {
         TYPE instanceType = type.SemantMe(); // This type exists in the symbol table
+
+        /* Check if instance type can even be instanced */
+        if (!SYMBOL_TABLE.getInstance().canBeInstanced(instanceType)) {
+            throw new SemanticException(
+                    "Cannot create instances of this type",
+                    this
+            );
+        }
 
         /* New instance of an array */
         if (exp != null) {
