@@ -24,4 +24,5 @@ public class TYPE_INT extends TYPE
 		}
 		return instance;
 	}
+
 }

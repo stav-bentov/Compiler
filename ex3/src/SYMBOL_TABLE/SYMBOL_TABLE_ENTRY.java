@@ -38,6 +38,12 @@ public class SYMBOL_TABLE_ENTRY
 	/* The prevtop_index is just for debug purposes ... */
 	/****************************************************/
 	public int prevtop_index;
+
+	/****************************************************/
+	/* The prevtop_index is just for debug purposes ... */
+	/****************************************************/
+	public boolean canBeInstanced;
+	public ScopeTypeEnum scopeEnum;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -48,7 +54,10 @@ public class SYMBOL_TABLE_ENTRY
 		int index,
 		SYMBOL_TABLE_ENTRY next,
 		SYMBOL_TABLE_ENTRY prevtop,
-		int prevtop_index)
+		int prevtop_index,
+		boolean canBeInstanced,
+		ScopeTypeEnum scopeEnum
+		)
 	{
 		this.index = index;
 		this.name = name;
@@ -56,5 +65,7 @@ public class SYMBOL_TABLE_ENTRY
 		this.next = next;
 		this.prevtop = prevtop;
 		this.prevtop_index = prevtop_index;
+		this.canBeInstanced = canBeInstanced;
+		this.scopeEnum = scopeEnum;
 	}
 }

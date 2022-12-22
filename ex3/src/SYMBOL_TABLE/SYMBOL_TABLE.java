@@ -26,7 +26,8 @@ public class SYMBOL_TABLE
 	private SYMBOL_TABLE_ENTRY[] table = new SYMBOL_TABLE_ENTRY[hashArraySize];
 	private SYMBOL_TABLE_ENTRY top;
 	private int top_index = 0;
-	
+	private TYPE_FOR_SCOPE_BOUNDARIES current_scope_boundary = null;
+
 	/**************************************************************/
 	/* A very primitive hash function for exposition purposes ... */
 	/**************************************************************/
@@ -46,7 +47,7 @@ public class SYMBOL_TABLE
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
-	public void enter(String name,TYPE t)
+	public void enter(String name, TYPE t, boolean isVariableType)
 	{
 		/*************************************************/
 		/* [1] Compute the hash value for this new entry */
@@ -58,11 +59,11 @@ public class SYMBOL_TABLE
 		/*     NOTE: this entry can very well be null, but the behaviour is identical */
 		/******************************************************************************/
 		SYMBOL_TABLE_ENTRY next = table[hashValue];
-	
+
 		/**************************************************************************/
 		/* [3] Prepare a new symbol table entry with name, type, next and prevtop */
 		/**************************************************************************/
-		SYMBOL_TABLE_ENTRY e = new SYMBOL_TABLE_ENTRY(name,t,hashValue,next,top,top_index++);
+		SYMBOL_TABLE_ENTRY e = new SYMBOL_TABLE_ENTRY(name, t, hashValue, next, top, top_index++, isVariableType, current_scope_boundary.scope_type_enum);
 
 		/**********************************************/
 		/* [4] Update the top of the symbol table ... */
@@ -99,19 +100,21 @@ public class SYMBOL_TABLE
 	}
 
 	/***************************************************************************/
-	/* begine scope = Enter the <SCOPE-BOUNDARY> element to the data structure */
+	/* begine scope = Enter the <SCOPE-BOUNDARY> element to the data structure
+	* ScopeTypeEnum scopeType: class, func, if, while global
+	* In case ScopeTypeEnum is class or func- t is the type of them */
 	/***************************************************************************/
-	public void beginScope()
+	public void beginScope(ScopeTypeEnum scopeType, TYPE t)
 	{
 		/************************************************************************/
 		/* Though <SCOPE-BOUNDARY> entries are present inside the symbol table, */
-		/* they are not really types. In order to be ablt to debug print them,  */
+		/* they are not really types. In order to be able to debug print them,  */
 		/* a special TYPE_FOR_SCOPE_BOUNDARIES was developed for them. This     */
 		/* class only contain their type name which is the bottom sign: _|_     */
 		/************************************************************************/
-		enter(
-			"SCOPE-BOUNDARY",
-			new TYPE_FOR_SCOPE_BOUNDARIES("NONE"));
+		TYPE_FOR_SCOPE_BOUNDARIES new_scope = new TYPE_FOR_SCOPE_BOUNDARIES("", scopeType, t, this.current_scope_boundary);
+		enter("SCOPE-BOUNDARY", new_scope, false);
+		this.current_scope_boundary = new_scope;
 
 		/*********************************************/
 		/* Print the symbol table after every change */
@@ -137,6 +140,7 @@ public class SYMBOL_TABLE
 		/**************************************/
 		/* Pop the SCOPE-BOUNDARY sign itself */		
 		/**************************************/
+		this.current_scope_boundary = this.current_scope_boundary.prev_scope;
 		table[top.index] = top.next;
 		top_index = top_index-1;
 		top = top.prevtop;
@@ -146,7 +150,74 @@ public class SYMBOL_TABLE
 		/*********************************************/
 		PrintMe();
 	}
-	
+
+	public ScopeTypeEnum getCurrentScopeType()
+	{
+		return this.current_scope_boundary.scope_type_enum;
+	}
+
+	public TYPE_FOR_SCOPE_BOUNDARIES getCurrentScopeBoundary()
+	{
+		return this.current_scope_boundary;
+	}
+
+	/* Receives: name
+	   Returns the TYPE in entry named "name" by searching only in current scope*/
+	public boolean isInLastScope(String name)
+	{
+		SYMBOL_TABLE_ENTRY e;
+
+		for (e = table[hash("SCOPE-BOUNDARY")]; e != null; e = e.next)
+		{
+			if (e.type instanceof TYPE_FOR_SCOPE_BOUNDARIES)
+			{
+				break;
+			}
+			if (e.name.equals(name))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/* Receives: name
+	   Returns the TYPE in entry named "name" by searching in class and fathers*/
+	public TYPE findInInheritance(String name)
+	{
+		TYPE_CLASS current_class= (TYPE_CLASS) this.current_scope_boundary.class_func_type;
+		while (current_class != null)
+		{
+			TYPE_LIST list_pointer = current_class.data_members;
+			while (list_pointer.head != null)
+			{
+				if (list_pointer.head.name.equals(name))
+				{
+					return list_pointer.head;
+				}
+				list_pointer = list_pointer.tail;
+			}
+			current_class = current_class.father;
+		}
+		return null;
+	}
+
+	/* Receives: name
+	   Returns the TYPE in entry named "name" in the global scope*/
+	public TYPE findInGlobal(String name)
+	{
+		SYMBOL_TABLE_ENTRY e;
+		for (e = table[hash(name)]; e != null; e = e.next)
+		{
+			if (e.scopeEnum == ScopeTypeEnum.GLOBAL && name.equals(e.name))
+			{
+				return e.type;
+			}
+		}
+
+		return null;
+	}
+
 	public static int n=0;
 	
 	public void PrintMe()
@@ -246,19 +317,21 @@ public class SYMBOL_TABLE
 			/* [0] The instance itself ... */
 			/*******************************/
 			instance = new SYMBOL_TABLE();
+			instance.beginScope(ScopeTypeEnum.GLOBAL, null);
 
 			/*****************************************/
 			/* [1] Enter primitive types int, string */
 			/*****************************************/
-			instance.enter("int",   TYPE_INT.getInstance());
-			instance.enter("string",TYPE_STRING.getInstance());
+			instance.enter("int",   TYPE_INT.getInstance(), true);
+			instance.enter("string",TYPE_STRING.getInstance(), true);
 
 			/*************************************/
 			/* [2] How should we handle void ??? */
 			/*************************************/
+			instance.enter("void",TYPE_STRING.getInstance(), false);
 
 			/***************************************/
-			/* [3] Enter library function PrintInt */
+			/* [3] Enter library function PrintInt, PrintString */
 			/***************************************/
 			instance.enter(
 				"PrintInt",
@@ -267,7 +340,15 @@ public class SYMBOL_TABLE
 					"PrintInt",
 					new TYPE_LIST(
 						TYPE_INT.getInstance(),
-						null)));
+						null)),false);
+			instance.enter(
+					"PrintString",
+					new TYPE_FUNCTION(
+							TYPE_VOID.getInstance(),
+							"PrintString",
+							new TYPE_LIST(
+									TYPE_STRING.getInstance(),
+									null)), false);
 			
 		}
 		return instance;
