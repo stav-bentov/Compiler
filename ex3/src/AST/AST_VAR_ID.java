@@ -38,8 +38,7 @@ public class AST_VAR_ID extends AST_VAR
 	}
 
 	public TYPE SemantMe() throws SemanticException{
-		TYPE_VAR type_var = new TYPE_VAR(this.id);
-		type_var.type = SYMBOL_TABLE.getInstance().find(id);
+		TYPE_VAR type_var = new TYPE_VAR(this.id, SYMBOL_TABLE.getInstance().find(id));
 		if(type_var.type == null || !type_var.type.isVar())
 			throw new SemanticException(String.format("%s referenced before declaration or is not a var!", this.id));
 
