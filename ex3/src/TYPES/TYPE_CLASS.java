@@ -23,4 +23,20 @@ public class TYPE_CLASS extends TYPE
 		this.father = father;
 		this.data_members = data_members;
 	}
+
+	/********************************************************/
+	/* a.inheritsFrom(b) returns true iff a inherits from b */
+	/********************************************************/
+	public boolean inheritsFrom(TYPE_CLASS c) {
+		TYPE_CLASS currFather = this.father;
+
+		while (currFather != null) {
+			if (currFather == c) {
+				return true;
+			}
+			currFather = currFather.father;
+		}
+
+		return false;
+	}
 }
