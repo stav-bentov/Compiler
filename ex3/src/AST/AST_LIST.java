@@ -65,14 +65,17 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
 
         if (head instanceof AST_STMT)
         {
-            TYPE func_type = ;
-            head_type = this.head.SemantMe();
+            TYPE_FUNCTION func_type = (TYPE_FUNCTION) SYMBOL_TABLE.getInstance().getLastFunc();
+            /* Assumption (TODO) for Lilach - SemantMe on AST_STMT_RET will get the func_type to check return type..
+            *               also- Lilach making the enters if needed*/
             if (this.head instanceof AST_STMT_RET)
             {
-                /* Check if the function return type is same as head_type */
+                head_type = this.head.SemantMe(func_type);
             }
-            /* Parameter's type and name are valid*/
-            SYMBOL_TABLE.getInstance().enter(head_type.name, head_type, false);
+            else
+            {
+                head_type = this.head.SemantMe();
+            }
             tail_type = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
         }
 

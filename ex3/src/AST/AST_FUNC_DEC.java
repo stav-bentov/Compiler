@@ -58,8 +58,6 @@ public class AST_FUNC_DEC extends AST_Node {
         TYPE_FUNCTION curr_type_func;
         ScopeTypeEnum scope_type;
         TYPE_LIST params = null;
-        TYPE_LIST stmts = null;
-        TYPE returnType = null;
 
         /* Search the type of the function- (class) method or (global) function */
         scope_type = SYMBOL_TABLE.getInstance().getCurrentScopeType();
@@ -110,7 +108,7 @@ public class AST_FUNC_DEC extends AST_Node {
 
             /* If the return type isn't match or if there is a semantic error inside the scope- SemantMe() will throw an error*/
             if (stmtList != null)
-                stmts = (TYPE_LIST) stmtList.SemantMe();
+                stmtList.SemantMe();
 
             SYMBOL_TABLE.getInstance().endScope();
         }
