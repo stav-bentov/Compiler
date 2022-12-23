@@ -1,5 +1,5 @@
 package AST;
-
+import TYPES.*
 import SYMBOL_TABLE.*
 import src.AST.AST_LIST;
 
@@ -49,30 +49,41 @@ public class AST_CLASS_DEC extends AST_Node{
         if (cFieldList != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cFieldList.SerialNumber);
     }
 
-    public TYPE SemantMe()
+    public TYPE SemantMe() throws SemanticException
     {
-        if(SYMBOL_TABLE.getInstance().getCurrentScope() != 'global'){
-            throw new Exception("class declaration in non-global scope");
+        if(SYMBOL_TABLE.getInstance().getCurrentScopeType() != ScopeTypeEnum.GLOBAL){
+            throw new SemanticException(String.format("class %s declaration in non-global scope", className));
         }
+
+        if(SYMBOL_TABLE.getInstance().findInGlobal(this.className) != null)
+            throw new SemanticException(String.format("class %s already exists!", className));
+
         /*************************/
         /* [1] Begin Class Scope */
         /*************************/
+
+
         TYPE_CLASS type_class = new TYPE_CLASS(null, name, null);
-        SYMBOL_TABLE.getInstance().beginScope('class', type_class);
 
         /***************************/
         /* [2] Semant Data Members */
         /***************************/
 
 
+        TYPE_CLASS father = (TYPE_CLASS) SYMBOL_TABLE.getInstance().findInGlobal(this.extendsName);
+
         if(this.extendsName != null){
-            if(!SYMBOL_TABLE.getInstance().IsClass(this.extendsName)) {//IsClass is in SymbolTable
-                throw new Exception(String.format("%s is not a class and cannot be extended by %s", this.extendsName, this.className));
+            if(!father.isClass()) {
+                throw new SemanticException(String.format("%s is not a class and cannot be extended by %s", this.extendsName, this.className));
             }
 
-            type_class.father = SYMBOL_TABLE.getInstance().find(this.extendsName);
+            type_class.father = father;
         }
 
+        SYMBOL_TABLE.getInstance().enter(className, type_class);
+        SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, type_class);
+
+        //SemantMe will check if illegal inheritance or duplicated names in the same scope
         type_class.data_members = cFieldList.SemantMe();
 
         /*****************/
@@ -80,14 +91,6 @@ public class AST_CLASS_DEC extends AST_Node{
         /*****************/
         SYMBOL_TABLE.getInstance().endScope();
 
-        /************************************************/
-        /* [4] Enter the Class Type to the Symbol Table */
-        /************************************************/
-        SYMBOL_TABLE.getInstance().enter(name, type_class);//TODO: fix according to implementation of SYMBOL_TABLE.enter
-
-        /*********************************************************/
-        /* [5] Return value is irrelevant for class declarations */
-        /*********************************************************/
         return type_class;
     }
 }
