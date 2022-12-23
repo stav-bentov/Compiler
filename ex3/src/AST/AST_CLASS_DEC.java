@@ -69,11 +69,9 @@ public class AST_CLASS_DEC extends AST_Node{
         /* [2] Semant Data Members */
         /***************************/
 
-
-        TYPE_CLASS father = (TYPE_CLASS) SYMBOL_TABLE.getInstance().findInGlobal(this.extendsName);
-
         if(this.extendsName != null){
-            if(!father.isClass()) {
+            TYPE father = SYMBOL_TABLE.getInstance().findInGlobal(this.extendsName);
+            if(father != null || !father.isClass()) {
                 throw new SemanticException(String.format("%s is not a class and cannot be extended by %s", this.extendsName, this.className));
             }
 
