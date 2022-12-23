@@ -45,4 +45,17 @@ public class AST_VAR_EXP extends AST_VAR
 		if (var != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
 		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
 	}
+
+	public TYPE SemantMe() throws SemanticException{
+		TYPE_VAR type_var = this.var.SemantMe();
+		if(!type_var.type.isArray()){
+			throw new SemanticException(String.format("%s is not an array!", this.type_var.name))
+		}
+
+		TYPE type_exp = this.exp.SemantMe();
+		if(!(type_var instanceof TYPE_INT)){
+			throw new SemanticException(String.format("%s is not an int - cannot put int inside brackets"), type_exp.name);
+		}
+		//TODO: what should return from here? how do i acess the array[i]? meaning, how was it put in the symbol table?
+	}
 }
