@@ -66,12 +66,13 @@ public class AST_FUNC_DEC extends AST_Node {
             throw new SemanticException("Function: %s is not declared in a Global scope or in a Class scope", name);
         }
 
-        /*  CHECK:
+        /*  CHECK: check if there are classes/ arrays with func name and func name != "string","int","void"
             case (class) method: check if there are previous declarations with this name in current class and
                                  if there is in a parent class- make sure it has the same signature
             case (global) function: check if there are previous declarations with this name in global scope
          */
-        is_in_scope = SYMBOL_TABLE.getInstance().isInLastScope(name);
+        /* ASSUMPTION!! method name can't be a class/ array/ "string"/ "void"/ "int*/
+        is_in_scope = SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null && !SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.name) && !this.name.equals("void");
         is_valid_method = scope_type == ScopeTypeEnum.CLASS && !is_in_scope;
         is_valid_function = scope_type ==  ScopeTypeEnum.GLOBAL && !is_in_scope;
 
@@ -83,21 +84,11 @@ public class AST_FUNC_DEC extends AST_Node {
             SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.FUNC, curr_type_func);
 
             /* SemantMe() checks parameters:
-               1. parameter's type can be instanced (only a "string"/ "int"/ previous declared class/ previous declared array)
-               2. parameter's name is not string/ int/ previous declared class/ previous declared array*/
+               1. parameter's type can be instanced (only a "string"/ "int"/ previous declared class/ previous declared array/"void")
+               2. parameter's name is not string/ int/ previous declared class/ previous declared array/"void"*/
             if (argList != null)
             {
                 params = (TYPE_LIST) argList.SemantMe();
-                TYPE_LIST pointer = params;
-                while (pointer != null)
-                {
-                    /* Variables can't be from **type** VOID */
-                    if (pointer.head instanceof TYPE_VOID)
-                    {
-                        throw new SemanticException("%s is a void variable", pointer.head.name);
-                    }
-                    pointer = pointer.tail;
-                }
             }
 
             curr_type_func.params = params;
@@ -111,13 +102,14 @@ public class AST_FUNC_DEC extends AST_Node {
                 stmtList.SemantMe();
 
             SYMBOL_TABLE.getInstance().endScope();
+            return curr_type_func;
         }
         throw new SemanticException("Duplicated definitions named: %s", name);
     }
 
     public void isValidMethod(String name, TYPE_FUNCTION override_method)
     {
-        TYPE_CLASS curr_class = (TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentScopeBoundary.class_func_type;
+        TYPE_CLASS curr_class = (TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass();
         /* Check if there is a variable named "name" or a function overloading*/
         while (curr_class != null)
         {
@@ -127,7 +119,7 @@ public class AST_FUNC_DEC extends AST_Node {
                     if (list_pointer.head.name.equals(name)) {
                         if (list_pointer.head instanceof TYPE_FUNCTION) {
                             /* Different signatures- overload*/
-                            if (!override_method.equals((TYPE_FUNCTION) list_pointer.head)) {
+                            if (!override_method.equals(list_pointer.head)) {
                                 throw new SemanticException("Overload functions named: %s", name);
                             }
                             return;

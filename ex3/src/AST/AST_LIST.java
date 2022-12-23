@@ -43,41 +43,30 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
 
     public TYPE SemantMe() throws SemanticException
     {
+        /* No need to create TYPE_LIST*/
+        if (head instanceof AST_STMT || head instanceof AST_DEC)
+        {
+            this.head.SemantMe();
+            if (this.tail != null)
+                this.tail.SemantMe();
+            return null;
+        }
+
         TYPE head_type = null;
         TYPE_LIST tail_type = null;
 
-        /* function/method's parameters list
-         check parameters:
-               1. (checked in AST_TYPE) parameter's type can be instanced (only a "string"/ "int"/ previous declared class/ previous declared array)
-               2. (checked here) parameter's name is not string/ int/ previous declared class/ previous declared array*/
-        if (head instanceof AST_ARGUMENT)
-        {
-            head_type = this.head.SemantMe();
-            /* Assumption: the arguments are the first to get in the symbol table then if there is a duplicate name- will find it*/
-            if (SYMBOL_TABLE.getInstance().findInLastScope(((AST_ARGUMENT)this.head).id))
-            {
-                throw new SemanticException("There are at least 2 parameters named: %s", ((AST_ARGUMENT)this.head).id);
-            }
-            /* Parameter's type and name are valid*/
-            SYMBOL_TABLE.getInstance().enter(head_type.name, head_type, false);
-            tail_type = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
-        }
-
-        if (head instanceof AST_STMT)
-        {
-            TYPE_FUNCTION func_type = (TYPE_FUNCTION) SYMBOL_TABLE.getInstance().getLastFunc();
-            /* Assumption (TODO) for Lilach - SemantMe on AST_STMT_RET will get the func_type to check return type..
-            *               also- Lilach making the enters if needed*/
-            if (this.head instanceof AST_STMT_RET)
-            {
-                head_type = this.head.SemantMe(func_type);
-            }
-            else
-            {
-                head_type = this.head.SemantMe();
-            }
-            tail_type = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
-        }
+        /* AST_CFIELD (TYPE_LIST of TYPE_VAR and TYPE_FUNCTION)
+           AST_EXP (TYPE_LIST of TYPE)
+           AST_ARGUMENT (TYPE_LIST of TYPE_ARGUMENT)*/
+        /* CASE AST_ARGUMENT: parameters list check parameters:
+                              1. (checked in AST_TYPE) parameter's type can be instanced (only a "string"/ "int"/ previous declared
+                                  class/ previous declared array)
+                              2. (checked here) parameter's name is not string/ int/ previous declared class/ previous declared array*/
+        /* CASE AST_EXP TODO: ask Rotem if it's OK There will be a need in this list to compare functions/ classes?*/
+        /* CASE AST_STMT Assumption (TODO) for Lilach - SemantMe on AST_STMT_RET will check return type.. also- Lilach making the enters if needed*/
+        head_type = this.head.SemantMe();
+        SYMBOL_TABLE.getInstance().enter(head_type.name, head_type, false);
+        tail_type = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
 
         return new TYPE_LIST(head_type, tail_type);
     }

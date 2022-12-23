@@ -32,11 +32,7 @@ public class TYPE_LIST extends TYPE
 			if(this_pointer.head.getClass().equals(compared_pointer.head.getClass())) return false;
 
 			/* Same inst_type of nodes- need to check extra in case of an array (array of arrays or array of classes) or class*/
-			if (this_pointer.head instanceof TYPE_ARRAY)
-			{
-				if (!(this_pointer.head.equals(compared_pointer.head))) return false;
-			}
-			if (this_pointer.head instanceof TYPE_CLASS)
+			if (this_pointer.head instanceof TYPE_ARRAY || this_pointer.head instanceof TYPE_CLASS)
 			{
 				if (!(this_pointer.head.equals(compared_pointer.head))) return false;
 			}

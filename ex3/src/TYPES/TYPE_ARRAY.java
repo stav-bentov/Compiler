@@ -25,11 +25,7 @@ public class TYPE_ARRAY extends TYPE{
 
         /* Compare types and if type is an Array or Class-> compare them! */
         if (!(this.array_type.getClass().equals(compered_array.array_type.getClass()))) return false;
-        if (this.array_type instanceof TYPE_ARRAY)
-        {
-            return (this.array_type.equals(compered_array.array_type));
-        }
-        if (this.array_type instanceof TYPE_CLASS)
+        if (this.array_type instanceof TYPE_ARRAY || this.array_type instanceof TYPE_CLASS)
         {
             return (this.array_type.equals(compered_array.array_type));
         }

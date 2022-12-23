@@ -182,27 +182,6 @@ public class SYMBOL_TABLE
 	}
 
 	/* Receives: name
-	   Returns the TYPE in entry named "name" by searching in class and fathers*/
-	public TYPE findInInheritance(String name)
-	{
-		TYPE_CLASS current_class= (TYPE_CLASS) this.current_scope_boundary.class_func_type;
-		while (current_class != null)
-		{
-			TYPE_LIST list_pointer = current_class.data_members;
-			while (list_pointer.head != null)
-			{
-				if (list_pointer.head.name.equals(name))
-				{
-					return list_pointer.head;
-				}
-				list_pointer = list_pointer.tail;
-			}
-			current_class = current_class.father;
-		}
-		return null;
-	}
-
-	/* Receives: name
 	   Returns the TYPE of entry named "name" in the global scope*/
 	public SYMBOL_TABLE_ENTRY findEntryInGlobal(String name)
 	{
@@ -245,6 +224,56 @@ public class SYMBOL_TABLE
 				if (((TYPE_FOR_SCOPE_BOUNDARIES) e.type).scope_type_enum == ScopeTypeEnum.FUNC)
 				{
 					return ((TYPE_FOR_SCOPE_BOUNDARIES) e.type).class_func_type;
+				}
+			}
+		}
+		return null;
+	}
+
+	/* Receives: name
+	   Returns the TYPE of the data member named "name" by searching in current open class and fathers
+	   If we are not in a class OR there is no data member with this name- returns null*/
+	public TYPE findInInheritance(String name)
+	{
+		TYPE_CLASS current_class= getCurrentClass();
+		return findInInheritance(name, current_class);
+	}
+
+	/*  Receives: name and current_class
+   		Returns the TYPE of the data member named "name" by searching in current_class and fathers
+   		If there is no data member with this name- returns null*/
+	public TYPE findInInheritance(String name, TYPE_CLASS current_class) {
+		while (current_class != null)
+		{
+			TYPE_LIST list_pointer = current_class.data_members;
+			while (list_pointer.head != null)
+			{
+				if (list_pointer.head.name.equals(name))
+				{
+					return list_pointer.head;
+				}
+				list_pointer = list_pointer.tail;
+			}
+			current_class = current_class.father;
+		}
+		return null;
+	}
+	/*  Returns the TYPE_CLASS current open class.
+	* 	If there is no class open- returns null*/
+	public TYPE_CLASS getCurrentClass()
+	{
+		if (this.getCurrentScopeType() == ScopeTypeEnum.GLOBAL) return null;
+
+		/* If, While, function ot class scope*/
+		SYMBOL_TABLE_ENTRY e;
+
+		for (e = top; e != null; e = e.prevtop)
+		{
+			if (e.type instanceof TYPE_FOR_SCOPE_BOUNDARIES)
+			{
+				if (((TYPE_FOR_SCOPE_BOUNDARIES) e.type).scope_type_enum == ScopeTypeEnum.CLASS)
+				{
+					return (TYPE_CLASS) e.type;
 				}
 			}
 		}

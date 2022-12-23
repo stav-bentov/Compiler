@@ -42,12 +42,7 @@ public class TYPE_FUNCTION extends TYPE
 		if (this.returnType.getClass().equals(compered_func.returnType.getClass()))
 		{
 			/* Same inst_type of return- need to check extra in case of array (array of arrays or array of classes) or class*/
-			if (this.returnType instanceof TYPE_ARRAY)
-			{
-				if (!(this.returnType.equals(compered_func.returnType))) return false;
-			}
-
-			if (this.returnType instanceof TYPE_CLASS)
+			if (this.returnType instanceof TYPE_ARRAY || this.returnType instanceof TYPE_CLASS)
 			{
 				if (!(this.returnType.equals(compered_func.returnType))) return false;
 			}
