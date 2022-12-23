@@ -39,12 +39,4 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
         AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, head.SerialNumber);
         if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, tail.SerialNumber);
     }
-
-    //if this is a list of CFields
-    public TYPE SemantMe(){
-        TYPE head_type = head.SemantMe();
-        if (tail != null) { tail_type = tail.SemantMe(); }
-        TYPE_LIST type_list = new TYPE_LIST(head_type, tail_type);
-        return type_list;
-    }
 }
