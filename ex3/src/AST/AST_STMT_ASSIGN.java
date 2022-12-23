@@ -1,8 +1,10 @@
 package AST;
 
+import TYPES.TYPE;
+import TYPES.TYPE_CLASS;
+
 public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 {
-	// TODO: Add an abstract class the newExp and exp extends, to enforce T to be only of these two types
 	/***************/
 	/*  var := exp */
 	/***************/
@@ -55,5 +57,26 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
+	}
+
+	@Override
+	public TYPE SemantMe() throws SemanticException {
+		TYPE varType = var.SemantMe();
+		TYPE expType = exp.SemantMe();
+
+		if (varType.equals(expType)) {
+			return null;
+		}
+
+		/* Case of inheritance should be semantically correct */
+		else if (varType instanceof TYPE_CLASS && expType instanceof TYPE_CLASS &&
+				((TYPE_CLASS)expType).inheritsFrom((TYPE_CLASS)varType)) {
+			return null;
+		}
+
+		throw new SemanticException(
+			"Illegal assignment to var",
+			this
+		);
 	}
 }
