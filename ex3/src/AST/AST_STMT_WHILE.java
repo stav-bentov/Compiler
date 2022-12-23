@@ -1,5 +1,8 @@
 package AST;
 
+import TYPES.TYPE;
+import TYPES.TYPE_INT;
+
 public class AST_STMT_WHILE extends AST_STMT {
 	public AST_EXP cond;
 	public AST_LIST<AST_STMT> body;
@@ -32,5 +35,20 @@ public class AST_STMT_WHILE extends AST_STMT {
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cond.SerialNumber);
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, body.SerialNumber);
+	}
+
+	@Override
+	public TYPE SemantMe() throws SemanticException {
+		TYPE condType = cond.SemantMe();
+		body.SemantMe();
+
+		if (!condType.equals(TYPE_INT.getInstance())) {
+			throw new SemanticException(
+					"Condition is not an integer",
+					this
+			);
+		}
+
+		return null;
 	}
 }
