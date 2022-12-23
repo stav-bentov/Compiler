@@ -167,7 +167,7 @@ public class SYMBOL_TABLE
 	{
 		SYMBOL_TABLE_ENTRY e;
 
-		for (e = table[hash("SCOPE-BOUNDARY")]; e != null; e = e.next)
+		for (e = top; e != null; e = e.prevtop)
 		{
 			if (e.type instanceof TYPE_FOR_SCOPE_BOUNDARIES)
 			{
@@ -203,38 +203,52 @@ public class SYMBOL_TABLE
 	}
 
 	/* Receives: name
-	   Returns the TYPE in entry named "name" in the global scope*/
-	public TYPE findInGlobal(String name)
+	   Returns the TYPE of entry named "name" in the global scope*/
+	public SYMBOL_TABLE_ENTRY findEntryInGlobal(String name)
 	{
 		SYMBOL_TABLE_ENTRY e;
 		for (e = table[hash(name)]; e != null; e = e.next)
 		{
 			if (e.scopeEnum == ScopeTypeEnum.GLOBAL && name.equals(e.name))
 			{
-				return e.type;
+				return e;
 			}
 		}
 
 		return null;
 	}
 
-	public boolean typeCanBeInstanced(String name)
+	/* Receives: name
+	   Returns the TYPE of entry named "name" in the global scope*/
+	public TYPE findInGlobal(String name)
 	{
-		SYMBOL_TABLE_ENTRY e;
-		for (e = table[hash(name)]; e != null; e = e.next)
-		{
-			if (e.scopeEnum == ScopeTypeEnum.GLOBAL && name.equals(e.name))
-			{
-				return e.canBeInstanced;
-			}
-		}
-
-		return false;
+		SYMBOL_TABLE_ENTRY e = findEntryInGlobal(name);
+		if (e == null) return null;
+		return e.type;
 	}
 
-	public boolean getLastFunc()
+	public boolean typeCanBeInstanced(String name)
 	{
+		SYMBOL_TABLE_ENTRY e = findEntryInGlobal(name);
+		if (e == null) return false;
+		return e.canBeInstanced;
+	}
 
+	public TYPE getLastFunc()
+	{
+		SYMBOL_TABLE_ENTRY e;
+
+		for (e = top; e != null; e = e.prevtop)
+		{
+			if (e.type instanceof TYPE_FOR_SCOPE_BOUNDARIES)
+			{
+				if (((TYPE_FOR_SCOPE_BOUNDARIES) e.type).scope_type_enum == ScopeTypeEnum.FUNC)
+				{
+					return ((TYPE_FOR_SCOPE_BOUNDARIES) e.type).class_func_type;
+				}
+			}
+		}
+		return null;
 	}
 
 	public static int n=0;
