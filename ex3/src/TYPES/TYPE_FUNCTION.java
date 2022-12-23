@@ -44,12 +44,12 @@ public class TYPE_FUNCTION extends TYPE
 			/* Same inst_type of return- need to check extra in case of array (array of arrays or array of classes) or class*/
 			if (this.returnType instanceof TYPE_ARRAY)
 			{
-				if (!((TYPE_ARRAY) this.returnType).equals((TYPE_ARRAY)compered_func.returnType)) return false;
+				if (!(this.returnType.equals(compered_func.returnType))) return false;
 			}
 
 			if (this.returnType instanceof TYPE_CLASS)
 			{
-				if (!((TYPE_CLASS) this.returnType).equals((TYPE_CLASS)compered_func.returnType)) return false;
+				if (!(this.returnType.equals(compered_func.returnType))) return false;
 			}
 			return true;
 		}

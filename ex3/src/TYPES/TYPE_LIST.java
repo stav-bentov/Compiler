@@ -34,11 +34,11 @@ public class TYPE_LIST extends TYPE
 			/* Same inst_type of nodes- need to check extra in case of an array (array of arrays or array of classes) or class*/
 			if (this_pointer.head instanceof TYPE_ARRAY)
 			{
-				if (!((TYPE_ARRAY) this_pointer.head).equals((TYPE_ARRAY)compared_pointer.head)) return false;
+				if (!(this_pointer.head.equals(compared_pointer.head))) return false;
 			}
 			if (this_pointer.head instanceof TYPE_CLASS)
 			{
-				if (!((TYPE_CLASS) this_pointer.head).equals((TYPE_CLASS)compared_pointer.head)) return false;
+				if (!(this_pointer.head.equals(compared_pointer.head))) return false;
 			}
 
 			this_pointer = this_pointer.tail;

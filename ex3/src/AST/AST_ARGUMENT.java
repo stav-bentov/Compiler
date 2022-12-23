@@ -1,5 +1,7 @@
 package AST;
 
+import TYPES.TYPE;
+
 public class AST_ARGUMENT extends AST_Node{
     public AST_TYPE type;
     public String id;
@@ -34,5 +36,14 @@ public class AST_ARGUMENT extends AST_Node{
         /* PRINT Edges to AST GRAPHVIZ DOT file */
         /****************************************/
         if (type != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,type.SerialNumber);
+    }
+
+    public TYPE SemantMe() throws SemanticException
+    {
+        TYPE arg_type = this.type.SemantMe();
+        /* Check parameter name (=id) is not class name, "int", "string" or array name *and* void*/
+        if (SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.id) || this.id.equals("void") )
+            throw new SemanticException("invalid parameter name!");
+        return arg_type;
     }
 }

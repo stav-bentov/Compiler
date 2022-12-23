@@ -47,7 +47,7 @@ public class SYMBOL_TABLE
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
-	public void enter(String name, TYPE t, boolean isVariableType)
+	public void enter(String name, TYPE t, boolean canBeInstanced)
 	{
 		/*************************************************/
 		/* [1] Compute the hash value for this new entry */
@@ -63,7 +63,7 @@ public class SYMBOL_TABLE
 		/**************************************************************************/
 		/* [3] Prepare a new symbol table entry with name, type, next and prevtop */
 		/**************************************************************************/
-		SYMBOL_TABLE_ENTRY e = new SYMBOL_TABLE_ENTRY(name, t, hashValue, next, top, top_index++, isVariableType, current_scope_boundary.scope_type_enum);
+		SYMBOL_TABLE_ENTRY e = new SYMBOL_TABLE_ENTRY(name, t, hashValue, next, top, top_index++, canBeInstanced, current_scope_boundary.scope_type_enum);
 
 		/**********************************************/
 		/* [4] Update the top of the symbol table ... */
@@ -163,7 +163,7 @@ public class SYMBOL_TABLE
 
 	/* Receives: name
 	   Returns the TYPE in entry named "name" by searching only in current scope*/
-	public boolean isInLastScope(String name)
+	public TYPE findInLastScope(String name)
 	{
 		SYMBOL_TABLE_ENTRY e;
 
@@ -175,10 +175,10 @@ public class SYMBOL_TABLE
 			}
 			if (e.name.equals(name))
 			{
-				return true;
+				return e.type;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/* Receives: name
@@ -216,6 +216,25 @@ public class SYMBOL_TABLE
 		}
 
 		return null;
+	}
+
+	public boolean typeCanBeInstanced(String name)
+	{
+		SYMBOL_TABLE_ENTRY e;
+		for (e = table[hash(name)]; e != null; e = e.next)
+		{
+			if (e.scopeEnum == ScopeTypeEnum.GLOBAL && name.equals(e.name))
+			{
+				return e.canBeInstanced;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean getLastFunc()
+	{
+
 	}
 
 	public static int n=0;

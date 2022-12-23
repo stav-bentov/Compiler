@@ -27,11 +27,11 @@ public class TYPE_ARRAY extends TYPE{
         if (!(this.array_type.getClass().equals(compered_array.array_type.getClass()))) return false;
         if (this.array_type instanceof TYPE_ARRAY)
         {
-            return ((TYPE_ARRAY) this.array_type).equals((TYPE_ARRAY) compered_array.array_type);
+            return (this.array_type.equals(compered_array.array_type));
         }
         if (this.array_type instanceof TYPE_CLASS)
         {
-            return ((TYPE_CLASS) this.array_type).equals((TYPE_CLASS) compered_array.array_type);
+            return (this.array_type.equals(compered_array.array_type));
         }
         return true;
     }
