@@ -1,4 +1,7 @@
 package AST;
+import TYPES.*
+import SYMBOL_TABLE.*
+import src.AST.AST_LIST;
 
 public class AST_CLASS_DEC extends AST_Node{
     public String className;
@@ -44,5 +47,51 @@ public class AST_CLASS_DEC extends AST_Node{
         /* PRINT Edges to AST GRAPHVIZ DOT file */
         /****************************************/
         if (cFieldList != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cFieldList.SerialNumber);
+    }
+
+    public TYPE SemantMe() throws SemanticException
+    {
+        if(SYMBOL_TABLE.getInstance().getCurrentScopeType() != ScopeTypeEnum.GLOBAL){
+            throw new SemanticException(String.format("class %s declaration in non-global scope", className));
+        }
+
+        if(SYMBOL_TABLE.getInstance().findInGlobal(this.className) != null)
+            throw new SemanticException(String.format("class %s already exists!", className));
+
+        /*************************/
+        /* [1] Begin Class Scope */
+        /*************************/
+
+
+        TYPE_CLASS type_class = new TYPE_CLASS(null, name, null);
+
+        /***************************/
+        /* [2] Semant Data Members */
+        /***************************/
+
+        if(this.extendsName != null){
+            TYPE father = SYMBOL_TABLE.getInstance().findInGlobal(this.extendsName);
+            if(father == null){
+                throw new SemanticException(String.format("no such class %s therefore cannot be extended by %s", this.extendsName, this.className));
+            }
+            if(father != null || !father.isClass()) {
+                throw new SemanticException(String.format("%s is not a class and cannot be extended by %s", this.extendsName, this.className));
+            }
+
+            type_class.father = father;
+        }
+
+        SYMBOL_TABLE.getInstance().enter(className, type_class);
+        SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, type_class);
+
+        //SemantMe will check if illegal inheritance or duplicated names in the same scope
+        type_class.data_members = cFieldList.SemantMe();
+
+        /*****************/
+        /* [3] End Scope */
+        /*****************/
+        SYMBOL_TABLE.getInstance().endScope();
+
+        return type_class;
     }
 }
