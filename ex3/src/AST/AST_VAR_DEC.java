@@ -66,22 +66,31 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         if (exp != null)
         {
             TYPE exp_type = exp.SemantMe();
-            if (!(var_inner_type.getClass().equals(exp_type.getClass())))
-                throw new SemanticException("Assign types doesnt match");
-            if (var_inner_type instanceof TYPE_CLASS)
+            if (exp_type instanceof TYPE_NIL)
+            {   /* Only variables of arrays and classes can be defined with null expression */
+                if (!(var_inner_type instanceof TYPE_CLASS) && !(var_inner_type instanceof TYPE_ARRAY))
+                    throw new SemanticException("Assign types doesnt match (wrong classes)");
+            }
+            else
             {
-                if (!exp_type.equals(var_inner_type))
+                if (!(var_inner_type.getClass().equals(exp_type.getClass())))
+                    throw new SemanticException("Assign types doesnt match");
+                if (var_inner_type instanceof TYPE_CLASS)
+                {
+                    if (!exp_type.equals(var_inner_type))
+                    {
+                        /* Make sure exp_type inherited from var_inner_type */
+                        if (!exp_type.inheritsFrom(var_inner_type))
+                            throw new SemanticException("Assign types doesnt match (wrong classes)");
+                    }
+                }
+                if (var_inner_type instanceof TYPE_ARRAY)
                 {
                     /* Make sure exp_type inherited from var_inner_type */
-                    if (!exp_type.inheritsFrom(var_inner_type))
-                        throw new SemanticException("Assign types doesnt match (wrong classes)");
+                    var_inner_type.equals(exp_type);
                 }
             }
-            if (var_inner_type instanceof TYPE_ARRAY)
-            {
-                /* Make sure exp_type inherited from var_inner_type */
-                var_inner_type.equals(exp_type);
-            }
+
         }
 
         TYPE_VAR curr_var = new TYPE_VAR(this.id, var_inner_type);
