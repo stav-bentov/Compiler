@@ -54,9 +54,50 @@ public class AST_EXP_ID extends AST_EXP
 		if (l != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, l.SerialNumber);
 	}
 
-	public TYPE SemantMe(){
-		if(this.var != null){
-			TYPE_CLASS type_class = SYMBOL_TABLE.SYMBOL_TABLE.getInstance().find(var.id)
+	public TYPE SemantMe() throws SemanticException {
+		TYPE typeFound;
+
+		/* Find type */
+		if (var == null) {
+			typeFound = SYMBOL_TABLE.getInstance().findInInheritance(this.id);
+		} else {
+			TYPE typeOfVar = var.SemantMe().type;
+			if (!typeOfVar.isClass()) {
+				throw new SemanticException("This type is not a class and therefore does not have class methods", this);
+			}
+
+			TYPE_CLASS typeClassOfVar = (TYPE_CLASS)typeOfVar;
+			typeFound = SYMBOL_TABLE.getInstance().findInInheritance(this.id, typeClassOfVar);
+		}
+
+		if (typeFound == null) {
+			/* If not found, and it can be a global function, check in global scope */
+			if (var == null) { // If var is null it can be a global function
+				typeFound = findInGlobalScope(this.id);
+			}
+
+			/* Check if it is still not found */
+			if (typeFound == null) {
+				/* Now it really does not exist */
+				throw new SemanticException("Function does not exist", this);
+			}
+
+			if (!(typeFound instanceof TYPE_FUNCTION)) {
+				// There is no way a function with this name exists,
+				// because this type wouldn't have been inserted to this symbol table in the first place
+				throw new SemanticException("This function does not exist in an open scope", this);
+			}
+
+			CallToFuncMatchesFunc((TYPE_FUNCTION)typeFound); // We've already made sure typeFound is of TYPE_FUNC
+			return (TYPE_FUNCTION) typeFound.returnType;
+		}
+	}
+
+	private void CallToFuncMatchesFunc(TYPE_FUNCTION func) {
+		/* Check if parameters match expected parameters */
+		TYPE_LIST params = (TYPE_LIST) l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
+		if (!func.params.validateGivenParam(params)) {
+			throw new SemanticException("Parameters received do not match expected parameters", this);
 		}
 	}
 }

@@ -56,6 +56,7 @@ public class AST_VAR_EXP extends AST_VAR
 		if(!(type_var instanceof TYPE_INT)){
 			throw new SemanticException(String.format("%s is not an int - cannot put int inside brackets"), type_exp.name);
 		}
+		//TODO: should fail on negative index to array?
 		//TODO: what should return from here? how do i acess the array[i]? meaning, how was it put in the symbol table?
 	}
 }
