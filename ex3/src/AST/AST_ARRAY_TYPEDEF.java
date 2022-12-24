@@ -45,10 +45,10 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
         /* There is no variable/ class/ function/ with this name/ "string"/"void"/"int"*/
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null) throw new SemanticException("%s id already declared", this.name);
         /* Check: type can be instanced (is in AST_TYPE) if this is a defined class/ array/ string/ int */
-        TYPE array_type = this.type.SemantMe();
-        TYPE_ARRAY curr_array = new TYPE_ARRAY(array_type, this.name);
+        TYPE arrayType = this.type.SemantMe();
+        TYPE_ARRAY currArray = new TYPE_ARRAY(arrayType, this.name);
         /* REMEMBER: Array can be instanced*/
-        SYMBOL_TABLE.getInstance().enter(this.name, curr_array, true);
+        SYMBOL_TABLE.getInstance().enter(this.name, currArray, true);
         return null;
     }
 }

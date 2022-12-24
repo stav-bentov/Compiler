@@ -54,14 +54,14 @@ public class AST_FUNC_DEC extends AST_Node {
 
     public TYPE SemantMe() throws SemanticException
     {
-        boolean is_in_scope, is_valid_method, is_valid_function;
-        TYPE_FUNCTION curr_type_func;
-        ScopeTypeEnum scope_type;
+        boolean isInScope, isValidMethod, isValidFunction;
+        TYPE_FUNCTION currTypeFunc;
+        ScopeTypeEnum scopeType;
         TYPE_LIST params = null;
 
         /* Search the type of the function- (class) method or (global) function */
-        scope_type = SYMBOL_TABLE.getInstance().getCurrentScopeType();
-        if (scope_type != ScopeTypeEnum.CLASS && scopeType != ScopeTypeEnum.GLOBAL)
+        scopeType = SYMBOL_TABLE.getInstance().getCurrentScopeType();
+        if (scopeType != ScopeTypeEnum.CLASS && scopeType != ScopeTypeEnum.GLOBAL)
         {
             throw new SemanticException("Function: %s is not declared in a Global scope or in a Class scope", name);
         }
@@ -72,16 +72,16 @@ public class AST_FUNC_DEC extends AST_Node {
             case (global) function: check if there are previous declarations with this name in global scope
          */
         /* ASSUMPTION!! method name can't be a class/ array/ "string"/ "void"/ "int*/
-        is_in_scope = SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null && !SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.name) && !this.name.equals("void");
-        is_valid_method = scope_type == ScopeTypeEnum.CLASS && !is_in_scope;
-        is_valid_function = scope_type ==  ScopeTypeEnum.GLOBAL && !is_in_scope;
+        isInScope = SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null && !SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.name) && !this.name.equals("void");
+        isValidMethod = scopeType == ScopeTypeEnum.CLASS && !isInScope;
+        isValidFunction = scopeType ==  ScopeTypeEnum.GLOBAL && !isInScope;
 
-        if (is_valid_method || is_valid_function)
+        if (isValidMethod || isValidFunction)
         {
             /*  SemantMe will throw an error if the return type is invalid */
-            curr_type_func = new TYPE_FUNCTION(this.return_type.SemantMe(), this.name, null);
-            SYMBOL_TABLE.getInstance().enter(name, curr_type_func);
-            SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.FUNC, curr_type_func);
+            currTypeFunc = new TYPE_FUNCTION(this.return_type.SemantMe(), this.name, null);
+            SYMBOL_TABLE.getInstance().enter(name, currTypeFunc);
+            SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.FUNC, currTypeFunc);
 
             /* SemantMe() checks parameters:
                1. parameter's type can be instanced (only a "string"/ "int"/ previous declared class/ previous declared array/"void")
@@ -91,36 +91,36 @@ public class AST_FUNC_DEC extends AST_Node {
                 params = (TYPE_LIST) argList.SemantMe();
             }
 
-            curr_type_func.params = params;
+            currTypeFunc.params = params;
 
             /* Make sure there is only an override and no overload or using with function's name */
-            if (is_valid_method)
-                isValidMethod(name, curr_type_func);
+            if (isValidMethod)
+                isValidMethod(name, currTypeFunc);
 
             /* If the return type isn't match or if there is a semantic error inside the scope- SemantMe() will throw an error*/
             if (stmtList != null)
                 stmtList.SemantMe();
 
             SYMBOL_TABLE.getInstance().endScope();
-            return curr_type_func;
+            return currTypeFunc;
         }
-        throw new SemanticException("Duplicated definitions named: %s", name);
+        throw new SemanticException("Duplicated definitions named: %s", this.name);
     }
 
-    public void isValidMethod(String name, TYPE_FUNCTION override_method)
+    public void isValidMethod(String name, TYPE_FUNCTION overrideMethod)
     {
-        TYPE_CLASS curr_class = (TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass();
+        TYPE_CLASS currClass = (TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass();
         /* Check if there is a variable named "name" or a function overloading*/
-        while (curr_class != null)
+        while (currClass != null)
         {
-            if (curr_class.data_members != null) {
-                TYPE_LIST list_pointer = curr_class.data_members;
-                while (list_pointer.head != null) {
-                    if (list_pointer.head.name.equals(name)) {
-                        if (list_pointer.head instanceof TYPE_FUNCTION) {
+            if (currClass.data_members != null) {
+                TYPE_LIST listPointer = currClass.data_members;
+                while (listPointer.head != null) {
+                    if (listPointer.head.name.equals(name)) {
+                        if (listPointer.head instanceof TYPE_FUNCTION) {
                             /* Different signatures- overload*/
-                            if (!override_method.equals(list_pointer.head)) {
-                                throw new SemanticException("Overload functions named: %s", name);
+                            if (!overrideMethod.equals(listPointer.head)) {
+                                throw new SemanticException("Overload functions named: %s", this.name);
                             }
                             return;
                         } else {
@@ -128,10 +128,10 @@ public class AST_FUNC_DEC extends AST_Node {
                             throw new SemanticException("Duplicated definitions named in parent's class");
                         }
                     }
-                    list_pointer = list_pointer.tail;
+                    listPointer = listPointer.tail;
                 }
             }
-            curr_class = curr_class.father;
+            currClass = currClass.father;
         }
     }
 }

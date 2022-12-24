@@ -52,8 +52,8 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
             return null;
         }
 
-        TYPE head_type = null;
-        TYPE_LIST tail_type = null;
+        TYPE headType = null;
+        TYPE_LIST tailType = null;
 
         /* AST_CFIELD (TYPE_LIST of TYPE_VAR and TYPE_FUNCTION)
            AST_EXP (TYPE_LIST of TYPE)
@@ -64,10 +64,10 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
                               2. (checked here) parameter's name is not string/ int/ previous declared class/ previous declared array*/
         /* CASE AST_EXP TODO: ask Rotem if it's OK There will be a need in this list to compare functions/ classes?*/
         /* CASE AST_STMT Assumption (TODO) for Lilach - SemantMe on AST_STMT_RET will check return type.. also- Lilach making the enters if needed*/
-        head_type = this.head.SemantMe();
-        SYMBOL_TABLE.getInstance().enter(head_type.name, head_type, false);
-        tail_type = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
+        headType = this.head.SemantMe();
+        SYMBOL_TABLE.getInstance().enter(headType.name, headType, false);
+        tailType = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
 
-        return new TYPE_LIST(head_type, tail_type);
+        return new TYPE_LIST(headType, tailType);
     }
 }

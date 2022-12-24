@@ -43,7 +43,7 @@ public class AST_ARGUMENT extends AST_Node{
     public TYPE SemantMe() throws SemanticException
     {
         /* checking that a variable can be created from type made in SemantMe() */
-        TYPE_ARGUMENT arg_type = new TYPE_ARGUMENT(this.id, this.type.SemantMe());
+        TYPE_ARGUMENT argType = new TYPE_ARGUMENT(this.id, this.type.SemantMe());
         /* Check parameter name (=id) is not class name, "int", "string" or array name *and* void*/
         if (SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.id) || this.id.equals("void") )
             throw new SemanticException("invalid parameter name!");
@@ -53,10 +53,10 @@ public class AST_ARGUMENT extends AST_Node{
             throw new SemanticException("There are at least 2 parameters named: %s", ((AST_ARGUMENT)this.head).id);
         }
         /* argument type can't be TYPE_VOID!*/
-        if (arg_type.type instanceof TYPE_VOID)
+        if (argType.type instanceof TYPE_VOID)
         {
             throw new SemanticException("There are at least 2 parameters named: %s", ((AST_ARGUMENT)this.head).id);
         }
-        return arg_type;
+        return argType;
     }
 }

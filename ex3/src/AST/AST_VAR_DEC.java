@@ -62,39 +62,39 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
 
         /* Check: type can be instanced (is in AST_TYPE) */
         /* Compare types if there is an assignment */
-        TYPE var_inner_type = this.type.SemantMe();
+        TYPE varInnerType = this.type.SemantMe();
         if (exp != null)
         {
-            TYPE exp_type = exp.SemantMe();
-            if (exp_type instanceof TYPE_NIL)
+            TYPE expType = exp.SemantMe();
+            if (expType instanceof TYPE_NIL)
             {   /* Only variables of arrays and classes can be defined with null expression */
-                if (!(var_inner_type instanceof TYPE_CLASS) && !(var_inner_type instanceof TYPE_ARRAY))
+                if (!(varInnerType instanceof TYPE_CLASS) && !(varInnerType instanceof TYPE_ARRAY))
                     throw new SemanticException("Assign types doesnt match (wrong classes)");
             }
             else
             {
-                if (!(var_inner_type.getClass().equals(exp_type.getClass())))
+                if (!(varInnerType.getClass().equals(expType.getClass())))
                     throw new SemanticException("Assign types doesnt match");
-                if (var_inner_type instanceof TYPE_CLASS)
+                if (varInnerType instanceof TYPE_CLASS)
                 {
-                    if (!exp_type.equals(var_inner_type))
+                    if (!expType.equals(varInnerType))
                     {
-                        /* Make sure exp_type inherited from var_inner_type */
-                        if (!exp_type.inheritsFrom(var_inner_type))
+                        /* Make sure expType inherited from varInnerType */
+                        if (!expType.inheritsFrom(varInnerType))
                             throw new SemanticException("Assign types doesnt match (wrong classes)");
                     }
                 }
-                if (var_inner_type instanceof TYPE_ARRAY)
+                if (varInnerType instanceof TYPE_ARRAY)
                 {
-                    /* Make sure exp_type inherited from var_inner_type */
-                    var_inner_type.equals(exp_type);
+                    /* Make sure expType inherited from varInnerType */
+                    varInnerType.equals(expType);
                 }
             }
 
         }
 
-        TYPE_VAR curr_var = new TYPE_VAR(this.id, var_inner_type);
-        SYMBOL_TABLE.getInstance().enter(this.id, curr_var, false);
-        return curr_var;
+        TYPE_VAR currVar = new TYPE_VAR(this.id, varInnerType);
+        SYMBOL_TABLE.getInstance().enter(this.id, currVar, false);
+        return currVar;
     }
 }

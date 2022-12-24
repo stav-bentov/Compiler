@@ -1,6 +1,6 @@
 package TYPES;
 
-public class TYPE_NIL {
+public class TYPE_NIL extends TYPE{
     /**************************************/
     /* USUAL SINGLETON IMPLEMENTATION ... */
     /**************************************/
