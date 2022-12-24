@@ -54,9 +54,4 @@ public class AST_EXP_ID extends AST_EXP
 		if (l != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, l.SerialNumber);
 	}
 
-	public TYPE SemantMe(){
-		if(this.var != null){
-			TYPE_CLASS type_class = SYMBOL_TABLE.SYMBOL_TABLE.getInstance().find(var.id)
-		}
-	}
 }
