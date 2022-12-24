@@ -47,15 +47,19 @@ public class AST_VAR_EXP extends AST_VAR
 	}
 
 	public TYPE SemantMe() throws SemanticException{
+		//checking if type_var is an array
 		TYPE_VAR type_var = this.var.SemantMe();
 		if(!type_var.type.isArray()){
 			throw new SemanticException(String.format("%s is not an array!", this.type_var.name))
 		}
 
+		//checking if there was a legal access to the array
 		TYPE type_exp = this.exp.SemantMe();
 		if(!(type_var instanceof TYPE_INT)){
 			throw new SemanticException(String.format("%s is not an int - cannot put int inside brackets"), type_exp.name);
 		}
-		//TODO: what should return from here? how do i acess the array[i]? meaning, how was it put in the symbol table?
+
+		//type_var.type is TYPE_ARRAY - which should have a field called type - which is why type of array it is.
+		return type_var.type.type;
 	}
 }
