@@ -53,9 +53,20 @@ public class AST_VAR_EXP extends AST_VAR
 		}
 
 		TYPE type_exp = this.exp.SemantMe();
-		if(!(type_var instanceof TYPE_INT)){
+		if(!(type_exp instanceof TYPE_INT)){
 			throw new SemanticException(String.format("%s is not an int - cannot put int inside brackets"), type_exp.name);
 		}
+
+		if(this.exp instanceof AST_EXP_OPT){
+			AST_EXP_OPT constExp = (AST_EXP_OPT) this.exp;
+			if (!(constExp.opt.equals("INT") && constExp.i > 0)) {
+				throw new SemanticException("Allocating arrays with the new operator, when done with a constant, must be greater then zero",
+						this);
+			}
+		}
+
+		return type_var.type;
+	}
 		//TODO: should fail on negative index to array?
 		//TODO: what should return from here? how do i acess the array[i]? meaning, how was it put in the symbol table?
 	}
