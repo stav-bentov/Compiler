@@ -53,7 +53,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		return GetDataMemberVarType(first_var_type, this.id);
 	}
 
-	public GetDataMemberVarType(TYPE_VAR first_var_type, String id) throws SemanticException{
+	public TYPE GetDataMemberVarType(TYPE_VAR first_var_type, String id) throws SemanticException{
 		TYPE_LIST head = first_var_type.type.DataMembers.head;
 		while(head != null){
 			if (head.name == id){
