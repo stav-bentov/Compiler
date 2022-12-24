@@ -40,7 +40,7 @@ public class AST_EXP_EXP extends AST_EXP
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
 	}
 
-	public TYPE SemantMe(){
+	public TYPE SemantMe() throws SemanticException{
 		return this.exp.SemantMe();
 	}
 }
