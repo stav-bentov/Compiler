@@ -49,52 +49,107 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                   3. id != "void", "string", "int"
                   4. ASSUMPTION!!! If we are in class-  no variable with this name in parent class
          */
-        if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null) throw new SemanticException("%s id already declared", this.id);
-        if (SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.id) != null) throw new SemanticException("%s is a class/ array/string/int", this.id);
-        if (this.id.equals("void")) throw new SemanticException("%s is void", this.id);
+        if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null) throw new SemanticException("%s id already declared");
+        if (SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.id) != null) throw new SemanticException("%s is a class/ array/string/int");
+        if (this.id.equals("void")) throw new SemanticException("%s is void");
         /* If we are not in a function will return false (good)
            If we are in a function will return - null if there is no variable name id
                                                 type with name id*/
         if(SYMBOL_TABLE.getInstance().findInInheritance(this.id) != null)
         {
-            throw new SemanticException("%s declared in parent class", this.id);
+            throw new SemanticException("%s declared in parent class");
         }
 
         /* Check: type can be instanced (is in AST_TYPE) */
-        /* Compare types if there is an assignment */
-        TYPE varInnerType = this.type.SemantMe();
-        if (exp != null)
+        /* Compare types if there is an assignment
+        *  2 options: 1. assign Class / Class variable
+        *             2. assign Array
+        *             3. assign int
+        *            4. assign string
+        * BUT- if it's vardec in CFIELD(we are in a class), can only assign string, int, null*/
+        TYPE typeToAssign = this.type.SemantMe();
+        if (this.exp != null)
         {
             TYPE expType = exp.SemantMe();
-            if (expType instanceof TYPE_NIL)
-            {   /* Only variables of arrays and classes can be defined with null expression */
-                if (!(varInnerType instanceof TYPE_CLASS) && !(varInnerType instanceof TYPE_ARRAY))
-                    throw new SemanticException("Assign types doesnt match (wrong classes)");
+            /* vardec is CFIELD- just const string/int/null assignments*/
+            if (SYMBOL_TABLE.getInstance().getCurrentScopeType == ScopeTypeEnum.CLASS)
+            {
+                if (!(expType instanceof TYPE_NIL || expType instanceof TYPE_STRING || expType instanceof TYPE_INT))
+                    throw new SemanticException("Data member inside a class can be initialized only with a constant value");
+                if (expType instanceof TYPE_NIL)
+                {
+                    if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY))
+                        throw new SemanticException("Can assign null only on arrays and classes");
+                }
             }
             else
-            {
-                if (!(varInnerType.getClass().equals(expType.getClass())))
-                    throw new SemanticException("Assign types doesnt match");
-                if (varInnerType instanceof TYPE_CLASS)
+            { /* We are inside a function/ method/ global scope/ if/ while*/
+                /* Assumption new_exp can't be from type null*/
+                if (expType instanceof TYPE_NIL)
                 {
-                    if (!expType.equals(varInnerType))
+                    /* Only variables of arrays and classes can be defined with null expression */
+                    if (!(typeToAssign instanceof TYPE_CLASS) && !(typeToAssign instanceof TYPE_ARRAY))
+                        throw new SemanticException("Assign types doesnt match (wrong classes)");
+                    /* TODO: Update array size to 0?*/
+                }
+                else
+                {
+                    if (typeToAssign instanceof TYPE_ARRAY)
                     {
-                        /* Make sure expType inherited from varInnerType */
-                        if (!expType.inheritsFrom(varInnerType))
+                        /* check if it's an array of arrays/ arrays of classes and if it's match*/
+                        if(!compareTypeArrays((TYPE_ARRAY) typeToAssign, expType))
+                        {
                             throw new SemanticException("Assign types doesnt match (wrong classes)");
+                        }
+
+                        if (exp instanceof AST_NEW_EXP)
+                        {/* a size of an array is given*/
+                            /*TODO: should I take care of that??*/
+                        }
+                    }
+                    else if (typeToAssign instanceof TYPE_CLASS)
+                    {
+                        if (!typeToAssign.equals(expType))
+                        {
+                            /* Make sure expType inherited from typeToAssign */
+                            if (!((TYPE_CLASS) expType).inheritsFrom(typeToAssign))
+                                throw new SemanticException("Assign types doesnt match (wrong classes)");
+                        }
+                    }
+                    else
+                    {
+                        /* Cases of int/ string*/
+                        if(!(typeToAssign.getClass().equals(expType.getClass())))
+                        {
+                            throw new SemanticException("Assign types doesnt match (wrong classes)");
+                        }
                     }
                 }
-                if (varInnerType instanceof TYPE_ARRAY)
-                {
-                    /* Make sure expType inherited from varInnerType */
-                    varInnerType.equals(expType);
-                }
             }
-
         }
 
-        TYPE_VAR currVar = new TYPE_VAR(this.id, varInnerType);
+        TYPE_VAR currVar = new TYPE_VAR(this.id, typeToAssign);
         SYMBOL_TABLE.getInstance().enter(this.id, currVar, false);
         return currVar;
     }
+
+    /* Receives the array that the assignment is made on and check the types of the expression that is assigned*/
+    public boolean compareTypeArrays(TYPE_ARRAY arrayToAssign, TYPE assignedType)
+    {
+        TYPE requiredType = arrayToAssign.arrayType;
+        if (!(requiredType.getClass().equals(assignedType.getClass())))
+            return false;
+        if (requiredType instanceof TYPE_CLASS)
+        {
+            /*Check inheritance*/
+            if (!requiredType.equals(assignedType))
+            {
+                /* Make sure assignedType inherited from requiredType */
+                if (!((TYPE_CLASS) assignedType).inheritsFrom(requiredType))
+                    return false;
+            }
+        }
+        return true;
+    }
 }
+

@@ -59,19 +59,24 @@ public class TYPE_LIST extends TYPE
 		TYPE_LIST variablesPointer = (TYPE_LIST) o;
 		TYPE_LIST paramsPointer = this;
 
-		while (paramsPointer.head != null && variablesPointer.head != null)
-		{
-			/* If the given variable should be from type Class ot Array it could be TYPE_NIL*/
-			if (paramsPointer.head instanceof TYPE_CLASS || paramsPointer.head instanceof TYPE_ARRAY)
-			{
-				if (!(variablesPointer.head instanceof TYPE_NIL))
-				{
-					if(paramsPointer.head.getClass().equals(variablesPointer.head.getClass())) return false;
+		while (paramsPointer.head != null && variablesPointer.head != null) {
+			if (paramsPointer.head instanceof TYPE_CLASS) {
+				/* class can be null but if not- check if it's same class or inherited*/
+				if (!(variablesPointer.head instanceof TYPE_NIL)) {
+					if(!(paramsPointer.head.getClass().equals(variablesPointer.head.getClass()))) return false;
+					if (!(paramsPointer.head.equals(variablesPointer.head))) {
+						if (!(TYPE_CLASS)variablesPointer.inheritsFrom(paramsPointer)) return false;
+					}
+				}
+			}
+			else if (paramsPointer.head instanceof TYPE_ARRAY) {
+				/* class array be null but if not- check if it's same array*/
+				if (!(variablesPointer.head instanceof TYPE_NIL)) {
+					if (!(paramsPointer.head.getClass().equals(variablesPointer.head.getClass()))) return false;
 					if (!(paramsPointer.head.equals(variablesPointer.head))) return false;
 				}
 			}
-			else
-			{
+			else {
 				if(paramsPointer.head.getClass().equals(variablesPointer.head.getClass())) return false;
 			}
 

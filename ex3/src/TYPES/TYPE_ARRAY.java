@@ -3,15 +3,16 @@ package TYPES;
 public class TYPE_ARRAY extends TYPE{
 
     /* The type can be a class/array/primitive type*/
-    public TYPE array_type;
+    public TYPE arrayType;
+    public int arraySize;
 
     /****************/
     /* CTROR(S) ... */
     /****************/
-    public TYPE_ARRAY(TYPE array_type,String name)
+    public TYPE_ARRAY(TYPE arrayType,String name)
     {
         this.name = name;
-        this.array_type = array_type;
+        this.arrayType = arrayType;
     }
 
     @Override
@@ -21,13 +22,13 @@ public class TYPE_ARRAY extends TYPE{
     public boolean equals(Object o)
     {
         if (!(o instanceof TYPE_ARRAY)) return false;
-        TYPE_ARRAY compered_array = (TYPE_ARRAY) o;
+        TYPE_ARRAY comperedArray = (TYPE_ARRAY) o;
 
         /* Compare types and if type is an Array or Class-> compare them! */
-        if (!(this.array_type.getClass().equals(compered_array.array_type.getClass()))) return false;
-        if (this.array_type instanceof TYPE_ARRAY || this.array_type instanceof TYPE_CLASS)
+        if (!(this.arrayType.getClass().equals(comperedArray.arrayType.getClass()))) return false;
+        if (this.arrayType instanceof TYPE_ARRAY || this.arrayType instanceof TYPE_CLASS)
         {
-            return (this.array_type.equals(compered_array.array_type));
+            return (this.arrayType.equals(comperedArray.arrayType));
         }
         return true;
     }

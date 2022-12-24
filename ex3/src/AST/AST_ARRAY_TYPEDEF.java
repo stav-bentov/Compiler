@@ -43,7 +43,7 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
         /* I'm not sure it's necessary (because I think that cup defines it to only be declared in Global scope */
         if (SYMBOL_TABLE.getInstance().getCurrentScopeType() != ScopeTypeEnum.GLOBAL) throw new SemanticException("Array can only be declared in Global scope");
         /* There is no variable/ class/ function/ with this name/ "string"/"void"/"int"*/
-        if (SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null) throw new SemanticException("%s id already declared", this.name);
+        if (SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null) throw new SemanticException("id already declared");
         /* Check: type can be instanced (is in AST_TYPE) if this is a defined class/ array/ string/ int */
         TYPE arrayType = this.type.SemantMe();
         TYPE_ARRAY currArray = new TYPE_ARRAY(arrayType, this.name);
