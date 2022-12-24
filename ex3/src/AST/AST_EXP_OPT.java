@@ -44,10 +44,10 @@ public class AST_EXP_OPT extends AST_EXP
 				type = TYPE_INT.getInstance();
 				break;
 			case "STRING":
-				type = TYPE_STRING().getInstace();
+				type = TYPE_STRING.getInstace();
 				break;
 			case "NIL":
-				type = TYPE_NIL().getInstance();
+				type = TYPE_NIL.getInstance();
 				break;
 		}
 
