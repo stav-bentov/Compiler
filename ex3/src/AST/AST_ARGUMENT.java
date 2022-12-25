@@ -54,6 +54,7 @@ public class AST_ARGUMENT extends AST_Node{
         {
             throw new SemanticException("There are at least 2 parameters named: %s");
         }
+        SYMBOL_TABLE.getInstance().enter(this.id, varType, false);
         return varType;
     }
 }

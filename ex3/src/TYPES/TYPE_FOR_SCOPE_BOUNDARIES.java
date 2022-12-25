@@ -5,7 +5,6 @@ public class TYPE_FOR_SCOPE_BOUNDARIES extends TYPE
 	/****************/
 	/* CTROR(S) ... */
 	/****************/
-	public String name;
 	public ScopeTypeEnum scope_type_enum;
 	public TYPE class_func_type;
 	public TYPE_FOR_SCOPE_BOUNDARIES prev_scope;

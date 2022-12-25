@@ -74,10 +74,10 @@ public class AST_FUNC_DEC extends AST_Node {
         /* TODO: because Im not sure - if this.name = string, void, int for method what to do?
         *  validName = true if there is no variable with this name in current scope*/
         validName = SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null;
-        isValidMethod = scopeType == ScopeTypeEnum.CLASS && !validName;
-        isValidFunction = scopeType ==  ScopeTypeEnum.GLOBAL && !validName;
+        isMethod = scopeType == ScopeTypeEnum.CLASS && !validName;
+        isFunction = scopeType ==  ScopeTypeEnum.GLOBAL && !validName;
 
-        if (isValidMethod || isValidFunction)
+        if (isMethod || isFunction)
         {
             /*  SemantMe will throw an error if the return type is invalid */
             currTypeFunc = new TYPE_FUNCTION(this.return_type.SemantMe(), this.name, null);
@@ -87,20 +87,20 @@ public class AST_FUNC_DEC extends AST_Node {
             /* SemantMe() checks parameters:
                1. parameter's type can be instanced (only a "string"/ "int"/ previous declared class/ previous declared array/"void")
                2. parameter's name is not string/ int/ previous declared class/ previous declared array/"void"*/
-            if (argList != null)
+            if (this.argList != null)
             {
-                params = (TYPE_LIST) argList.SemantMe();
+                params = (TYPE_LIST) this.argList.SemantMe();
             }
 
             currTypeFunc.params = params;
 
             /* Make sure there is only an override and no overload or using with function's name */
-            if (isValidMethod)
-                isValidMethod(name, currTypeFunc);
+            if (isMethod)
+                isValidMethod(this.name, currTypeFunc);
 
             /* If the return type isn't match or if there is a semantic error inside the scope- SemantMe() will throw an error*/
-            if (stmtList != null)
-                stmtList.SemantMe();
+            if (this.stmtList != null)
+                this.stmtList.SemantMe();
 
             SYMBOL_TABLE.getInstance().endScope();
             return currTypeFunc;

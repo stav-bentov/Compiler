@@ -45,14 +45,9 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public TYPE SemantMe() throws SemanticException
     {
         /* Check: 1. No other variable with this name in current scope
-                  2. ASSUMPTION!!! No class/ array with this name
-                  3. id != "void", "string", "int"
-                  4. ASSUMPTION!!! If we are in class-  no variable with this name in parent class
+                  2. ASSUMPTION!!! If we are in class-  no variable with this name in parent class
          */
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null) throw new SemanticException("%s id already declared");
-        /* TODO: check if the name can be instanced or void  is it right or wrong? I dont understand
-        if (SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.id) != null) throw new SemanticException("%s is a class/ array/string/int");
-        if (this.id.equals("void")) throw new SemanticException("%s is void");*/
 
         /* If we are not in a class check there is no variable (CFIELD) with this name in parents classes */
         if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS){
@@ -147,13 +142,10 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             return false;
         if (requiredType instanceof TYPE_CLASS)
         {
-            /*Check inheritance*/
-            if (!requiredType.equals(assignedType))
-            {
-                /* Make sure assignedType inherited from requiredType */
-                if (!((TYPE_CLASS) assignedType).inheritsFrom(requiredType))
-                    return false;
-            }
+            /*Check inheritance
+             Make sure assignedType inherited from requiredType */
+            if (!((TYPE_CLASS) assignedType).inheritsFrom(requiredType))
+                return false;
         }
         else
         {
