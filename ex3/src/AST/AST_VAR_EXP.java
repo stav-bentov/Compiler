@@ -63,7 +63,7 @@ public class AST_VAR_EXP extends AST_VAR
 		//if this.exp is a constant integer, check if the given index to the array is non-negative
 		if(this.exp instanceof AST_EXP_OPT){
 			AST_EXP_OPT constExp = (AST_EXP_OPT) this.exp;
-			if (!(constExp.opt.equals("INT") && constExp.i >= 0)) {
+			if (!(constExp.opt.equals("INT"))) {
 				throw new SemanticException("Allocating arrays with the new operator, when done with a constant, must be greater then zero",
 						this);
 			}
