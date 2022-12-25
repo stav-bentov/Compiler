@@ -54,7 +54,7 @@ public class AST_FUNC_DEC extends AST_Node {
 
     public TYPE SemantMe() throws SemanticException
     {
-        boolean isInScope, isValidMethod, isValidFunction;
+        boolean validName, isValidMethod, isValidFunction;
         TYPE_FUNCTION currTypeFunc;
         ScopeTypeEnum scopeType;
         TYPE_LIST params = null;
@@ -71,16 +71,17 @@ public class AST_FUNC_DEC extends AST_Node {
                                  if there is in a parent class- make sure it has the same signature
             case (global) function: check if there are previous declarations with this name in global scope
          */
-        /* ASSUMPTION!! method name can't be a class/ array/ "string"/ "void"/ "int*/
-        isInScope = SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null && !SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.name) && !this.name.equals("void");
-        isValidMethod = scopeType == ScopeTypeEnum.CLASS && !isInScope;
-        isValidFunction = scopeType ==  ScopeTypeEnum.GLOBAL && !isInScope;
+        /* TODO: because Im not sure - if this.name = string, void, int for method what to do?
+        *  validName = true if there is no variable with this name in current scope*/
+        validName = SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null;
+        isValidMethod = scopeType == ScopeTypeEnum.CLASS && !validName;
+        isValidFunction = scopeType ==  ScopeTypeEnum.GLOBAL && !validName;
 
         if (isValidMethod || isValidFunction)
         {
             /*  SemantMe will throw an error if the return type is invalid */
             currTypeFunc = new TYPE_FUNCTION(this.return_type.SemantMe(), this.name, null);
-            SYMBOL_TABLE.getInstance().enter(name, currTypeFunc);
+            SYMBOL_TABLE.getInstance().enter(this.name, currTypeFunc, false);
             SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.FUNC, currTypeFunc);
 
             /* SemantMe() checks parameters:
