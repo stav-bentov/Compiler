@@ -12,7 +12,7 @@ public class AST_EXP_EXP extends AST_EXP
 		System.out.print("====================== exp -> (exp)\n");
 		this.exp = exp;
 	}
-	
+
 	/***********************************************/
 	/* The default message for an exp var AST node */
 	/***********************************************/
@@ -26,13 +26,13 @@ public class AST_EXP_EXP extends AST_EXP
 		/* RECURSIVELY PRINT var ... */
 		/*****************************/
 		if (exp != null) exp.PrintMe();
-		
+
 		/*********************************/
 		/* Print to AST GRAPHIZ DOT file */
 		/*********************************/
 		AST_GRAPHVIZ.getInstance().logNode(
-			SerialNumber,
-			"EXP\nEXP");
+				SerialNumber,
+				"EXP\nEXP");
 
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
@@ -40,7 +40,7 @@ public class AST_EXP_EXP extends AST_EXP
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
 	}
 
-	public TYPE SemantMe() throws SemanticException{
+	public TYPE SemantMe(){
 		return this.exp.SemantMe();
 	}
 }
