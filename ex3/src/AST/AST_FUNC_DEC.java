@@ -108,31 +108,18 @@ public class AST_FUNC_DEC extends AST_Node {
         throw new SemanticException("Duplicated definitions named: %s");
     }
 
-    public void isValidMethod(String name, TYPE_FUNCTION overrideMethod)
+    public void isValidMethod(String name, TYPE_FUNCTION overrideMethod) throws SemanticException
     {
-        TYPE_CLASS currClass = (TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass();
-        /* Check if there is a variable named "name" or a function overloading*/
-        while (currClass != null)
-        {
-            if (currClass.data_members != null) {
-                TYPE_LIST listPointer = currClass.data_members;
-                while (listPointer.head != null) {
-                    if (listPointer.head.name.equals(name)) {
-                        if (listPointer.head instanceof TYPE_FUNCTION) {
-                            /* Different signatures- overload*/
-                            if (!overrideMethod.equals(listPointer.head)) {
-                                throw new SemanticException("Overload functions named: %s", this.name);
-                            }
-                            return;
-                        } else {
-                            /* There is a variable with the same name in a parent class */
-                            throw new SemanticException("Duplicated definitions named in parent's class");
-                        }
-                    }
-                    listPointer = listPointer.tail;
-                }
+        TYPE currType = SYMBOL_TABLE.getInstance().findInInheritance(name);
+        if (currType instanceof TYPE_FUNCTION) {
+            /* Different signatures- overload*/
+            if (!overrideMethod.equals(currType)) {
+                throw new SemanticException("Overload functions named: %s");
             }
-            currClass = currClass.father;
+            return;
+        } else {
+            /* There is a variable with the same name in a parent class (and it's not a function) */
+            throw new SemanticException("Duplicated definitions named in parent's class");
         }
     }
 }

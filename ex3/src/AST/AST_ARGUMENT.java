@@ -2,6 +2,7 @@ package AST;
 
 import TYPES.TYPE;
 import TYPES.TYPE_ARGUMENT;
+import TYPES.TYPE_VAR;
 import TYPES.TYPE_VOID;
 
 public class AST_ARGUMENT extends AST_Node{
@@ -42,21 +43,18 @@ public class AST_ARGUMENT extends AST_Node{
 
     public TYPE SemantMe() throws SemanticException
     {
-        /* checking that a variable can be created from type made in SemantMe() */
-        TYPE_ARGUMENT argType = new TYPE_ARGUMENT(this.id, this.type.SemantMe());
-        /* Check parameter name (=id) is not class name, "int", "string" or array name *and* void*/
-        if (SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.id) || this.id.equals("void") )
-            throw new SemanticException("invalid parameter name!");
+        /* Checking that a variable can be created from type made in SemantMe() */
+        TYPE_VAR varType = new TYPE_VAR(this.id, this.type.SemantMe());
         /* Assumption: the arguments are the first to get in the symbol table then if there is a duplicate name- will find it*/
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.id))
         {
             throw new SemanticException("There are at least 2 parameters named: %s");
         }
         /* argument type can't be TYPE_VOID!*/
-        if (argType.type instanceof TYPE_VOID)
+        if (varType.type instanceof TYPE_VOID)
         {
             throw new SemanticException("There are at least 2 parameters named: %s");
         }
-        return argType;
+        return varType;
     }
 }

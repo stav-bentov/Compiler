@@ -55,7 +55,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         if (this.id.equals("void")) throw new SemanticException("%s is void");*/
 
         /* If we are not in a class check there is no variable (CFIELD) with this name in parents classes */
-        if (SYMBOL_TABLE.getInstance().getCurrentScopeType == ScopeTypeEnum.CLASS){
+        if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS){
             if (SYMBOL_TABLE.getInstance().findInInheritance(this.id) != null) {
                 throw new SemanticException("%s declared in parent class");
             }
@@ -66,16 +66,16 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         *  2 options: 1. assign Class / Class variable
         *             2. assign Array
         *             3. assign int
-        *            4. assign string
+        *             4. assign string
         * BUT- if it's vardec in CFIELD(we are in a class), can only assign string, int, null*/
         TYPE typeToAssign = this.type.SemantMe();
         if (this.exp != null)
         {
-            TYPE expType = exp.SemantMe();
+            TYPE expType = this.exp.SemantMe();
             /* vardec is CFIELD- just const string/int/null assignments*/
-            if (SYMBOL_TABLE.getInstance().getCurrentScopeType == ScopeTypeEnum.CLASS)
+            if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS)
             {
-                if (!(expType instanceof TYPE_NIL || expType instanceof TYPE_STRING || expType instanceof TYPE_INT))
+                if (!(this.exp instanceof AST_EXP_OPT))
                     throw new SemanticException("Data member inside a class can be initialized only with a constant value");
                 if (expType instanceof TYPE_NIL)
                 {
@@ -103,7 +103,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                             throw new SemanticException("Assign types doesnt match (wrong classes)");
                         }
 
-                        if (exp instanceof AST_NEW_EXP)
+                        if (this.exp instanceof AST_NEW_EXP)
                         {/* a size of an array is given*/
                             /*TODO: should I take care of that??*/
                         }
@@ -134,7 +134,8 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         return currVar;
     }
 
-    /* Receives the array that the assignment is made on and check the types of the expression that is assigned*/
+    /* Receives the array that the assignment is made on c
+       Check the types of the expression that is assigned*/
     public boolean compareTypeArrays(TYPE_ARRAY arrayToAssign, TYPE assignedType)
     {
         TYPE requiredType = arrayToAssign.arrayType;
