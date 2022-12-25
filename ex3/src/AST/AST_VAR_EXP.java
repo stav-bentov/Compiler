@@ -69,6 +69,7 @@ public class AST_VAR_EXP extends AST_VAR
 			}
 
 		//type_var.type is TYPE_ARRAY - which should have a field called type - which is why type of array it is.
-		return type_var.type.type;
+		//after speaking to lilach we realized the name does not matter. returning name null.
+		return new TYPE_VAR(null, type_var.type.type);
 	}
 }
