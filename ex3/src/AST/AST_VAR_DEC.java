@@ -61,14 +61,18 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             }
         }
 
-        /* Check: type can be instanced (is in AST_TYPE) */
+        /* Check: type can be instanced (is in AST_TYPE) but not VOID */
         /* Compare types if there is an assignment
-        *  2 options: 1. assign Class / Class variable
+        *  4 options: 1. assign Class / Class variable
         *             2. assign Array
         *             3. assign int
         *             4. assign string
         * BUT- if it's vardec in CFIELD(we are in a class), can only assign string, int, null*/
         TYPE typeToAssign = this.type.SemantMe();
+        if (typeToAssign instanceof TYPE_VOID)
+        {
+            throw new SemanticException("%s declared in parent class");
+        }
         if (this.exp != null)
         {
             TYPE expType = this.exp.SemantMe();
