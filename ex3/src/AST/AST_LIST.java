@@ -65,7 +65,7 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
         /* CASE AST_EXP TODO: ask Rotem if it's OK There will be a need in this list to compare functions/ classes?*/
         /* CASE AST_STMT Assumption (TODO) for Lilach - SemantMe on AST_STMT_RET will check return type.. also- Lilach making the enters if needed*/
         headType = this.head.SemantMe();
-        /* The only cases for return*/
+        /* The only cases for enter*/
         if (head instanceof AST_ARGUMENT || head instanceof AST_CFIELD)
             SYMBOL_TABLE.getInstance().enter(headType.name, headType, false);
         tailType = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
