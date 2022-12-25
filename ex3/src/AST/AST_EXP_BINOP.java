@@ -112,7 +112,7 @@ public class AST_EXP_BINOP extends AST_EXP
 					throw new SemanticException("can only perform + between two integers or two strings");
 
 				//so left_type is the type we wanna return. if he is TYPE_INT we wil return TYPE_INT and same for TYPE_STRING
-				return TYPE_INT.getInstance();
+				return left_type;
 
 			case "=":
 				//only classes and arrays can be compared to NIL
@@ -150,10 +150,6 @@ public class AST_EXP_BINOP extends AST_EXP
 				if(sOP.equals("/") && right_type instanceof AST_EXP_OPT && (AST_EXP_OPT) right_type.i == 0)
 					throw new SemanticException(String.format("cannot perform division! %s is divided by 0!", left_type.name));
 				return TYPE_INT.getInstance();
-
-
-
-
 		}
 
 	}
