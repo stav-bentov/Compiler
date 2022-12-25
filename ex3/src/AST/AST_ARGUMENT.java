@@ -1,7 +1,6 @@
 package AST;
 
 import TYPES.TYPE;
-import TYPES.TYPE_ARGUMENT;
 import TYPES.TYPE_VAR;
 import TYPES.TYPE_VOID;
 

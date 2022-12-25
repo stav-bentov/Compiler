@@ -45,6 +45,7 @@ public class TYPE_FUNCTION extends TYPE
 			if (this.returnType instanceof TYPE_ARRAY || this.returnType instanceof TYPE_CLASS)
 			{
 				if (!(this.returnType.equals(compered_func.returnType))) return false;
+				/*TODO: check if the types can be inherited*/
 			}
 			return true;
 		}
