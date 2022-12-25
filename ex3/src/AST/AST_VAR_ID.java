@@ -1,6 +1,6 @@
 package AST;
 
-import src.TYPES.TYPE_VAR;
+import TYPES.*;
 
 public class AST_VAR_ID extends AST_VAR
 {
@@ -38,8 +38,9 @@ public class AST_VAR_ID extends AST_VAR
 	}
 
 	public TYPE SemantMe() throws SemanticException{
-		TYPE_VAR type_var = new TYPE_VAR(this.id, SYMBOL_TABLE.getInstance().find(id));
-		if(type_var.type == null || !type_var.type.isVar())
+		//simple case of var: id. get the var from symbol table according to the id, and then check that it is indeed a var
+		TYPE var = SYMBOL_TABLE.getInstance().find(this.id);
+		if(var == null || !var.isVar())
 			throw new SemanticException(String.format("%s referenced before declaration or is not a var!", this.id));
 
 		return type_var;

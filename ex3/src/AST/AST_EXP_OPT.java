@@ -41,13 +41,13 @@ public class AST_EXP_OPT extends AST_EXP
 		switch this.opt{
 			case "MINUS INT":
 			case "INT":
-				type = new TYPE_INT();
+				type = TYPE_INT.getInstance();
 				break;
 			case "STRING":
-				type = new TYPE_STRING();
+				type = TYPE_STRING.getInstace();
 				break;
 			case "NIL":
-				type = new TYPE_NIL();
+				type = TYPE_NIL.getInstance();
 				break;
 		}
 

@@ -47,27 +47,29 @@ public class AST_VAR_EXP extends AST_VAR
 	}
 
 	public TYPE SemantMe() throws SemanticException{
+		//is var is not of TYPE_VAR SemantMe will throw an error
 		TYPE_VAR type_var = this.var.SemantMe();
+		//checking if type_var is an array
 		if(!type_var.type.isArray()){
 			throw new SemanticException(String.format("%s is not an array!", this.type_var.name))
 		}
 
+		//checking if there was a legal access to the array
 		TYPE type_exp = this.exp.SemantMe();
 		if(!(type_exp instanceof TYPE_INT)){
 			throw new SemanticException(String.format("%s is not an int - cannot put int inside brackets"), type_exp.name);
 		}
 
+		//if this.exp is a constant integer, check if the given index to the array is non-negative
 		if(this.exp instanceof AST_EXP_OPT){
 			AST_EXP_OPT constExp = (AST_EXP_OPT) this.exp;
-			if (!(constExp.opt.equals("INT") && constExp.i > 0)) {
+			if (!(constExp.opt.equals("INT"))) {
 				throw new SemanticException("Allocating arrays with the new operator, when done with a constant, must be greater then zero",
 						this);
 			}
-		}
 
-		return type_var.type;
-	}
-		//TODO: should fail on negative index to array?
-		//TODO: what should return from here? how do i acess the array[i]? meaning, how was it put in the symbol table?
+		//type_var.type is TYPE_ARRAY - which should have a field called type - which is why type of array it is.
+		//after speaking to lilach we realized the name does not matter. returning name null.
+		return new TYPE_VAR(null, type_var.type.type);
 	}
 }

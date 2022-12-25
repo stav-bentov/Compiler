@@ -6,7 +6,7 @@ public class TYPE_VAR extends TYPE{
     public TYPE type;
 
     public TYPE_VAR(String name, TYPE type){
-        this.name = id;
+        this.name = name;
         this.type = type;
     }
 
