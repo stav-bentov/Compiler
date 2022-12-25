@@ -36,7 +36,7 @@ public class TYPE_FUNCTION extends TYPE
 					3. parameter's types */
 		if (!(this.name.equals(compered_func.name))) return false;
 		if (!(this.CompareReturnType(compered_func))) return false;
-		if (!(this.params.equals(compered_func.params))) return false;
+		if (!(this.params.compareSignature(compered_func.params))) return false;
 		return true;
 	}
 
