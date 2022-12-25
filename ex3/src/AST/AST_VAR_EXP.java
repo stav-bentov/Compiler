@@ -56,7 +56,7 @@ public class AST_VAR_EXP extends AST_VAR
 
 		//checking if there was a legal access to the array
 		TYPE type_exp = this.exp.SemantMe();
-		if(!(type_var instanceof TYPE_INT)){
+		if(!(type_exp instanceof TYPE_INT)){
 			throw new SemanticException(String.format("%s is not an int - cannot put int inside brackets"), type_exp.name);
 		}
 
