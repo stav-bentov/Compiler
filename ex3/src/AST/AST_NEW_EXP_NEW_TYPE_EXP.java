@@ -40,12 +40,12 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
     }
 
     public TYPE SemantMe() throws SemanticException {
-        TYPE instanceType = type.SemantMe(); // This type exists in the symbol table
+        TYPE instanceType = type.SemantMe(); // This is a legal type
 
-        /* Check if instance type can even be instanced */
-        if (!SYMBOL_TABLE.getInstance().canBeInstanced(instanceType)) {
+        /* Make sure instanceType is not void */
+        if (!(instanceType instanceof TYPE_VOID)) {
             throw new SemanticException(
-                    "Cannot create instances of this type",
+                    "Cannot create instances of type void",
                     this
             );
         }
@@ -68,17 +68,6 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
     }
 
     private TYPE SemantMeCaseArray(TYPE arrayMembersType) throws SemanticException {
-        /* Check type of array members */
-        if (!(arrayMembersType instanceof TYPE_CLASS) &&
-            !(arrayMembersType instanceof TYPE_ARRAY) &&
-            !(arrayMembersType instanceof TYPE_INT)   &&
-            !(arrayMembersType instanceof TYPE_STRING)) {
-            throw new SemanticException(
-                    "Array has an invalid memebres' type",
-                    this
-            );
-        }
-
         /* Check expression */
         TYPE expType = exp.SemantMe();
 
