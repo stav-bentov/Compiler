@@ -48,7 +48,7 @@ public class AST_STMT_RET extends AST_STMT {
     }
 
     private TYPE SemantMeCaseVoid(TYPE expectedReturnType) {
-        if (!expectedReturnType.equals(TYPE_VOID.getInstance())) {
+        if (expectedReturnType instanceof TYPE_VOID) {
             throw new SemanticException(
                     "Returns nothing when expected return type isn't void",
                     this
