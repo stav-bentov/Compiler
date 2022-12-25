@@ -93,7 +93,7 @@ public class AST_EXP_ID extends AST_EXP
 			}
 
 			CallToFuncMatchesFunc((TYPE_FUNCTION)typeFound); // We've already made sure typeFound is of TYPE_FUNC
-			return (TYPE_FUNCTION) typeFound.returnType;
+			return ((TYPE_FUNCTION) typeFound).returnType;
 		}
 	}
 
