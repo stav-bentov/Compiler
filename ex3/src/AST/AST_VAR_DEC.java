@@ -52,12 +52,12 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null) throw new SemanticException("%s id already declared");
         if (SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.id) != null) throw new SemanticException("%s is a class/ array/string/int");
         if (this.id.equals("void")) throw new SemanticException("%s is void");
-        /* If we are not in a function will return false (good)
-           If we are in a function will return - null if there is no variable name id
-                                                type with name id*/
-        if(SYMBOL_TABLE.getInstance().findInInheritance(this.id) != null)
-        {
-            throw new SemanticException("%s declared in parent class");
+
+        /* If we are not in a class check there is no variable (CFIELD) with this name in parents classes */
+        if (SYMBOL_TABLE.getInstance().getCurrentScopeType == ScopeTypeEnum.CLASS){
+            if (SYMBOL_TABLE.getInstance().findInInheritance(this.id) != null) {
+                throw new SemanticException("%s declared in parent class");
+            }
         }
 
         /* Check: type can be instanced (is in AST_TYPE) */
