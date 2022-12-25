@@ -57,8 +57,14 @@ public class AST_STMT_RET extends AST_STMT {
         return null;
     }
 
+    /* In case the return statment is not empty, we need to check if the exp matches the return type:
+    *   a. expectedReturnType shouldn't be void because we return something
+    *   b. expectedReturnType should be either string, int, a class, an array:
+    *       * class should allow inheritance
+    *       * array should be checked to be the same array (TYPE_ARRAY can be instanced)
+    *       all should be checked to match the actual return type  */
     private TYPE SemantMeCaseNonVoid(TYPE expectedReturnType) {
-        if (expectedReturnType.equals(TYPE_VOID.getInstance())) {
+        if (expectedReturnType instanceof TYPE_VOID) {
             throw new SemanticException(
                     "Returns something when expected return type is void",
                     this
@@ -66,15 +72,6 @@ public class AST_STMT_RET extends AST_STMT {
         }
 
         TYPE returnType = exp.SemantMe();
-        /* Both ints */
-        if (expectedReturnType.equals(TYPE_INT.getInstance()) && returnType.equals(TYPE_INT.getInstance())) {
-            return null;
-        }
-
-        /* Both strings */
-        if (expectedReturnType.equals(TYPE_STRING.getInstance()) && returnType.equals(TYPE_STRING.getInstance())) {
-            return null;
-        }
 
         /* Both classes */
         if (expectedReturnType instanceof TYPE_CLASS && returnType instanceof TYPE_CLASS &&
@@ -84,7 +81,13 @@ public class AST_STMT_RET extends AST_STMT {
 
         /* Both arrays */
         if (expectedReturnType instanceof TYPE_ARRAY && returnType instanceof TYPE_ARRAY &&
-                (returnType).equals((expectedReturnType)) {
+                returnType.equals(expectedReturnType)) {
+            return null;
+        }
+
+        /* Only cases left for the expected return type are string or int,
+        just need to make sure the actual return type matches them */
+        if (returnType.getClass().equals(expectedReturnType.getClass())) {
             return null;
         }
 

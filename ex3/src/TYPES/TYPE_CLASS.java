@@ -25,16 +25,16 @@ public class TYPE_CLASS extends TYPE
 	}
 
 	/********************************************************/
-	/* a.inheritsFrom(b) returns true iff a inherits from b */
+	/* a.inheritsFrom(b) returns true iff a inherits from b (or if a is b) */
 	/********************************************************/
 	public boolean inheritsFrom(TYPE_CLASS c) {
-		TYPE_CLASS currFather = this.father;
+		TYPE_CLASS curr = this;
 
-		while (currFather != null) {
-			if (currFather == c) {
+		while (curr != null) {
+			if (curr == c) {
 				return true;
 			}
-			currFather = currFather.father;
+			curr = curr.father;
 		}
 
 		return false;
