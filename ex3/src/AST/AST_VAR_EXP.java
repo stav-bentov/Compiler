@@ -47,8 +47,9 @@ public class AST_VAR_EXP extends AST_VAR
 	}
 
 	public TYPE SemantMe() throws SemanticException{
-		//checking if type_var is an array
+		//is var is not of TYPE_VAR SemantMe will throw an error
 		TYPE_VAR type_var = this.var.SemantMe();
+		//checking if type_var is an array
 		if(!type_var.type.isArray()){
 			throw new SemanticException(String.format("%s is not an array!", this.type_var.name))
 		}
