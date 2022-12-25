@@ -100,7 +100,7 @@ public class AST_EXP_ID extends AST_EXP
 	private void CallToFuncMatchesFunc(TYPE_FUNCTION func) {
 		/* Check if parameters match expected parameters */
 		TYPE_LIST params = (TYPE_LIST) this.l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
-		if (!func.params.validateGivenParam(params)) {
+		if (!func.params.equalsForValidatingGivenParams(params)) {
 			throw new SemanticException("Parameters received do not match expected parameters", this);
 		}
 	}
