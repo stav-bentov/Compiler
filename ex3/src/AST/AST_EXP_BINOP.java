@@ -101,10 +101,11 @@ public class AST_EXP_BINOP extends AST_EXP
 		TYPE left_type = this.left.SemantMe();
 		TYPE right_type = this.right.SemantMe();
 
+		boolean are_same_type = left_type.getClass().equals(right_type.getClass());
 		switch (this.sOP){
 			case "+":
 				//+ can only occur between two ints or two strings. gonna check if they are of the same class first
-				if(!left_type.getClass().equals(right_type.getClass()))
+				if(!are_same_type)
 					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name));
 
 				//here they are of the same class. we check if left_type is eiter TYPE_INT or TYPE_STRING. if not, then error.
@@ -121,7 +122,7 @@ public class AST_EXP_BINOP extends AST_EXP
 					throw new SemanticException("cannot check equality nil with something that is not class or array");
 
 				//equality testing must happen between two objects of the same type
-				if(!left_type.getClass().equals(right_type.getClass()))
+				if(!are_same_type)
 					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name));
 
 				//if the two objects are classes, we need to check that they are percisly the same class, or inherit from one another
