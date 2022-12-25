@@ -1,6 +1,6 @@
 package AST;
 
-import src.TYPES.TYPE_VAR;
+import TYPES.*;
 
 public class AST_VAR_ID extends AST_VAR
 {
