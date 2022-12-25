@@ -54,14 +54,17 @@ public class AST_EXP_ID extends AST_EXP
 		if (l != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, l.SerialNumber);
 	}
 
+	//calling a function
 	public TYPE SemantMe() throws SemanticException {
 		TYPE typeFound;
 
-		/* Find type */
+		//find type - assuming this is a method of class. either method of the current class scope, or a method of already defined class.
 		if (var == null) {
 			typeFound = SYMBOL_TABLE.getInstance().findInInheritance(this.id);
 		} else {
+			//if var != null then this is a method of a class. we get the class, and then find the method in its inheritance tree
 			TYPE typeOfVar = var.SemantMe().type;
+			//if this is not a class, then this.id does not represent a method, and therefore error
 			if (!typeOfVar.isClass()) {
 				throw new SemanticException("This type is not a class and therefore does not have class methods", this);
 			}
