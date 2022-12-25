@@ -91,15 +91,15 @@ public class AST_EXP_ID extends AST_EXP
 				// because this type wouldn't have been inserted to this symbol table in the first place
 				throw new SemanticException("This function does not exist in an open scope", this);
 			}
-
-			CallToFuncMatchesFunc((TYPE_FUNCTION)typeFound); // We've already made sure typeFound is of TYPE_FUNC
-			return ((TYPE_FUNCTION) typeFound).returnType;
 		}
+
+		CallToFuncMatchesFunc((TYPE_FUNCTION)typeFound); // We've already made sure typeFound is of TYPE_FUNC
+		return ((TYPE_FUNCTION) typeFound).returnType;
 	}
 
 	private void CallToFuncMatchesFunc(TYPE_FUNCTION func) {
 		/* Check if parameters match expected parameters */
-		TYPE_LIST params = (TYPE_LIST) l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
+		TYPE_LIST params = (TYPE_LIST) this.l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
 		if (!func.params.validateGivenParam(params)) {
 			throw new SemanticException("Parameters received do not match expected parameters", this);
 		}
