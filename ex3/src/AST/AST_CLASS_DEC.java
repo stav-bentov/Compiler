@@ -74,14 +74,14 @@ public class AST_CLASS_DEC extends AST_Node{
             if(father == null){
                 throw new SemanticException(String.format("no such class %s therefore cannot be extended by %s", this.extendsName, this.className));
             }
-            if(father != null || !father.isClass()) {
+            if(!father.isClass()) {
                 throw new SemanticException(String.format("%s is not a class and cannot be extended by %s", this.extendsName, this.className));
             }
 
             type_class.father = father;
         }
 
-        SYMBOL_TABLE.getInstance().enter(className, type_class);
+        SYMBOL_TABLE.getInstance().enter(className, type_class, true);
         SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, type_class);
 
         //SemantMe will check if illegal inheritance or duplicated names in the same scope
