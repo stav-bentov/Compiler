@@ -116,8 +116,8 @@ public class AST_EXP_BINOP extends AST_EXP
 
 			case "=":
 				//only classes and arrays can be compared to NIL
-				if(left_type instanceof TYPE_NIL && !(right_type instanceof TYPE_CLASS || right_type instanceof TYPE_ARRAY)
-				|| right_type instanceof TYPE_NIL && !(left_type instanceof TYPE_CLASS || left_type instanceof TYPE_ARRAY)
+				if((left_type instanceof TYPE_NIL && !(right_type instanceof TYPE_CLASS || right_type instanceof TYPE_ARRAY))
+				|| (right_type instanceof TYPE_NIL && !(left_type instanceof TYPE_CLASS || left_type instanceof TYPE_ARRAY)))
 					throw new SemanticException("cannot check equality nil with something that is not class or array");
 
 				//equality testing must happen between two objects of the same type
