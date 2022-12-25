@@ -132,7 +132,7 @@ public class AST_EXP_BINOP extends AST_EXP
 
 				//arrays have to be percisely the same. using equals between them to check they are the same array
 				if(left_type instanceof TYPE_ARRAY){
-					if(!left_type.equals(right_type))
+					if(!left_type == right_type)
 						throw new SemanticException(String.format("cannot check equality between two different arrays: %s and %s")
 								, left_type.name, right_type.name)
 				}
