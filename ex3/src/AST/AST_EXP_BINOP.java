@@ -5,13 +5,12 @@ public class AST_EXP_BINOP extends AST_EXP
 	int OP;
 	public AST_EXP left;
 	public AST_EXP right;
-	
+	public String sOP;
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
 	public AST_EXP_BINOP(AST_EXP left, AST_EXP right, int OP) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
-		String sOP="";
 		switch(OP) {
 			case 0:
 				sOP = "+";
@@ -45,7 +44,6 @@ public class AST_EXP_BINOP extends AST_EXP
 	/* The printing message for a binop exp AST node */
 	/*************************************************/
 	public void PrintMe() {
-		String sOP="";
 		
 		/*********************************/
 		/* CONVERT OP to a printable sOP */
@@ -96,5 +94,67 @@ public class AST_EXP_BINOP extends AST_EXP
 		/****************************************/
 		if (left  != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,left.SerialNumber);
 		if (right != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,right.SerialNumber);
+	}
+
+	public TYPE SemantMe() throws SemanticException{
+		//figuring out the types of left and right using their SemantMe
+		TYPE left_type = this.left.SemantMe();
+		TYPE right_type = this.right.SemantMe();
+
+		switch (this.sOP){
+			case "+":
+				//+ can only occur between two ints or two strings. gonna check if they are of the same class first
+				if(!left_type.getClass().equals(right_type.getClass()))
+					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name));
+
+				//here they are of the same class. we check if left_type is eiter TYPE_INT or TYPE_STRING. if not, then error.
+				if(!(left_type instanceof TYPE_INT) && !(left_type instanceof TYPE_STRING))
+					throw new SemanticException("can only perform + between two integers or two strings");
+
+				//so left_type is the type we wanna return. if he is TYPE_INT we wil return TYPE_INT and same for TYPE_STRING
+				return TYPE_INT.getInstance();
+
+			case "=":
+				//only classes and arrays can be compared to NIL
+				if(left_type instanceof TYPE_NIL && !(right_type instanceof TYPE_CLASS || right_type instanceof TYPE_ARRAY)
+				|| right_type instanceof TYPE_NIL && !(left_type instanceof TYPE_CLASS || left_type instanceof TYPE_ARRAY)
+					throw new SemanticException("cannot check equality nil with something that is not class or array");
+
+				//equality testing must happen between two objects of the same type
+				if(!left_type.getClass().equals(right_type.getClass()))
+					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name));
+
+				//if the two objects are classes, we need to check that they are percisly the same class, or inherit from one another
+				if(left_type instanceof TYPE_CLASS){
+					if(!left_type.InheritsFrom(right_type) && !right_type.InheritsFrom(left_type))
+						throw new SemanticException("cannot check equality of two foriegn classes");
+				}
+
+				//arrays have to be percisely the same. using equals between them to check they are the same array
+				if(left_type instanceof TYPE_ARRAY){
+					if(!left_type.equals(right_type))
+						throw new SemanticException(String.format("cannot check equality between two different arrays: %s and %s")
+								, left_type.name, right_type.name)
+				}
+
+				//equality always returns TYPE_INT
+				return TYPE_INT.getInstance();
+
+			default:
+				//the rest of binary operations (-, *, /, >, <) can happen only between two ints
+				if(!(left_type instanceof TYPE_INT) || !(right_type instanceof TYPE_INT))
+					throw new SemanticException(String.format("cannot perform binary operation %s: %s and %s are not both ints"
+							, sOP, left_type.name, right_type.name));
+
+				//check that we do not divide by a constant 0
+				if(sOP.equals("/") && right_type instanceof AST_EXP_OPT && (AST_EXP_OPT) right_type.i == 0)
+					throw new SemanticException(String.format("cannot perform division! %s is divided by 0!", left_type.name));
+				return TYPE_INT.getInstance();
+
+
+
+
+		}
+
 	}
 }
