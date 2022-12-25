@@ -72,8 +72,7 @@ public class TYPE_LIST extends TYPE
 			else if (paramsPointer.head instanceof TYPE_ARRAY) {
 				/* class array be null but if not- check if it's same array*/
 				if (!(variablesPointer.head instanceof TYPE_NIL)) {
-					if (!(paramsPointer.head.getClass().equals(variablesPointer.head.getClass()))) return false;
-					if (!(paramsPointer.head.equals(variablesPointer.head))) return false;
+					if (paramsPointer.head != variablesPointer.head) return false;
 				}
 			}
 			else {

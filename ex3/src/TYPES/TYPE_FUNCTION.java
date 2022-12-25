@@ -23,6 +23,9 @@ public class TYPE_FUNCTION extends TYPE
 	}
 
 	@Override
+    /* Receives Object o
+       If it's not from TYPE_FUNCTION- returns false
+       else- Checks if it has the same signature (same returned type, arguments types and names*/
 	public boolean equals(Object o)
 	{
 		if (!(o instanceof TYPE_FUNCTION)) return false;
@@ -44,7 +47,8 @@ public class TYPE_FUNCTION extends TYPE
 			/* Same inst_type of return- need to check extra in case of array (array of arrays or array of classes) or class*/
 			if (this.returnType instanceof TYPE_ARRAY || this.returnType instanceof TYPE_CLASS)
 			{
-				if (!(this.returnType.equals(compered_func.returnType))) return false;
+				/* Points to the SAME TYPE_CLASS or TYPE_ARRAY object*/
+				if (this.returnType != compered_func.returnType) return false;
 				/*TODO: check if the types can be inherited*/
 			}
 			return true;

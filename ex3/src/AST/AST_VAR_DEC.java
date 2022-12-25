@@ -155,6 +155,10 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                     return false;
             }
         }
+        else
+        {
+            return requiredType == assignedType;
+        }
         return true;
     }
 }

@@ -19,6 +19,10 @@ public class TYPE_ARRAY extends TYPE{
     public boolean isArray(){ return true;}
 
     @Override
+    /* TODO: I think it might be redundant
+       Receives Object
+       If it's not from TYPE_ARRAY- returns false
+       else- Checks the type *types* (will return true for different arrays but from same types*/
     public boolean equals(Object o)
     {
         if (!(o instanceof TYPE_ARRAY)) return false;
