@@ -1,6 +1,6 @@
 package AST;
-
 import TYPES.*;
+import SYMBOL_TABLE.*;
 
 public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public AST_TYPE type;

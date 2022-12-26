@@ -1,7 +1,6 @@
 package AST;
-
-import TYPES.TYPE;
-import TYPES.TYPE_VOID;
+import TYPES.*;
+import SYMBOL_TABLE.*;
 
 public class AST_ARGUMENT extends AST_Node{
     public AST_TYPE type;
@@ -44,7 +43,7 @@ public class AST_ARGUMENT extends AST_Node{
         /* Checking that a variable can be created from type made in SemantMe() */
         TYPE_VAR varType = new TYPE_VAR(this.id, this.type.SemantMe());
         /* Assumption: the arguments are the first to get in the symbol table then if there is a duplicate name- will find it*/
-        if (SYMBOL_TABLE.getInstance().findInLastScope(this.id))
+        if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null)
         {
             throw new SemanticException("There are at least 2 parameters named: %s");
         }

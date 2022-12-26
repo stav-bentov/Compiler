@@ -1,6 +1,6 @@
 package AST;
-
-import TYPES.TYPE;
+import SYMBOL_TABLE.*;
+import TYPES.*;
 
 public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
     public T dec;

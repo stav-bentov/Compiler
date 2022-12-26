@@ -1,7 +1,6 @@
 package AST;
-import TYPES.*
-import SYMBOL_TABLE.*
-import src.AST.AST_LIST;
+import TYPES.*;
+import SYMBOL_TABLE.*;
 
 public class AST_CLASS_DEC extends AST_Node{
     public String className;

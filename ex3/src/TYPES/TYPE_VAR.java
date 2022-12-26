@@ -1,4 +1,4 @@
-package src.TYPES;
+package TYPES;
 
 import jdk.nashorn.internal.ir.Symbol;
 

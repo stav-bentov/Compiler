@@ -1,7 +1,6 @@
 package AST;
-
-import TYPES.TYPE;
-import TYPES.TYPE_CLASS;
+import TYPES.*;
+import SYMBOL_TABLE.*;
 
 public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 {

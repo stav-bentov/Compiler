@@ -1,5 +1,6 @@
 package AST;
 import TYPES.*;
+import SYMBOL_TABLE.*;
 
 public class AST_TYPE extends AST_Node{
     public String type;

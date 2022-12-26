@@ -1,6 +1,5 @@
 package AST;
-
-import TYPES.TYPE;
+import TYPES.*;
 
 public class AST_DEC<T extends AST_Node> extends AST_Node
 {

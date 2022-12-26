@@ -1,6 +1,6 @@
 package AST;
-
-import TYPES.TYPE;
+import TYPES.*;
+import SYMBOL_TABLE.*;
 
 public class AST_STMT_VAR_DEC extends AST_STMT{
     public AST_VAR_DEC var;

@@ -1,10 +1,7 @@
 package AST;
+import TYPES.*;
+import SYMBOL_TABLE.*;
 
-import SYMBOL_TABLE.SYMBOL_TABLE;
-import TYPES.TYPE;
-import TYPES.TYPE_CLASS;
-import TYPES.TYPE_FUNCTION;
-import TYPES.TYPE_LIST;
 
 public class AST_STMT_ID extends AST_STMT{
     public AST_VAR var;

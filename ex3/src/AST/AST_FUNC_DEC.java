@@ -1,5 +1,6 @@
 package AST;
 import TYPES.*;
+import SYMBOL_TABLE.*;
 
 import java.util.HashSet;
 import java.util.Set;

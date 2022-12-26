@@ -1,4 +1,6 @@
 package AST;
+import TYPES.*;
+import SYMBOL_TABLE.*;
 
 public class AST_EXP_BINOP extends AST_EXP
 {
@@ -6,6 +8,7 @@ public class AST_EXP_BINOP extends AST_EXP
 	public AST_EXP left;
 	public AST_EXP right;
 	public String sOP;
+
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/

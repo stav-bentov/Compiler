@@ -1,8 +1,6 @@
 package AST;
 import TYPES.*;
 
-import TYPES.TYPE;
-
 public abstract class AST_Node
 {
 	/*******************************************/
