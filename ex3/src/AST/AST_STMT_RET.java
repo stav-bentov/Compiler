@@ -37,7 +37,7 @@ public class AST_STMT_RET extends AST_STMT {
     }
 
     @Override
-    public TYPE SemantMe() {
+    public TYPE SemantMe() throws SemanticException {
         TYPE expectedReturnType = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc()).returnType;
 
         if (exp == null) { // Returns nothing, return type should be void
@@ -47,8 +47,8 @@ public class AST_STMT_RET extends AST_STMT {
         return SemantMeCaseNonVoid(expectedReturnType);
     }
 
-    private TYPE SemantMeCaseVoid(TYPE expectedReturnType) {
-        if (expectedReturnType instanceof TYPE_VOID) {
+    private TYPE SemantMeCaseVoid(TYPE expectedReturnType) throws SemanticException {
+        if (!(expectedReturnType instanceof TYPE_VOID)) {
             throw new SemanticException(
                     "Returns nothing when expected return type isn't void",
                     this
@@ -63,7 +63,7 @@ public class AST_STMT_RET extends AST_STMT {
     *       * class should allow inheritance
     *       * array should be checked to be the same array (TYPE_ARRAY can be instanced)
     *       all should be checked to match the actual return type  */
-    private TYPE SemantMeCaseNonVoid(TYPE expectedReturnType) {
+    private TYPE SemantMeCaseNonVoid(TYPE expectedReturnType) throws SemanticException {
         if (expectedReturnType instanceof TYPE_VOID) {
             throw new SemanticException(
                     "Returns something when expected return type is void",
@@ -73,16 +73,32 @@ public class AST_STMT_RET extends AST_STMT {
 
         TYPE returnType = exp.SemantMe();
 
-        /* Both classes */
-        if (expectedReturnType instanceof TYPE_CLASS && returnType instanceof TYPE_CLASS &&
+        /* Returns a class */
+        if (expectedReturnType instanceof TYPE_CLASS) {
+            /* Inheritance is allowed */
+            if (returnType instanceof TYPE_CLASS &&
             ((TYPE_CLASS)returnType).inheritsFrom((TYPE_CLASS)expectedReturnType)) {
-            return null;
+                return null;
+            }
+
+            /* Nil is allowed */
+            if (returnType instanceof TYPE_NIL) {
+                return null;
+            }
         }
 
-        /* Both arrays */
-        if (expectedReturnType instanceof TYPE_ARRAY && returnType instanceof TYPE_ARRAY &&
-                returnType.equals(expectedReturnType)) {
-            return null;
+        /* Returns an array */
+        if (expectedReturnType instanceof TYPE_ARRAY) {
+            /* Same array */
+            if (returnType instanceof TYPE_ARRAY &&
+                returnType == expectedReturnType) {
+                return null;
+            }
+
+            /* Nil is allowed */
+            if (returnType instanceof TYPE_NIL) {
+                return null;
+            }
         }
 
         /* Only cases left for the expected return type are string or int,
