@@ -89,6 +89,6 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
                     this);
         }
 
-        return new TYPE_ARRAY(arrayMembersType, null);
+        return arrayMembersType;
     }
 }

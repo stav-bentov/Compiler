@@ -24,6 +24,21 @@ public class TYPE_CLASS extends TYPE
 		this.data_members = data_members;
 	}
 
+	/********************************************************/
+	/* a.inheritsFrom(b) returns true iff a inherits from b (or if a is b) */
+	/********************************************************/
+	public boolean inheritsFrom(TYPE_CLASS c) {
+		TYPE_CLASS curr = this;
+
+		while (curr != null) {
+			if (curr == c) {
+				return true;
+			}
+			curr = curr.father;
+		}
+
+		return false;
+	}
 	@Override
 	public boolean isClass(){ return true;}
 
