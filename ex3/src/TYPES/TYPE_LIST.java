@@ -27,19 +27,19 @@ public class TYPE_LIST extends TYPE
 
 		TYPE_LIST compared_pointer = (TYPE_LIST) o;
 		TYPE_LIST this_pointer = this;
-
-		while (this_pointer.head != null && compared_pointer.head != null)
+		while (this_pointer != null && compared_pointer != null)
 		{
 			TYPE currHeadType = ((TYPE_VAR) this_pointer.head).type;
 			TYPE comperedHeadType = ((TYPE_VAR) compared_pointer.head).type;
-			if(currHeadType != comperedHeadType)
+			if(currHeadType != comperedHeadType) {
 				return false;
+			}
 			this_pointer = this_pointer.tail;
 			compared_pointer = compared_pointer.tail;
 		}
 
 		/* Different lengths */
-		if (this_pointer.head != null || compared_pointer.head != null){
+		if (this_pointer != null || compared_pointer != null){
 			return false;
 		}
 		return true;
@@ -56,7 +56,7 @@ public class TYPE_LIST extends TYPE
 		TYPE_LIST variablesPointer = (TYPE_LIST) o;
 		TYPE_LIST paramsPointer = this;
 
-		while (paramsPointer.head != null && variablesPointer.head != null) {
+		while (paramsPointer != null && variablesPointer != null) {
 			TYPE currType = ((TYPE_VAR)paramsPointer.head).type;
 			if (currType instanceof TYPE_CLASS) {
 				/* class can be null but if not- check if it's same class or inherited*/
@@ -82,7 +82,7 @@ public class TYPE_LIST extends TYPE
 		}
 
 		/* Different lengths */
-		if (paramsPointer.head != null || variablesPointer.head != null){
+		if (paramsPointer != null || variablesPointer != null){
 			return false;
 		}
 		return true;
