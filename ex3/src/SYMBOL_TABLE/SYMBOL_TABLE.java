@@ -250,7 +250,7 @@ public class SYMBOL_TABLE
 		while (current_class != null)
 		{
 			TYPE_LIST list_pointer = current_class.data_members;
-			while (list_pointer.head != null)
+			while (list_pointer != null)
 			{
 				if (list_pointer.head.name.equals(name))
 				{

@@ -115,16 +115,18 @@ public class AST_FUNC_DEC extends AST_Node {
     {
         TYPE_CLASS fatherClass = ((TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass()).father;
         TYPE currType = SYMBOL_TABLE.getInstance().findInInheritance(name, fatherClass);
-        if (currType instanceof TYPE_FUNCTION) {
-            /* Different signatures- overload*/
-            if (!overrideMethod.equals(currType)) {
-                throw new SemanticException("Overload functions named: %s", this);
+        if (currType != null)
+        {
+            if (currType instanceof TYPE_FUNCTION) {
+                /* Different signatures- overload*/
+                if (!overrideMethod.equals(currType)) {
+                    throw new SemanticException("Overload functions named: %s", this);
+                }
+                return;
+            } else {
+                /* There is a variable with the same name in a parent class (and it's not a function) */
+                throw new SemanticException("Duplicated definitions named in parent's class", this);
             }
-            return;
-        } else {
-            /* There is a variable with the same name in a parent class (and it's not a function) */
-            throw new SemanticException("Duplicated definitions named in parent's class", this);
         }
-
     }
 }
