@@ -1,6 +1,5 @@
 package AST;
 import TYPES.*;
-import SYMBOL_TABLE.*;
 
 public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 {
@@ -60,7 +59,7 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 
 	@Override
 	public TYPE SemantMe() throws SemanticException {
-		TYPE varType = var.SemantMe().type;
+		TYPE varType = ((TYPE_VAR)var.SemantMe()).type;
 		TYPE expType = exp.SemantMe();
 
 		/* Class */
