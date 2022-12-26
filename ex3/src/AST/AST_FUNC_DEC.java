@@ -54,7 +54,7 @@ public class AST_FUNC_DEC extends AST_Node {
 
     public TYPE SemantMe() throws SemanticException
     {
-        boolean validName, isValidMethod, isValidFunction;
+        boolean validName, isMethod, isFunction;
         TYPE_FUNCTION currTypeFunc;
         ScopeTypeEnum scopeType;
         TYPE_LIST params = null;

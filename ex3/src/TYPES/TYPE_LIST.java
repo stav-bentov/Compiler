@@ -22,14 +22,18 @@ public class TYPE_LIST extends TYPE
 	public boolean equalsForComparingSignature(Object o)
 	{
 		/* Designate for comparing parameters list */
-		if (!(o instanceof TYPE_LIST)) return false;
+		if (!(o instanceof TYPE_LIST))
+			return false;
 
 		TYPE_LIST compared_pointer = (TYPE_LIST) o;
 		TYPE_LIST this_pointer = this;
 
 		while (this_pointer.head != null && compared_pointer.head != null)
 		{
-			if(((TYPE_VAR)this_pointer.head).type.getClass().equals(((TYPE_VAR)compared_pointer.head).type.getClass())) return false;
+			TYPE currHeadType = ((TYPE_VAR) this_pointer.head).type;
+			TYPE comperedHeadType = ((TYPE_VAR) compared_pointer.head).type;
+			if(currHeadType != comperedHeadType)
+				return false;
 			this_pointer = this_pointer.tail;
 			compared_pointer = compared_pointer.tail;
 		}
@@ -42,11 +46,12 @@ public class TYPE_LIST extends TYPE
 	}
 
 	/* Validate that the parameters given to function a is validate according to it's parameters types
-	* a is an argument's list (TYPE_VAR) , b is type's list (TYPE) (given from expsList), a.compareGivenParam(b) will return true if there is a match*/
+	* If A is an argument's list (TYPE_VAR) , B is type's list (TYPE) (given from expsList), A.compareGivenParam(B) will return true if there is a match*/
 	public boolean equalsForValidatingGivenParams(Object o)
 	{
 		/* Designate for comparing parameters list */
-		if (!(o instanceof TYPE_LIST)) return false;
+		if (!(o instanceof TYPE_LIST))
+			return false;
 
 		TYPE_LIST variablesPointer = (TYPE_LIST) o;
 		TYPE_LIST paramsPointer = this;
@@ -56,7 +61,6 @@ public class TYPE_LIST extends TYPE
 			if (currType instanceof TYPE_CLASS) {
 				/* class can be null but if not- check if it's same class or inherited*/
 				if (!(paramsPointer.head instanceof TYPE_NIL)) {
-					if(!(currType.getClass().equals(variablesPointer.head.getClass()))) return false;
 					if (currType != variablesPointer.head) {
 						if (!((TYPE_CLASS)variablesPointer.head).inheritsFrom(currType)) return false;
 					}
@@ -69,7 +73,8 @@ public class TYPE_LIST extends TYPE
 				}
 			}
 			else {
-				if(paramsPointer.head.getClass().equals(variablesPointer.head.getClass())) return false;
+				if(paramsPointer != variablesPointer.head)
+					return false;
 			}
 
 			variablesPointer = variablesPointer.tail;

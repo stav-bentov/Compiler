@@ -45,8 +45,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public TYPE SemantMe() throws SemanticException
     {
         /* Check: 1. No other variable with this name in current scope
-                  2. ASSUMPTION!!! If we are in class-  no variable with this name in parent class
-         */
+                  2. If we are in class-  no variable with this name in parent class*/
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null) throw new SemanticException("%s id already declared");
 
         /* If we are not in a class check there is no variable (CFIELD) with this name in parents classes */
@@ -57,17 +56,18 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         }
 
         /* Check: type can be instanced (is in AST_TYPE) but not VOID */
-        /* Compare types if there is an assignment
-        *  4 options: 1. assign Class / Class variable
-        *             2. assign Array
-        *             3. assign int
-        *             4. assign string
-        * BUT- if it's vardec in CFIELD(we are in a class), can only assign string, int, null*/
         TYPE typeToAssign = this.type.SemantMe();
         if (typeToAssign instanceof TYPE_VOID)
         {
             throw new SemanticException("%s declared in parent class");
         }
+
+        /*  Compare types if there is an assignment
+         *  4 options: 1. assign class variable
+         *             2. assign array variable
+         *             3. assign int
+         *             4. assign string
+         * BUT- if it's vardec in CFIELD(we are in a class), can only assign string, int, null*/
         if (this.exp != null)
         {
             TYPE expType = this.exp.SemantMe();
@@ -76,6 +76,8 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             {
                 if (!(this.exp instanceof AST_EXP_OPT))
                     throw new SemanticException("Data member inside a class can be initialized only with a constant value");
+
+                /* TYPE_NIL only on TYPE_CLASS or TYPE_ARRAY*/
                 if (expType instanceof TYPE_NIL)
                 {
                     if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY))
@@ -88,38 +90,21 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 if (expType instanceof TYPE_NIL)
                 {
                     /* Only variables of arrays and classes can be defined with null expression */
-                    if (!(typeToAssign instanceof TYPE_CLASS) && !(typeToAssign instanceof TYPE_ARRAY))
+                    if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY))
                         throw new SemanticException("Assign types doesnt match (wrong classes)");
                     /* TODO: Update array size to 0?*/
                 }
                 else
                 {
-                    if (typeToAssign instanceof TYPE_ARRAY)
+                    if (typeToAssign instanceof TYPE_CLASS)
                     {
-                        /* check if it's an array of arrays/ arrays of classes and if it's match*/
-                        if(!compareTypeArrays((TYPE_ARRAY) typeToAssign, expType))
-                        {
+                        if (!((TYPE_CLASS) expType).inheritsFrom(typeToAssign))
                             throw new SemanticException("Assign types doesnt match (wrong classes)");
-                        }
-
-                        if (this.exp instanceof AST_NEW_EXP)
-                        {/* a size of an array is given*/
-                            /*TODO: should I take care of that??*/
-                        }
-                    }
-                    else if (typeToAssign instanceof TYPE_CLASS)
-                    {
-                        if (!typeToAssign.equals(expType))
-                        {
-                            /* Make sure expType inherited from typeToAssign */
-                            if (!((TYPE_CLASS) expType).inheritsFrom(typeToAssign))
-                                throw new SemanticException("Assign types doesnt match (wrong classes)");
-                        }
                     }
                     else
                     {
-                        /* Cases of int/ string*/
-                        if(!(typeToAssign.getClass().equals(expType.getClass())))
+                        /* Cases of int/ string/ array*/
+                        if(typeToAssign != expType)
                         {
                             throw new SemanticException("Assign types doesnt match (wrong classes)");
                         }
@@ -131,27 +116,6 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         TYPE_VAR currVar = new TYPE_VAR(this.id, typeToAssign);
         SYMBOL_TABLE.getInstance().enter(this.id, currVar, false);
         return currVar;
-    }
-
-    /* Receives the array that the assignment is made on c
-       Check the types of the expression that is assigned*/
-    public boolean compareTypeArrays(TYPE_ARRAY arrayToAssign, TYPE assignedType)
-    {
-        TYPE requiredType = arrayToAssign.arrayType;
-        if (!(requiredType.getClass().equals(assignedType.getClass())))
-            return false;
-        if (requiredType instanceof TYPE_CLASS)
-        {
-            /*Check inheritance
-             Make sure assignedType inherited from requiredType */
-            if (!((TYPE_CLASS) assignedType).inheritsFrom(requiredType))
-                return false;
-        }
-        else
-        {
-            return requiredType == assignedType;
-        }
-        return true;
     }
 }
 
