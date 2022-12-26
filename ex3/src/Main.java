@@ -1,9 +1,8 @@
-   
+
 import java.io.*;
 import java.io.PrintWriter;
 import java_cup.runtime.Symbol;
 import AST.*;
-import TYPES.*;
 
 public class Main
 {
@@ -12,12 +11,13 @@ public class Main
 		Lexer l;
 		Parser p;
 		Symbol s;
-		AST_DEC_LIST AST;
+		AST_LIST<AST_STMT> AST;
 		FileReader file_reader;
 		PrintWriter file_writer;
 		String inputFilename = argv[0];
 		String outputFilename = argv[1];
-		
+		String outputText = "";
+
 		try
 		{
 			/********************************/
@@ -29,48 +29,54 @@ public class Main
 			/* [2] Initialize a file writer */
 			/********************************/
 			file_writer = new PrintWriter(outputFilename);
-			
-			/******************************/
-			/* [3] Initialize a new lexer */
-			/******************************/
-			l = new Lexer(file_reader);
-			
-			/*******************************/
-			/* [4] Initialize a new parser */
-			/*******************************/
-			p = new Parser(l);
 
-			/***********************************/
-			/* [5] 3 ... 2 ... 1 ... Parse !!! */
-			/***********************************/
-			AST = (AST_DEC_LIST) p.parse().value;
-			
-			/*************************/
-			/* [6] Print the AST ... */
-			/*************************/
-			AST.PrintMe();
+			try{
+				/******************************/
+				/* [3] Initialize a new lexer */
+				/******************************/
+				l = new Lexer(file_reader);
 
-			/**************************/
-			/* [7] Semant the AST ... */
-			/**************************/
-			AST.SemantMe();
-			
-			/*************************/
-			/* [8] Close output file */
-			/*************************/
+				/*******************************/
+				/* [4] Initialize a new parser */
+				/*******************************/
+				p = new Parser(l, outputFilename);
+
+				/***********************************/
+				/* [5] 3 ... 2 ... 1 ... Parse !!! */
+				/***********************************/
+				AST = (AST_LIST<AST_STMT>) p.parse().value;
+
+				/*************************/
+				/* [6] Print the AST ... */
+				/*************************/
+				AST.PrintMe();
+
+				System.out.println("SEMANTME ==================================================================================================");
+
+				/**************************/
+				/* [7] Semant the AST ... */
+				/**************************/
+				AST.SemantMe();
+				System.out.println("DONE SEMANTME ==================================================================================================");
+
+				/*************************************/
+				/* [8] Finalize AST GRAPHIZ DOT file */
+				/*************************************/
+				AST_GRAPHVIZ.getInstance().finalizeFile();
+
+				file_writer.write("OK");
+			}
+			catch (Error e)
+			{
+				file_writer.write("ERROR");
+			}
 			file_writer.close();
 
-			/*************************************/
-			/* [9] Finalize AST GRAPHIZ DOT file */
-			/*************************************/
-			AST_GRAPHVIZ.getInstance().finalizeFile();			
-    	}
-			     
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 }
-
 

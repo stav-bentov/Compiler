@@ -63,7 +63,11 @@ public class SYMBOL_TABLE
 		/**************************************************************************/
 		/* [3] Prepare a new symbol table entry with name, type, next and prevtop */
 		/**************************************************************************/
-		SYMBOL_TABLE_ENTRY e = new SYMBOL_TABLE_ENTRY(name, t, hashValue, next, top, top_index++, canBeInstanced, current_scope_boundary.scope_type_enum);
+		SYMBOL_TABLE_ENTRY e;
+		if (this.current_scope_boundary != null)
+			 e = new SYMBOL_TABLE_ENTRY(name, t, hashValue, next, top, top_index++, canBeInstanced, current_scope_boundary.scope_type_enum);
+		else
+			e = new SYMBOL_TABLE_ENTRY(name, t, hashValue, next, top, top_index++, canBeInstanced, ScopeTypeEnum.GLOBAL);
 
 		/**********************************************/
 		/* [4] Update the top of the symbol table ... */
@@ -379,6 +383,7 @@ public class SYMBOL_TABLE
 			/* [0] The instance itself ... */
 			/*******************************/
 			instance = new SYMBOL_TABLE();
+
 			instance.beginScope(ScopeTypeEnum.GLOBAL, null);
 
 			/*****************************************/
