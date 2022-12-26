@@ -68,7 +68,7 @@ public class Main
 			}
 
 			catch (SemanticException e) {
-				file_writer.write(e.node.line);
+				file_writer.write(String.format("ERROR(%d)", e.node.line));
 			}
 
 			catch (Error e)

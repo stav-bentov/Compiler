@@ -57,6 +57,7 @@ public class AST_FUNC_DEC extends AST_Node {
 
     public TYPE SemantMe() throws SemanticException
     {
+        System.out.println("in function");
         boolean validName, isMethod, isFunction;
         TYPE_FUNCTION currTypeFunc;
         ScopeTypeEnum scopeType;
@@ -106,26 +107,30 @@ public class AST_FUNC_DEC extends AST_Node {
                 this.stmtList.SemantMe();
 
             SYMBOL_TABLE.getInstance().endScope();
+            System.out.println("end function");
             return currTypeFunc;
         }
         throw new SemanticException(this);
     }
 
-    /* Recieves name of the given new function and the function itself
+    /* Receives name of the given new function and the function itself
        Throw an error if there is an overloading or a Cfield with this name*/
     public void isValidMethod(String name, TYPE_FUNCTION overrideMethod) throws SemanticException
     {
         TYPE_CLASS fatherClass = ((TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass()).father;
         TYPE currType = SYMBOL_TABLE.getInstance().findInInheritance(name, fatherClass);
-        if (currType instanceof TYPE_FUNCTION) {
-            /* Different signatures- overload*/
-            if (!overrideMethod.equals(currType)) {
+        if (currType != null)
+        {
+            if (currType instanceof TYPE_FUNCTION) {
+                /* Different signatures- overload*/
+                if (!overrideMethod.equals(currType)) {
+                    throw new SemanticException(this);
+                }
+                return;
+            } else {
+                /* There is a variable with the same name in a parent class (and it's not a function) */
                 throw new SemanticException(this);
             }
-            return;
-        } else {
-            /* There is a variable with the same name in a parent class (and it's not a function) */
-            throw new SemanticException(this);
         }
 
     }
