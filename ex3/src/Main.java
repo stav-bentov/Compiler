@@ -66,6 +66,11 @@ public class Main
 
 				file_writer.write("OK");
 			}
+
+			catch (SemanticException e) {
+				file_writer.write(e.node.line);
+			}
+
 			catch (Error e)
 			{
 				file_writer.write("ERROR");

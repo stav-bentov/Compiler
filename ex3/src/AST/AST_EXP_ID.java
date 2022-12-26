@@ -11,7 +11,7 @@ public class AST_EXP_ID extends AST_EXP
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_ID(String id, AST_VAR var, AST_LIST<AST_EXP> l) {
+	public AST_EXP_ID(String id, AST_VAR var, AST_LIST<AST_EXP> l, int line) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		if (var != null && l != null)
 			System.out.printf("====================== exp -> var DOT ID(%s)([commaExpList])", id);
@@ -24,6 +24,7 @@ public class AST_EXP_ID extends AST_EXP
 		this.id = id;
 		this.var = var;
 		this.l = l;
+		this.line = line;
 	}
 	
 	/***********************************************/
@@ -70,7 +71,7 @@ public class AST_EXP_ID extends AST_EXP
 
 			//if typeOfVar is not a class, then this.id does not represent a method, and therefore error
 			if (!typeOfVar.isClass()) {
-				throw new SemanticException("This type is not a class and therefore does not have class methods", this);
+				throw new SemanticException(this);
 			}
 
 			TYPE_CLASS typeClassOfVar = (TYPE_CLASS)typeOfVar;
@@ -86,13 +87,13 @@ public class AST_EXP_ID extends AST_EXP
 			/* Check if it is still not found */
 			if (typeFound == null) {
 				/* Now it really does not exist */
-				throw new SemanticException("Function does not exist", this);
+				throw new SemanticException(this);
 			}
 
 			if (!(typeFound instanceof TYPE_FUNCTION)) {
 				// There is no way a function with this name exists,
 				// because this type wouldn't have been inserted to this symbol table in the first place
-				throw new SemanticException("This function does not exist in an open scope", this);
+				throw new SemanticException(this);
 			}
 		}
 
@@ -104,7 +105,7 @@ public class AST_EXP_ID extends AST_EXP
 		/* Check if parameters match expected parameters */
 		TYPE_LIST params = (TYPE_LIST) this.l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
 		if (!func.params.equalsForValidatingGivenParams(params)) {
-			throw new SemanticException("Parameters received do not match expected parameters", this);
+			throw new SemanticException(this);
 		}
 	}
 }

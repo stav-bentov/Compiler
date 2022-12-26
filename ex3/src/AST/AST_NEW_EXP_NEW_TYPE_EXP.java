@@ -6,7 +6,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
     public AST_TYPE type;
     public AST_EXP exp;
 
-    public AST_NEW_EXP_NEW_TYPE_EXP(AST_TYPE type, AST_EXP exp) {
+    public AST_NEW_EXP_NEW_TYPE_EXP(AST_TYPE type, AST_EXP exp, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
         String addedExp = "";
         if (exp != null) {
@@ -16,6 +16,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         System.out.print(deriveRule);
         this.type = type;
         this.exp = exp;
+        this.line = line;
     }
 
     public void PrintMe() {
@@ -44,10 +45,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
 
         /* Make sure instanceType is not void */
         if (!(instanceType instanceof TYPE_VOID)) {
-            throw new SemanticException(
-                    "Cannot create instances of type void",
-                    this
-            );
+            throw new SemanticException(this);
         }
 
         /* New instance of an array */
@@ -61,9 +59,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         }
 
         else {
-            throw new SemanticException(
-                    "Cannot create instances of this type",
-                    this);
+            throw new SemanticException(this);
         }
     }
 
@@ -76,17 +72,13 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
             AST_EXP_OPT constExp = (AST_EXP_OPT) exp;
 
             if (!(constExp.opt.equals("INT") && constExp.i > 0)) {
-                throw new SemanticException(
-                        "Allocating arrays with the new operator, when done with a constant, must be greater then zero",
-                        this);
+                throw new SemanticException(this);
             }
         }
 
         /* Check if the expression evaluates to an integer */
         if (!(expType instanceof TYPE_INT)) {
-            throw new SemanticException(
-                    "Allocating arrays with the new operator must be done with an integral size",
-                    this);
+            throw new SemanticException(this);
         }
 
         return arrayMembersType;

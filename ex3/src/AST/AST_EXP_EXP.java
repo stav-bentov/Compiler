@@ -9,10 +9,11 @@ public class AST_EXP_EXP extends AST_EXP
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_EXP(AST_EXP exp) {
+	public AST_EXP_EXP(AST_EXP exp, int line) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		System.out.print("====================== exp -> (exp)\n");
 		this.exp = exp;
+		this.line = line;
 	}
 
 	/***********************************************/

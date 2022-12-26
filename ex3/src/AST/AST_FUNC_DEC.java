@@ -11,21 +11,23 @@ public class AST_FUNC_DEC extends AST_Node {
     public AST_LIST<AST_ARGUMENT> argList;
     public AST_LIST<AST_STMT> stmtList;
 
-    public AST_FUNC_DEC(AST_TYPE type, String name, AST_LIST<AST_STMT> stmtList) {
+    public AST_FUNC_DEC(AST_TYPE type, String name, AST_LIST<AST_STMT> stmtList, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("====================== funcDec -> type(%s) ID(%s)() {stmtList}\n", type.type, name);
         this.return_type = type;
         this.name = name;
         this.stmtList = stmtList;
+        this.line = line;
     }
 
-    public AST_FUNC_DEC(AST_TYPE type, String name, AST_LIST<AST_ARGUMENT> argList, AST_LIST<AST_STMT> stmtList) {
+    public AST_FUNC_DEC(AST_TYPE type, String name, AST_LIST<AST_ARGUMENT> argList, AST_LIST<AST_STMT> stmtList, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("====================== funcDec -> type(%s) ID(%s)(argumentsList) {stmtList}\n", type.type, name);
         this.return_type = type;
         this.name = name;
         this.argList = argList;
         this.stmtList = stmtList;
+        this.line = line;
     }
 
     public void PrintMe() {
@@ -64,7 +66,7 @@ public class AST_FUNC_DEC extends AST_Node {
         scopeType = SYMBOL_TABLE.getInstance().getCurrentScopeType();
         if (scopeType != ScopeTypeEnum.CLASS && scopeType != ScopeTypeEnum.GLOBAL)
         {
-            throw new SemanticException("Function: %s is not declared in a Global scope or in a Class scope", this);
+            throw new SemanticException(this);
         }
 
         /*  CHECK: check if there are classes/ arrays with func name and func name != "string","int","void"
@@ -106,7 +108,7 @@ public class AST_FUNC_DEC extends AST_Node {
             SYMBOL_TABLE.getInstance().endScope();
             return currTypeFunc;
         }
-        throw new SemanticException("Duplicated definitions named: %s", this);
+        throw new SemanticException(this);
     }
 
     /* Recieves name of the given new function and the function itself
@@ -115,18 +117,16 @@ public class AST_FUNC_DEC extends AST_Node {
     {
         TYPE_CLASS fatherClass = ((TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass()).father;
         TYPE currType = SYMBOL_TABLE.getInstance().findInInheritance(name, fatherClass);
-        if (currType != null)
-        {
-            if (currType instanceof TYPE_FUNCTION) {
-                /* Different signatures- overload*/
-                if (!overrideMethod.equals(currType)) {
-                    throw new SemanticException("Overload functions named: %s", this);
-                }
-                return;
-            } else {
-                /* There is a variable with the same name in a parent class (and it's not a function) */
-                throw new SemanticException("Duplicated definitions named in parent's class", this);
+        if (currType instanceof TYPE_FUNCTION) {
+            /* Different signatures- overload*/
+            if (!overrideMethod.equals(currType)) {
+                throw new SemanticException(this);
             }
+            return;
+        } else {
+            /* There is a variable with the same name in a parent class (and it's not a function) */
+            throw new SemanticException(this);
         }
+
     }
 }
