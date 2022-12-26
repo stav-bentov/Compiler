@@ -49,10 +49,10 @@ public class AST_STMT_WHILE extends AST_STMT {
 			);
 		}
 
-		body.SemantMe();
-
 		/* Begin a new scope */
 		SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.WHILE, null);
+
+		body.SemantMe();
 
 		return null;
 	}
