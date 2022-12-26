@@ -1,5 +1,7 @@
 package AST;
 
+import TYPES.*;
+
 public class AST_VAR_ID extends AST_VAR
 {
 	public String id;
@@ -33,5 +35,14 @@ public class AST_VAR_ID extends AST_VAR
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
 			String.format("ID(%s)",id));
+	}
+
+	public TYPE SemantMe() throws SemanticException{
+		//simple case of var: id. get the var from symbol table according to the id, and then check that it is indeed a var
+		TYPE var = SYMBOL_TABLE.getInstance().find(this.id);
+		if(var == null || !var.isVar())
+			throw new SemanticException(String.format("%s referenced before declaration or is not a var!", this.id));
+
+		return type_var;
 	}
 }

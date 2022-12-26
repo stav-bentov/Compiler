@@ -11,7 +11,7 @@ public class TYPE_LIST extends TYPE
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public TYPE_LIST(TYPE head,TYPE_LIST tail)
+	public TYPE_LIST(TYPE head, TYPE_LIST tail)
 	{
 		this.head = head;
 		this.tail = tail;

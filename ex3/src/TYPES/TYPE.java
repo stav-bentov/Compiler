@@ -46,4 +46,5 @@ public abstract class TYPE
 		}
 		return false;
 	}
+	public boolean isVar(){ return false;}
 }
