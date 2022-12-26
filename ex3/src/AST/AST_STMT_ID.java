@@ -109,7 +109,7 @@ public class AST_STMT_ID extends AST_STMT{
     private void CallToFuncMatchesFunc(TYPE_FUNCTION func) {
         /* Check if parameters match expected parameters */
         TYPE_LIST params = (TYPE_LIST)l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
-        if (!params.equals(func.params)) {
+        if (!func.params.equalsForValidatingGivenParams(params)) {
             throw new SemanticException(
                     "Parameters received do not match expected parameters",
                     this
