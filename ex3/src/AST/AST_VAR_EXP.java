@@ -50,12 +50,14 @@ public class AST_VAR_EXP extends AST_VAR
 	}
 
 	public TYPE SemantMe() throws SemanticException{
-		//is var is not of TYPE_VAR SemantMe will throw an error
+		//If var is not of TYPE_VAR SemantMe will throw an error
 		TYPE_VAR type_var = (TYPE_VAR)var.SemantMe();
+
 		//checking if type_var is an array
 		if(!type_var.type.isArray()){
 			throw new SemanticException(this);
 		}
+		TYPE arrayType = ((TYPE_ARRAY)type_var.type).arrayType;
 
 		//checking if there was a legal access to the array
 		TYPE type_exp = this.exp.SemantMe();
@@ -73,6 +75,6 @@ public class AST_VAR_EXP extends AST_VAR
 
 		//type_var.type is TYPE_ARRAY - which should have a field called type - which is why type of array it is.
 		//after speaking to lilach we realized the name does not matter. returning name null.
-		return new TYPE_VAR(null, type_var.type);
+		return new TYPE_VAR(null, arrayType);
 	}
 }
