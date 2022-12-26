@@ -88,7 +88,7 @@ public class AST_STMT_RET extends AST_STMT {
         }
 
         /* Returns an array */
-        if (expectedReturnType instanceof TYPE_ARRAY) {
+        else if (expectedReturnType instanceof TYPE_ARRAY) {
             /* Same array */
             if (returnType instanceof TYPE_ARRAY &&
                 returnType == expectedReturnType) {
@@ -103,7 +103,7 @@ public class AST_STMT_RET extends AST_STMT {
 
         /* Only cases left for the expected return type are string or int,
         just need to make sure the actual return type matches them */
-        if (returnType.getClass().equals(expectedReturnType.getClass())) {
+        else if (returnType == expectedReturnType) {
             return null;
         }
 
