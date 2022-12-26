@@ -62,32 +62,7 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		TYPE varType = ((TYPE_VAR)var.SemantMe()).type;
 		TYPE expType = exp.SemantMe();
 
-		/* Class */
-		if (varType instanceof TYPE_CLASS) {
-			if (expType instanceof TYPE_NIL) { // Case of nil
-				return null;
-			}
-
-			else if (expType instanceof TYPE_CLASS &&  // Case of inheritance (also covers case of same class)
-					((TYPE_CLASS)expType).inheritsFrom((TYPE_CLASS)varType)) {
-				return null;
-			}
-		}
-
-		/* Array */
-		else if (varType instanceof TYPE_ARRAY) {
-			if (expType instanceof TYPE_NIL) { // Case of nil
-				return null;
-			}
-
-			else if (expType instanceof TYPE_ARRAY &&
-					expType == varType) {
-				return null;
-			}
-		}
-
-		/* Other */
-		else if (varType == expType) {
+		if (varType.checkAssign(expType)) {
 			return null;
 		}
 
