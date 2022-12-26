@@ -44,7 +44,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         TYPE instanceType = type.SemantMe(); // This is a legal type
 
         /* Make sure instanceType is not void */
-        if (!(instanceType instanceof TYPE_VOID)) {
+        if (instanceType instanceof TYPE_VOID) {
             throw new SemanticException(this);
         }
 
