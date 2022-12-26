@@ -1,5 +1,6 @@
 package AST;
 
+import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_INT;
 
@@ -40,14 +41,18 @@ public class AST_STMT_WHILE extends AST_STMT {
 	@Override
 	public TYPE SemantMe() throws SemanticException {
 		TYPE condType = cond.SemantMe();
-		body.SemantMe();
 
-		if (!condType.equals(TYPE_INT.getInstance())) {
+		if (condType instanceof TYPE_INT) {
 			throw new SemanticException(
 					"Condition is not an integer",
 					this
 			);
 		}
+
+		body.SemantMe();
+
+		/* Begin a new scope */
+		SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.WHILE, null);
 
 		return null;
 	}
