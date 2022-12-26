@@ -10,11 +10,12 @@ public class AST_VAR_VAR_ID extends AST_VAR
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_VAR_VAR_ID(AST_VAR var, String id) {
+	public AST_VAR_VAR_ID(AST_VAR var, String id, int line) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		System.out.format("====================== var -> var DOT ID(%s)\n",id);
 		this.var = var;
 		this.id = id;
+		this.line = line;
 	}
 
 	/*************************************************/
@@ -51,20 +52,20 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		TYPE_VAR first_var_type = (TYPE_VAR)var.SemantMe();
 		//first_var_type.type is the desired class
 		if(!first_var_type.type.isClass()){
-			throw new SemanticException(String.format("cannot access fields of %s - not a class"), this);
+			throw new SemanticException(this);
 		}
 
 		//find the field in the inheritance tree of the class
 		TYPE type = SYMBOL_TABLE.getInstance().findInInheritance(this.id, (TYPE_CLASS)first_var_type.type);
 		//if not found throw error
 		if(type == null){
-			throw new SemanticException(String.format("%s is not a field of %s or any of its ancsetors", this.id, first_var_type.type.name), this);
+			throw new SemanticException(this);
 		}
 
 		//type has to be a var or class (type is class in case of something like: house.room.size - so house.room is a class)
 		//type is a method is handled in AST_EXP_ID
 		if(!type.isVar() && !type.isClass()){
-			throw new SemanticException(String.format("property %s pf class %s is not a var or a class!", this.id, first_var_type.type.name), this);
+			throw new SemanticException(this);
 		}
 
 		//return the TYPE_VAR type
@@ -85,7 +86,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 //			head = head.tail;
 //		}
 //
-//		throw new SemanticException(String.format("%s not a data member of class %s"), id, first_var_type.name);
+//		throw new SemanticException(this);
 //
 //	}
 }

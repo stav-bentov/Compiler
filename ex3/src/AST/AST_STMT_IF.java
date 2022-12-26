@@ -9,11 +9,12 @@ public class AST_STMT_IF extends AST_STMT {
 	/*******************/
 	/*  CONSTRUCTOR(S) */
 	/*******************/
-	public AST_STMT_IF(AST_EXP cond, AST_LIST<AST_STMT> body) {
+	public AST_STMT_IF(AST_EXP cond, AST_LIST<AST_STMT> body, int line) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		System.out.print("====================== stmt -> IF (exp) {stmtList}\n");
 		this.cond = cond;
 		this.body = body;
+		this.line = line;
 	}
 
 	public void PrintMe()
@@ -46,10 +47,7 @@ public class AST_STMT_IF extends AST_STMT {
 		TYPE condType = cond.SemantMe();
 
 		if (condType instanceof TYPE_INT) {
-			throw new SemanticException(
-					"Condition is not an integer",
-					this
-			);
+			throw new SemanticException(this);
 		}
 
 		/* Begin a new scope */

@@ -10,7 +10,7 @@ public class AST_VAR_EXP extends AST_VAR
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_VAR_EXP(AST_VAR var, AST_EXP exp) {
+	public AST_VAR_EXP(AST_VAR var, AST_EXP exp, int line) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		if (exp == null)
 			System.out.format("====================== var -> var\n");
@@ -18,6 +18,7 @@ public class AST_VAR_EXP extends AST_VAR
 			System.out.format("====================== var -> var [exp]\n");
 		this.var = var;
 		this.exp = exp;
+		this.line = line;
 	}
 
 	/*************************************************/
@@ -53,21 +54,20 @@ public class AST_VAR_EXP extends AST_VAR
 		TYPE_VAR type_var = (TYPE_VAR)var.SemantMe();
 		//checking if type_var is an array
 		if(!type_var.type.isArray()){
-			throw new SemanticException(String.format("%s is not an array!", type_var.name), this);
+			throw new SemanticException(this);
 		}
 
 		//checking if there was a legal access to the array
 		TYPE type_exp = this.exp.SemantMe();
 		if(!(type_exp instanceof TYPE_INT)){
-			throw new SemanticException(String.format("%s is not an int - cannot put int inside brackets", type_exp.name), this);
+			throw new SemanticException(this);
 		}
 
 		//if this.exp is a constant integer, check if the given index to the array is non-negative
 		if(this.exp instanceof AST_EXP_OPT) {
 			AST_EXP_OPT constExp = (AST_EXP_OPT) this.exp;
 			if (!(constExp.opt.equals("INT"))) {
-				throw new SemanticException("Allocating arrays with the new operator, when done with a constant, must be greater then zero",
-						this);
+				throw new SemanticException(this);
 			}
 		}
 

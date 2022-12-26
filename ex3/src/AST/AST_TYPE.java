@@ -6,11 +6,12 @@ public class AST_TYPE extends AST_Node{
     public String type;
     public String idValue = "";
 
-    public AST_TYPE(String type, String idValue){
+    public AST_TYPE(String type, String idValue, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("====================== type -> ID(%s)\n", idValue);
         this.type = type;
         this.idValue = idValue;
+        this.line = line;
     }
 
     public AST_TYPE(String type){
@@ -46,7 +47,7 @@ public class AST_TYPE extends AST_Node{
         /* Check if it's a name of existing array or a class */
         /* Assumption- If we are in a class then the class is already entered to the symbol table*/
         if (!SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.idValue))
-            throw new SemanticException("Invalid type", this);
+            throw new SemanticException(this);
         /* typeCanBeInstanced(idValue) == true then this the type with this name is exist */
         return SYMBOL_TABLE.getInstance().find(this.idValue);
     }

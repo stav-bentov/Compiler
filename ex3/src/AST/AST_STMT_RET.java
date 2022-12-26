@@ -5,7 +5,7 @@ import SYMBOL_TABLE.*;
 public class AST_STMT_RET extends AST_STMT {
     public AST_EXP exp;
 
-    public AST_STMT_RET(AST_EXP exp) {
+    public AST_STMT_RET(AST_EXP exp, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
         String addedExp = "";
         if (exp != null) {
@@ -14,6 +14,7 @@ public class AST_STMT_RET extends AST_STMT {
         String deriveRule = String.format("====================== stmt -> RETURN%s SEMICOLON\n", addedExp);
         System.out.print(deriveRule);
         this.exp = exp;
+        this.line = line;
     }
 
     public void PrintMe() {
@@ -48,10 +49,7 @@ public class AST_STMT_RET extends AST_STMT {
 
     private TYPE SemantMeCaseVoid(TYPE expectedReturnType) throws SemanticException {
         if (!(expectedReturnType instanceof TYPE_VOID)) {
-            throw new SemanticException(
-                    "Returns nothing when expected return type isn't void",
-                    this
-            );
+            throw new SemanticException(this);
         }
         return null;
     }
@@ -64,10 +62,7 @@ public class AST_STMT_RET extends AST_STMT {
     *       all should be checked to match the actual return type  */
     private TYPE SemantMeCaseNonVoid(TYPE expectedReturnType) throws SemanticException {
         if (expectedReturnType instanceof TYPE_VOID) {
-            throw new SemanticException(
-                    "Returns something when expected return type is void",
-                    this
-            );
+            throw new SemanticException(this);
         }
 
         TYPE returnType = exp.SemantMe();
@@ -107,9 +102,6 @@ public class AST_STMT_RET extends AST_STMT {
         }
 
         /* None of the above */
-        throw new SemanticException(
-                "Return type does not match expected return type",
-                this
-        );
+        throw new SemanticException(this);
     }
 }

@@ -7,7 +7,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public String id;
     public T exp;
 
-    public AST_VAR_DEC(AST_TYPE type, String id, T exp){
+    public AST_VAR_DEC(AST_TYPE type, String id, T exp, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
         if (exp == null)
             System.out.format("====================== varDec -> type(%s) ID(%s)\n", type.type, id);
@@ -18,6 +18,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         this.type = type;
         this.id = id;
         this.exp = exp;
+        this.line = line;
     }
 
     public void PrintMe() {
@@ -46,12 +47,13 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     {
         /* Check: 1. No other variable with this name in current scope
                   2. If we are in class- no variable with this name in parent class*/
-        if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null) throw new SemanticException("%s id already declared", this);
+        if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null)
+            throw new SemanticException(this);
 
         /* If we are not in a class check there is no variable (CFIELD) with this name in parents classes */
         if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS){
             if (SYMBOL_TABLE.getInstance().findInInheritance(this.id) != null) {
-                throw new SemanticException("%s declared in parent class", this);
+                throw new SemanticException(this);
             }
         }
 
@@ -59,7 +61,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
         TYPE typeToAssign = this.type.SemantMe();
         if (typeToAssign instanceof TYPE_VOID)
         {
-            throw new SemanticException("%s declared in parent class", this);
+            throw new SemanticException(this);
         }
 
         /*  Compare types if there is an ASSIGNMENT
@@ -75,13 +77,13 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS)
             {
                 if (!(this.exp instanceof AST_EXP_OPT))
-                    throw new SemanticException("Data member inside a class can be initialized only with a constant value", this);
+                    throw new SemanticException(this);
 
                 /* TYPE_NIL only on TYPE_CLASS or TYPE_ARRAY*/
                 if (expType instanceof TYPE_NIL)
                 {
                     if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY))
-                        throw new SemanticException("Can assign null only on arrays and classes", this);
+                        throw new SemanticException(this);
                 }
             }
             else
@@ -89,7 +91,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 /* We are inside a function/ method/ global scope/ if/ while
                 * check that the assigned type is matched*/
                 if (!typeToAssign.checkAssign(expType))
-                    throw new SemanticException("Can assign null only on arrays and classes", this);
+                    throw new SemanticException(this);
             }
         }
 

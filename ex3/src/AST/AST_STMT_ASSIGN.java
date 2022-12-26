@@ -12,7 +12,7 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 	/*******************/
 	/*  CONSTRUCTOR(S) */
 	/*******************/
-	public AST_STMT_ASSIGN(AST_VAR var,T exp)
+	public AST_STMT_ASSIGN(AST_VAR var,T exp, int line)
 	{
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		String expType = "";
@@ -25,6 +25,7 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		System.out.print(deriveRule);
 		this.var = var;
 		this.exp = exp;
+		this.line = line;
 	}
 
 	/*********************************************************/
@@ -66,9 +67,6 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 			return null;
 		}
 
-		throw new SemanticException(
-			"Illegal assignment to var",
-			this
-		);
+		throw new SemanticException(this);
 	}
 }

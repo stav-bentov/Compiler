@@ -8,7 +8,7 @@ public class AST_STMT_ID extends AST_STMT{
     public String id;
     public AST_LIST<AST_EXP> l;
 
-    public AST_STMT_ID(AST_VAR var, String id, AST_LIST<AST_EXP> l) {
+    public AST_STMT_ID(AST_VAR var, String id, AST_LIST<AST_EXP> l, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
         if (var != null && l != null)
             System.out.printf("====================== stmt -> var DOT ID(%s)(commaExpList) SEMICOLON", id);
@@ -21,6 +21,7 @@ public class AST_STMT_ID extends AST_STMT{
         this.var = var;
         this.id = id;
         this.l = l;
+        this.line = line;
     }
 
     public void PrintMe()
@@ -61,10 +62,7 @@ public class AST_STMT_ID extends AST_STMT{
         else {
             TYPE typeOfVar = ((TYPE_VAR)var.SemantMe()).type;
             if (!typeOfVar.isClass()) {
-                throw new SemanticException(
-                        "This type is not a class and therefore does not have class methods",
-                        this
-                );
+                throw new SemanticException(this);
             }
             TYPE_CLASS typeClassOfVar = (TYPE_CLASS)typeOfVar;
             typeFound = SYMBOL_TABLE.getInstance().findInInheritance(this.id, typeClassOfVar);
@@ -80,10 +78,7 @@ public class AST_STMT_ID extends AST_STMT{
             /* Check if it is still not found */
             if (typeFound == null) {
                 /* Now it really does not exist */
-                throw new SemanticException(
-                        "Function does not exist",
-                        this
-                );
+                throw new SemanticException(this);
             }
         }
 
@@ -91,10 +86,7 @@ public class AST_STMT_ID extends AST_STMT{
         if (!(typeFound instanceof TYPE_FUNCTION)) {
             // There is no way a function with this name exists,
             // because this type wouldn't have been inserted to this symbol table in the first place
-            throw new SemanticException(
-                    "This function does not exist in an open scope",
-                    this
-            );
+            throw new SemanticException(this);
         }
 
         /* Check call */
@@ -107,10 +99,7 @@ public class AST_STMT_ID extends AST_STMT{
         /* Check if parameters match expected parameters */
         TYPE_LIST params = (TYPE_LIST)l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
         if (!func.params.equalsForValidatingGivenParams(params)) {
-            throw new SemanticException(
-                    "Parameters received do not match expected parameters",
-                    this
-            );
+            throw new SemanticException(this);
         }
 
         /* No need to check return type - no assignment is done here */
