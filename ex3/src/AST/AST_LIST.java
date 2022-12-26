@@ -6,7 +6,7 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
     public T head;
     public AST_LIST<T> tail;
 
-    public AST_LIST(T head, AST_LIST<T> tail) {
+    public AST_LIST(T head, AST_LIST<T> tail, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
         if (head instanceof AST_DEC) type = "AST_DEC";
         if (head instanceof  AST_ARGUMENT) type = "AST_ARGUMENT";
@@ -16,6 +16,7 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
         System.out.format("====================== AST_LIST -> of type(%s)\n", type);
         this.head = head;
         this.tail = tail;
+        this.line = line;
     }
 
     public void PrintMe() {

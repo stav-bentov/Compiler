@@ -6,7 +6,7 @@ public class AST_DEC<T extends AST_Node> extends AST_Node
 	public String type;
 	public T dec;
 
-	public AST_DEC(T dec){
+	public AST_DEC(T dec, int line){
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		if(dec instanceof AST_VAR_DEC) type = "varDec";
 		if(dec instanceof AST_FUNC_DEC) type = "funcDec";
@@ -14,6 +14,7 @@ public class AST_DEC<T extends AST_Node> extends AST_Node
 		if(dec instanceof AST_ARRAY_TYPEDEF) type = "arrayTypedef";
 		System.out.format("====================== dec -> %s\n", type);
 		this.dec = dec;
+		this.line = line;
 	}
 
 	public void PrintMe() {

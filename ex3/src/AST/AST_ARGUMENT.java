@@ -6,11 +6,12 @@ public class AST_ARGUMENT extends AST_Node{
     public AST_TYPE type;
     public String id;
 
-    public AST_ARGUMENT(AST_TYPE type, String id){
+    public AST_ARGUMENT(AST_TYPE type, String id, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("===================== argument -> type(%s) ID(%s)\n", type.type, id);
         this.type = type;
         this.id = id;
+        this.line = line;
     }
 
     public void PrintMe() {
@@ -45,12 +46,12 @@ public class AST_ARGUMENT extends AST_Node{
         /* Assumption: the arguments are the first to get in the symbol table then if there is a duplicate name- will find it*/
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null)
         {
-            throw new SemanticException("There are at least 2 parameters named: %s", this);
+            throw new SemanticException(this);
         }
         /* argument type can't be TYPE_VOID!*/
         if (varType.type instanceof TYPE_VOID)
         {
-            throw new SemanticException("There are at least 2 parameters named: %s",this);
+            throw new SemanticException(this);
         }
         SYMBOL_TABLE.getInstance().enter(this.id, varType, false);
         return varType;

@@ -162,7 +162,7 @@ funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE             
                 | type:t ID:id LPAREN argumentsList:al RPAREN LBRACE stmtList:sl RBRACE {:RESULT = new AST_FUNC_DEC(t, id, al, sl);:}
                 ;
 
-argument      ::= type:t ID:id                                                          {:RESULT = new AST_ARGUMENT(t, id);:};
+argument      ::= type:t ID:id                                                          {:RESULT = new AST_ARGUMENT(t, id, lexer.getLine());:};
 
 argumentsList ::= argument:a                                                            {:RESULT = new AST_LIST<AST_ARGUMENT>(a, null);:}
                   | argument:a COMMA argumentsList:al                                   {:RESULT = new AST_LIST<AST_ARGUMENT>(a, al);:}

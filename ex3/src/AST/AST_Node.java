@@ -13,6 +13,9 @@ public abstract class AST_Node
 	/***********************************************/
 	/* The default message for an unknown AST node */
 	/***********************************************/
+
+	public int line;
+
 	public void PrintMe()
 	{
 		System.out.print("AST NODE UNKNOWN\n");

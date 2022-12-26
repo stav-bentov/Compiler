@@ -7,19 +7,21 @@ public class AST_CLASS_DEC extends AST_Node{
     public String extendsName;
     public AST_LIST<AST_CFIELD> cFieldList;
 
-    public AST_CLASS_DEC(String className, String extendsName, AST_LIST<AST_CFIELD> cFieldList){
+    public AST_CLASS_DEC(String className, String extendsName, AST_LIST<AST_CFIELD> cFieldList, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("====================== classDec -> CLASS ID(%s) extends ID(%s) {cFieldList}\n", className, extendsName);
         this.className = className;
         this.extendsName = extendsName;
         this.cFieldList = cFieldList;
+        this.line = line;
     }
 
-    public AST_CLASS_DEC(String className, AST_LIST<AST_CFIELD> cFieldList){
+    public AST_CLASS_DEC(String className, AST_LIST<AST_CFIELD> cFieldList, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("====================== classDec -> CLASS ID(%s) {cFieldList}\n", className);
         this.className = className;
         this.cFieldList = cFieldList;
+        this.line = line;
     }
 
     public void PrintMe() {
@@ -51,11 +53,11 @@ public class AST_CLASS_DEC extends AST_Node{
     public TYPE SemantMe() throws SemanticException
     {
         if(SYMBOL_TABLE.getInstance().getCurrentScopeType() != ScopeTypeEnum.GLOBAL){
-            throw new SemanticException(String.format("class %s declaration in non-global scope", className), this);
+            throw new SemanticException(this);
         }
 
         if(SYMBOL_TABLE.getInstance().findInGlobal(this.className) != null)
-            throw new SemanticException(String.format("class %s already exists!", className), this);
+            throw new SemanticException(this);
 
         /*************************/
         /* [1] Begin Class Scope */
@@ -71,10 +73,10 @@ public class AST_CLASS_DEC extends AST_Node{
         if(this.extendsName != null){
             TYPE father = SYMBOL_TABLE.getInstance().findInGlobal(this.extendsName);
             if(father == null){
-                throw new SemanticException(String.format("no such class %s therefore cannot be extended by %s", this.extendsName, this.className), this);
+                throw new SemanticException(this);
             }
             if(!father.isClass()) {
-                throw new SemanticException(String.format("%s is not a class and cannot be extended by %s", this.extendsName, this.className), this);
+                throw new SemanticException(this);
             }
 
             type_class.father = (TYPE_CLASS) father;

@@ -11,7 +11,7 @@ public class AST_EXP_OPT extends AST_EXP
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_OPT(Integer i, String s, String opt) {
+	public AST_EXP_OPT(Integer i, String s, String opt, int line) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 		System.out.format("====================== exp -> %s", opt);
 		if (opt.equals("INT") || opt.equals("MINUS INT"))
@@ -21,6 +21,7 @@ public class AST_EXP_OPT extends AST_EXP
 		this.i = i;
 		this.s = s;
 		this.opt = opt;
+		this.line = line;
 	}
 	
 	/*************************************************/

@@ -6,7 +6,7 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
     public T dec;
     public String type;
 
-    public AST_CFIELD_DEC(T dec) {
+    public AST_CFIELD_DEC(T dec, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
         if (dec instanceof AST_VAR_DEC) {
             this.type = "varDec";
@@ -16,6 +16,7 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         }
         System.out.format("====================== cField -> %s\n", this.type);
         this.dec = dec;
+        this.line = line;
     }
 
     public void PrintMe() {
