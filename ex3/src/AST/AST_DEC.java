@@ -1,5 +1,7 @@
 package AST;
 
+import TYPES.TYPE;
+
 public class AST_DEC<T extends AST_Node> extends AST_Node
 {
 	public String type;
@@ -36,5 +38,12 @@ public class AST_DEC<T extends AST_Node> extends AST_Node
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, dec.SerialNumber);
+	}
+
+	public TYPE SemantMe() throws SemanticException
+	{
+		/* Assumption- the enter occur in SemantMe()*/
+		this.dec.SemantMe();
+		return null;
 	}
 }
