@@ -14,10 +14,11 @@ public class AST_TYPE extends AST_Node{
         this.line = line;
     }
 
-    public AST_TYPE(String type){
+    public AST_TYPE(String type, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
         System.out.format("====================== type -> %s\n", type);
         this.type = type;
+        this.line = line;
     }
 
     public void PrintMe() {
