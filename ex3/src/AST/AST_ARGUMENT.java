@@ -45,12 +45,12 @@ public class AST_ARGUMENT extends AST_Node{
         /* Assumption: the arguments are the first to get in the symbol table then if there is a duplicate name- will find it*/
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null)
         {
-            throw new SemanticException("There are at least 2 parameters named: %s");
+            throw new SemanticException("There are at least 2 parameters named: %s", this);
         }
         /* argument type can't be TYPE_VOID!*/
         if (varType.type instanceof TYPE_VOID)
         {
-            throw new SemanticException("There are at least 2 parameters named: %s");
+            throw new SemanticException("There are at least 2 parameters named: %s",this);
         }
         SYMBOL_TABLE.getInstance().enter(this.id, varType, false);
         return varType;

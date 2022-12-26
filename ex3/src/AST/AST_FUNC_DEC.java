@@ -64,7 +64,7 @@ public class AST_FUNC_DEC extends AST_Node {
         scopeType = SYMBOL_TABLE.getInstance().getCurrentScopeType();
         if (scopeType != ScopeTypeEnum.CLASS && scopeType != ScopeTypeEnum.GLOBAL)
         {
-            throw new SemanticException("Function: %s is not declared in a Global scope or in a Class scope");
+            throw new SemanticException("Function: %s is not declared in a Global scope or in a Class scope", this);
         }
 
         /*  CHECK: check if there are classes/ arrays with func name and func name != "string","int","void"
@@ -106,7 +106,7 @@ public class AST_FUNC_DEC extends AST_Node {
             SYMBOL_TABLE.getInstance().endScope();
             return currTypeFunc;
         }
-        throw new SemanticException("Duplicated definitions named: %s");
+        throw new SemanticException("Duplicated definitions named: %s", this);
     }
 
     /* Recieves name of the given new function and the function itself
@@ -118,12 +118,12 @@ public class AST_FUNC_DEC extends AST_Node {
         if (currType instanceof TYPE_FUNCTION) {
             /* Different signatures- overload*/
             if (!overrideMethod.equals(currType)) {
-                throw new SemanticException("Overload functions named: %s");
+                throw new SemanticException("Overload functions named: %s", this);
             }
             return;
         } else {
             /* There is a variable with the same name in a parent class (and it's not a function) */
-            throw new SemanticException("Duplicated definitions named in parent's class");
+            throw new SemanticException("Duplicated definitions named in parent's class", this);
         }
 
     }
