@@ -60,8 +60,8 @@ public class TYPE_LIST extends TYPE
 			TYPE paramType = ((TYPE_VAR)paramsPointer.head).type;
 			if (paramType instanceof TYPE_CLASS) {
 				/* class can be null but if not- check if it's same class or inherited*/
-				if (!(paramsPointer.head instanceof TYPE_NIL)) {
-					if (paramType != variablesPointer.head) {
+				if (!(variablesPointer.head instanceof TYPE_NIL)) {
+					if (variablesPointer.head instanceof TYPE_CLASS) {
 						if (!((TYPE_CLASS)variablesPointer.head).inheritsFrom((TYPE_CLASS)paramType)) return false;
 					}
 				}
@@ -69,7 +69,7 @@ public class TYPE_LIST extends TYPE
 			else if (paramType instanceof TYPE_ARRAY) {
 				/* class array be null but if not- check if it's same array*/
 				if (!(variablesPointer.head instanceof TYPE_NIL)) {
-					if (paramsPointer.head != variablesPointer.head) return false;
+					if (paramType != variablesPointer.head) return false;
 				}
 			}
 			else {
