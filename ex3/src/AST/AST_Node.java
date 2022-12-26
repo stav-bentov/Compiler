@@ -1,4 +1,5 @@
 package AST;
+import TYPES.*;
 
 import TYPES.TYPE;
 
@@ -10,7 +11,7 @@ public abstract class AST_Node
 	/* a graphviz dot format of the AST ...    */
 	/*******************************************/
 	public int SerialNumber;
-	
+
 	/***********************************************/
 	/* The default message for an unknown AST node */
 	/***********************************************/
@@ -18,6 +19,6 @@ public abstract class AST_Node
 	{
 		System.out.print("AST NODE UNKNOWN\n");
 	}
-
+	
 	public abstract TYPE SemantMe() throws SemanticException;
 }

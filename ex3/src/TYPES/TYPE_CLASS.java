@@ -39,4 +39,18 @@ public class TYPE_CLASS extends TYPE
 
 		return false;
 	}
+	@Override
+	public boolean isClass(){ return true;}
+
+	@Override
+	  /* Receives Object o
+       If it's not from TYPE_CLASS- returns false
+       else- Checks the names*/
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof TYPE_CLASS)) return false;
+		if (!(this.name.equals(((TYPE_CLASS)o).name))) return false;
+		return true;
+	}
+
 }
