@@ -44,6 +44,6 @@ public class AST_EXP_VAR extends AST_EXP
 
 	public TYPE SemantMe() throws SemanticException{
 		//this class is of type expression and therefore should return TYPE of the var (and not TYPE_VAR)
-		return this.var.SemantMe().type;
+		return ((TYPE_VAR) this.var.SemantMe()).type;
 	}
 }

@@ -1,6 +1,5 @@
 package AST;
 import TYPES.*;
-import SYMBOL_TABLE.*;
 
 public class AST_EXP_BINOP extends AST_EXP
 {
@@ -107,38 +106,39 @@ public class AST_EXP_BINOP extends AST_EXP
 		boolean are_same_type = left_type.getClass().equals(right_type.getClass());
 		switch (this.sOP){
 			case "+":
-				//+ can only occur between two ints or two strings. gonna check if they are of the same class first
+				// + can only occur between two ints or two strings. gonna check if they are of the same class first
 				if(!are_same_type)
-					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name));
+					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name), this);
 
-				//here they are of the same class. we check if left_type is eiter TYPE_INT or TYPE_STRING. if not, then error.
+				// Here they are of the same class. we check if left_type is eiter TYPE_INT or TYPE_STRING. if not, then error.
 				if(!(left_type instanceof TYPE_INT) && !(left_type instanceof TYPE_STRING))
-					throw new SemanticException("can only perform + between two integers or two strings");
+					throw new SemanticException("can only perform + between two integers or two strings", this);
 
-				//so left_type is the type we wanna return. if he is TYPE_INT we wil return TYPE_INT and same for TYPE_STRING
+				// So left_type is the type we wanna return. if he is TYPE_INT we wil return TYPE_INT and same for TYPE_STRING
 				return left_type;
 
 			case "=":
-				//only classes and arrays can be compared to NIL
+				// Only classes and arrays can be compared to NIL
 				if((left_type instanceof TYPE_NIL && !(right_type instanceof TYPE_CLASS || right_type instanceof TYPE_ARRAY))
 				|| (right_type instanceof TYPE_NIL && !(left_type instanceof TYPE_CLASS || left_type instanceof TYPE_ARRAY)))
-					throw new SemanticException("cannot check equality nil with something that is not class or array");
+					throw new SemanticException("cannot check equality nil with something that is not class or array", this);
 
-				//equality testing must happen between two objects of the same type
+				// Equality testing must happen between two objects of the same type
 				if(!are_same_type)
-					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name));
+					throw new SemanticException(String.format("cannot perform + between %s and %s: they are not of the same type", left_type.name, right_type.name), this);
 
-				//if the two objects are classes, we need to check that they are percisly the same class, or inherit from one another
+				// If the two objects are classes, we need to check that they are percisly the same class, or inherit from one another
 				if(left_type instanceof TYPE_CLASS){
-					if(!left_type.InheritsFrom(right_type) && !right_type.InheritsFrom(left_type))
-						throw new SemanticException("cannot check equality of two foriegn classes");
+					boolean leftInheritsFromRight = ((TYPE_CLASS) left_type).inheritsFrom((TYPE_CLASS) right_type);
+					boolean rightInheritsFromLeft = ((TYPE_CLASS) left_type).inheritsFrom((TYPE_CLASS) right_type);
+					if(!leftInheritsFromRight && !rightInheritsFromLeft)
+						throw new SemanticException("cannot check equality of two foriegn classes", this);
 				}
 
-				//arrays have to be percisely the same. using equals between them to check they are the same array
+				//arrays have to be precisely the same. using equals between them to check they are the same array
 				if(left_type instanceof TYPE_ARRAY){
-					if(!left_type == right_type)
-						throw new SemanticException(String.format("cannot check equality between two different arrays: %s and %s")
-								, left_type.name, right_type.name)
+					if(!(left_type == right_type))
+						throw new SemanticException(String.format("cannot check equality between two different arrays: %s and %s", left_type.name, right_type.name), this);
 				}
 
 				//equality always returns TYPE_INT
@@ -147,12 +147,11 @@ public class AST_EXP_BINOP extends AST_EXP
 			default:
 				//the rest of binary operations (-, *, /, >, <) can happen only between two ints
 				if(!(left_type instanceof TYPE_INT) || !(right_type instanceof TYPE_INT))
-					throw new SemanticException(String.format("cannot perform binary operation %s: %s and %s are not both ints"
-							, sOP, left_type.name, right_type.name));
+					throw new SemanticException(String.format("cannot perform binary operation %s: %s and %s are not both ints", sOP, left_type.name, right_type.name), this);
 
 				//check that we do not divide by a constant 0
-				if(sOP.equals("/") && right_type instanceof AST_EXP_OPT && (AST_EXP_OPT) right_type.i == 0)
-					throw new SemanticException(String.format("cannot perform division! %s is divided by 0!", left_type.name));
+				if(sOP.equals("/") && right instanceof AST_EXP_OPT && ((AST_EXP_OPT) right).i == 0)
+					throw new SemanticException(String.format("cannot perform division! %s is divided by 0!", left_type.name), this);
 				return TYPE_INT.getInstance();
 		}
 

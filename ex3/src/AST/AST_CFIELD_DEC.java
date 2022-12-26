@@ -40,7 +40,7 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         if (dec != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, dec.SerialNumber);
     }
 
-    public TYPE SemantMe() {
+    public TYPE SemantMe() throws SemanticException {
         return dec.SemantMe();
     }
 }

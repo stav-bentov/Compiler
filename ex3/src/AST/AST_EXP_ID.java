@@ -66,7 +66,8 @@ public class AST_EXP_ID extends AST_EXP
 			typeFound = SYMBOL_TABLE.getInstance().find(this.id);
 		} else {
 			//if var != null then this is a method of a class. we get the class, and then find the method in its inheritance tree
-			TYPE typeOfVar = var.SemantMe().type;
+			TYPE typeOfVar = ((TYPE_VAR) var.SemantMe()).type;
+
 			//if typeOfVar is not a class, then this.id does not represent a method, and therefore error
 			if (!typeOfVar.isClass()) {
 				throw new SemanticException("This type is not a class and therefore does not have class methods", this);
@@ -79,7 +80,7 @@ public class AST_EXP_ID extends AST_EXP
 		if (typeFound == null) {
 			/* If not found the function can be a global function, check in global scope */
 			if (var == null) {
-				typeFound = findInGlobalScope(this.id);
+				typeFound = SYMBOL_TABLE.getInstance().findInGlobal(this.id);
 			}
 
 			/* Check if it is still not found */
@@ -99,7 +100,7 @@ public class AST_EXP_ID extends AST_EXP
 		return ((TYPE_FUNCTION) typeFound).returnType;
 	}
 
-	private void CallToFuncMatchesFunc(TYPE_FUNCTION func) {
+	private void CallToFuncMatchesFunc(TYPE_FUNCTION func) throws SemanticException{
 		/* Check if parameters match expected parameters */
 		TYPE_LIST params = (TYPE_LIST) this.l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
 		if (!func.params.equalsForValidatingGivenParams(params)) {
