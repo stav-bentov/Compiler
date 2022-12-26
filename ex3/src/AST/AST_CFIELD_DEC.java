@@ -4,17 +4,17 @@ import TYPES.TYPE;
 
 public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
     public T dec;
+    public String type;
 
     public AST_CFIELD_DEC(T dec) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
-        String type = "";
         if (dec instanceof AST_VAR_DEC) {
-            type = "varDec";
+            this.type = "varDec";
         }
         else if (dec instanceof AST_FUNC_DEC) {
-            type = "funcDec";
+            this.type = "funcDec";
         }
-        System.out.format("====================== cField -> %s\n", type);
+        System.out.format("====================== cField -> %s\n", this.type);
         this.dec = dec;
     }
 

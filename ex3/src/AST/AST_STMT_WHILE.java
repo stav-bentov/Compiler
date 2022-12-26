@@ -1,5 +1,9 @@
 package AST;
 
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TYPES.TYPE;
+import TYPES.TYPE_INT;
+
 public class AST_STMT_WHILE extends AST_STMT {
 	public AST_EXP cond;
 	public AST_LIST<AST_STMT> body;
@@ -32,5 +36,24 @@ public class AST_STMT_WHILE extends AST_STMT {
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cond.SerialNumber);
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, body.SerialNumber);
+	}
+
+	@Override
+	public TYPE SemantMe() throws SemanticException {
+		TYPE condType = cond.SemantMe();
+
+		if (condType instanceof TYPE_INT) {
+			throw new SemanticException(
+					"Condition is not an integer",
+					this
+			);
+		}
+
+		/* Begin a new scope */
+		SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.WHILE, null);
+
+		body.SemantMe();
+
+		return null;
 	}
 }
