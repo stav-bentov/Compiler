@@ -62,7 +62,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             throw new SemanticException("%s declared in parent class");
         }
 
-        /*  Compare types if there is an assignment
+        /*  Compare types if there is an ASSIGNMENT
          *  4 options: 1. assign class variable
          *             2. assign array variable
          *             3. assign int
@@ -85,31 +85,11 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 }
             }
             else
-            { /* We are inside a function/ method/ global scope/ if/ while*/
-                /* Assumption new_exp can't be from type null*/
-                if (expType instanceof TYPE_NIL)
-                {
-                    /* Only variables of arrays and classes can be defined with null expression */
-                    if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY))
-                        throw new SemanticException("Assign types doesnt match (wrong classes)");
-                    /* TODO: Update array size to 0?*/
-                }
-                else
-                {
-                    if (typeToAssign instanceof TYPE_CLASS)
-                    {
-                        if (!((TYPE_CLASS) expType).inheritsFrom(typeToAssign))
-                            throw new SemanticException("Assign types doesnt match (wrong classes)");
-                    }
-                    else
-                    {
-                        /* Cases of int/ string/ array*/
-                        if(typeToAssign != expType)
-                        {
-                            throw new SemanticException("Assign types doesnt match (wrong classes)");
-                        }
-                    }
-                }
+            {
+                /* We are inside a function/ method/ global scope/ if/ while
+                * check that the assigned type is matched*/
+                if (!typeToAssign.checkAssign(expType))
+                    throw new SemanticException("Can assign null only on arrays and classes");
             }
         }
 

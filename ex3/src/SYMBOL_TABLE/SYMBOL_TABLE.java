@@ -273,7 +273,7 @@ public class SYMBOL_TABLE
 			{
 				if (((TYPE_FOR_SCOPE_BOUNDARIES) e.type).scope_type_enum == ScopeTypeEnum.CLASS)
 				{
-					return (TYPE_CLASS) e.type;
+					return (TYPE_CLASS)((TYPE_FOR_SCOPE_BOUNDARIES) e.type).class_func_type;
 				}
 			}
 		}
