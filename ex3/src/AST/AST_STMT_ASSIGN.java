@@ -61,16 +61,35 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 
 	@Override
 	public TYPE SemantMe() throws SemanticException {
-		TYPE varType = var.SemantMe();
+		TYPE varType = var.SemantMe().type;
 		TYPE expType = exp.SemantMe();
 
-		if (varType.equals(expType)) {
-			return null;
+		/* Class */
+		if (varType instanceof TYPE_CLASS) {
+			if (expType instanceof TYPE_NIL) { // Case of nil
+				return null;
+			}
+
+			else if (expType instanceof TYPE_CLASS &&  // Case of inheritance (also covers case of same class)
+					((TYPE_CLASS)expType).inheritsFrom((TYPE_CLASS)varType)) {
+				return null;
+			}
 		}
 
-		/* Case of inheritance should be semantically correct */
-		else if (varType instanceof TYPE_CLASS && expType instanceof TYPE_CLASS &&
-				((TYPE_CLASS)expType).inheritsFrom((TYPE_CLASS)varType)) {
+		/* Array */
+		else if (varType instanceof TYPE_ARRAY) {
+			if (expType instanceof TYPE_NIL) { // Case of nil
+				return null;
+			}
+
+			else if (expType instanceof TYPE_ARRAY &&
+					expType.equals(varType)) {
+				return null;
+			}
+		}
+
+		/* Other */
+		else if (varType.equals(expType)) {
 			return null;
 		}
 
