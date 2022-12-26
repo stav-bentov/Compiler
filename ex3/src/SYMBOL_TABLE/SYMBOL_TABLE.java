@@ -406,7 +406,7 @@ public class SYMBOL_TABLE
 					TYPE_VOID.getInstance(),
 					"PrintInt",
 					new TYPE_LIST(
-						TYPE_INT.getInstance(),
+						new TYPE_VAR("intForPrint", TYPE_INT.getInstance()),
 						null)),false);
 			instance.enter(
 					"PrintString",
@@ -414,7 +414,7 @@ public class SYMBOL_TABLE
 							TYPE_VOID.getInstance(),
 							"PrintString",
 							new TYPE_LIST(
-									TYPE_STRING.getInstance(),
+									new TYPE_VAR("stringForPrint", TYPE_STRING.getInstance()),
 									null)), false);
 			
 		}

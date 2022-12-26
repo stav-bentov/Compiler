@@ -101,13 +101,13 @@ public class AST_FUNC_DEC extends AST_Node {
             /* Make sure there is only an override and no overload or using with function's name */
             if (isMethod)
                 isValidMethod(this.name, currTypeFunc);
-
             /* If the return type isn't match or if there is a semantic error inside the scope- SemantMe() will throw an error*/
             if (this.stmtList != null)
+            {
                 this.stmtList.SemantMe();
+            }
 
             SYMBOL_TABLE.getInstance().endScope();
-            System.out.println("end function");
             return currTypeFunc;
         }
         throw new SemanticException(this);
