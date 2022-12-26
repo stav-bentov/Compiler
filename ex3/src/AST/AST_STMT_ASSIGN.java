@@ -83,13 +83,13 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 			}
 
 			else if (expType instanceof TYPE_ARRAY &&
-					expType.equals(varType)) {
+					expType == varType) {
 				return null;
 			}
 		}
 
 		/* Other */
-		else if (varType.equals(expType)) {
+		else if (varType == expType) {
 			return null;
 		}
 
