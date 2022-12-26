@@ -51,7 +51,7 @@ public class AST_STMT_ID extends AST_STMT{
     }
 
     @Override
-    public TYPE SemantMe() {
+    public TYPE SemantMe() throws SemanticException {
         TYPE typeFound;
 
         /* Find type */
@@ -59,7 +59,7 @@ public class AST_STMT_ID extends AST_STMT{
             typeFound = SYMBOL_TABLE.getInstance().findInInheritance(this.id);
         }
         else {
-            TYPE typeOfVar = var.SemantMe().type;
+            TYPE typeOfVar = ((TYPE_VAR)var.SemantMe()).type;
             if (!typeOfVar.isClass()) {
                 throw new SemanticException(
                         "This type is not a class and therefore does not have class methods",
@@ -74,7 +74,7 @@ public class AST_STMT_ID extends AST_STMT{
         if (typeFound == null) {
             /* If not found, and it can be a global function, check in global scope */
             if (var == null) { // If var is null it can be a global function
-                typeFound = findInGlobalScope(this.id);
+                typeFound = SYMBOL_TABLE.getInstance().findInGlobal(this.id);
             }
 
             /* Check if it is still not found */
@@ -103,7 +103,7 @@ public class AST_STMT_ID extends AST_STMT{
         return null;
     }
 
-    private void CallToFuncMatchesFunc(TYPE_FUNCTION func) {
+    private void CallToFuncMatchesFunc(TYPE_FUNCTION func) throws SemanticException {
         /* Check if parameters match expected parameters */
         TYPE_LIST params = (TYPE_LIST)l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
         if (!func.params.equalsForValidatingGivenParams(params)) {

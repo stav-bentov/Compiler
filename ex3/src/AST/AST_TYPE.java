@@ -46,7 +46,7 @@ public class AST_TYPE extends AST_Node{
         /* Check if it's a name of existing array or a class */
         /* Assumption- If we are in a class then the class is already entered to the symbol table*/
         if (!SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.idValue))
-            throw new SemanticException("Invalid type");
+            throw new SemanticException("Invalid type", this);
         /* typeCanBeInstanced(idValue) == true then this the type with this name is exist */
         return SYMBOL_TABLE.getInstance().find(this.idValue);
     }

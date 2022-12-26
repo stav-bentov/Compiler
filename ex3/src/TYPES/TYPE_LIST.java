@@ -62,7 +62,7 @@ public class TYPE_LIST extends TYPE
 				/* class can be null but if not- check if it's same class or inherited*/
 				if (!(paramsPointer.head instanceof TYPE_NIL)) {
 					if (currType != variablesPointer.head) {
-						if (!((TYPE_CLASS)variablesPointer.head).inheritsFrom(currType)) return false;
+						if (!((TYPE_CLASS)variablesPointer.head).inheritsFrom((TYPE_CLASS)currType)) return false;
 					}
 				}
 			}

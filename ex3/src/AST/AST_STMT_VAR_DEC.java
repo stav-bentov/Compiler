@@ -31,7 +31,7 @@ public class AST_STMT_VAR_DEC extends AST_STMT{
     }
 
     @Override
-    public TYPE SemantMe() {
+    public TYPE SemantMe() throws SemanticException {
         var.SemantMe();
         return null;
     }
