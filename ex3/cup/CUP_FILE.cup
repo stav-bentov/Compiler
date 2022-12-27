@@ -139,95 +139,95 @@ Program     ::= dec:d Program:dl                                                
                 | dec:d                                                                 {:RESULT = new AST_LIST<AST_DEC>(d, null, lexer.getLine()); :}
                 ;
 
-dec         ::= varDec:vd                                                               {:RESULT = new AST_DEC<AST_VAR_DEC>(vd, lexer.getLine());:}
-                | funcDec:fd                                                            {: RESULT = new AST_DEC<AST_FUNC_DEC>(fd, lexer.getLine());:}
-                | classDec:cd                                                           {: RESULT = new AST_DEC<AST_CLASS_DEC>(cd, lexer.getLine());:}
-                | arrayTypedef:atd                                                      {: RESULT = new AST_DEC<AST_ARRAY_TYPEDEF>(atd, lexer.getLine());:}
+dec         ::= varDec:vd                                                               {:RESULT = new AST_DEC<AST_VAR_DEC>(vd, vdleft);:}
+                | funcDec:fd                                                            {: RESULT = new AST_DEC<AST_FUNC_DEC>(fd, fdleft);:}
+                | classDec:cd                                                           {: RESULT = new AST_DEC<AST_CLASS_DEC>(cd, cdleft);:}
+                | arrayTypedef:atd                                                      {: RESULT = new AST_DEC<AST_ARRAY_TYPEDEF>(atd, atdleft);:}
                 ;
 
 type        ::= TYPE_INT                                                                {:RESULT = new AST_TYPE("TYPE_INT", lexer.getLine());:}
                 | TYPE_STRING                                                           {:RESULT = new AST_TYPE("TYPE_STRING", lexer.getLine());:}
                 | TYPE_VOID                                                             {:RESULT = new AST_TYPE("TYPE_VOID", lexer.getLine());:}
-                | ID:id                                                                 {:RESULT = new AST_TYPE("ID", id, lexer.getLine());:}
+                | ID:id                                                                 {:RESULT = new AST_TYPE("ID", id, idleft);:}
                 ;
 
-arrayTypedef ::= ARRAY ID:id EQ type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAY_TYPEDEF(id, t, lexer.getLine());:};
+arrayTypedef ::= ARRAY ID:id EQ type:t LBRACK RBRACK SEMICOLON                      {:RESULT = new AST_ARRAY_TYPEDEF(id, t, tleft);:};
 
-varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, null, lexer.getLine());:}
-                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, e, lexer.getLine());:}
-                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VAR_DEC<AST_NEW_EXP>(t, id, ne, lexer.getLine());:}
+varDec       ::= type:t ID:id  SEMICOLON                                                {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, null, tleft);:}
+                | type:t ID:id ASSIGN exp:e SEMICOLON                                   {:RESULT = new AST_VAR_DEC<AST_EXP>(t, id, e, tleft);:}
+                | type:t ID:id ASSIGN newExp:ne SEMICOLON                               {:RESULT = new AST_VAR_DEC<AST_NEW_EXP>(t, id, ne, tleft);:}
                 ;
 
-funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE                     {:RESULT = new AST_FUNC_DEC(t, id, null, l, lexer.getLine());:}
-                | type:t ID:id LPAREN argumentsList:al RPAREN LBRACE stmtList:sl RBRACE {:RESULT = new AST_FUNC_DEC(t, id, al, sl, lexer.getLine());:}
+funcDec     ::= type:t ID:id LPAREN RPAREN LBRACE stmtList:l RBRACE                     {:RESULT = new AST_FUNC_DEC(t, id, null, l, tleft);:}
+                | type:t ID:id LPAREN argumentsList:al RPAREN LBRACE stmtList:sl RBRACE {:RESULT = new AST_FUNC_DEC(t, id, al, sl, tleft);:}
                 ;
 
-argument      ::= type:t ID:id                                                          {:RESULT = new AST_ARGUMENT(t, id, lexer.getLine());:};
+argument      ::= type:t ID:id                                                          {:RESULT = new AST_ARGUMENT(t, id, tleft);:};
 
-argumentsList ::= argument:a                                                            {:RESULT = new AST_LIST<AST_ARGUMENT>(a, null, lexer.getLine());:}
-                  | argument:a COMMA argumentsList:al                                   {:RESULT = new AST_LIST<AST_ARGUMENT>(a, al, lexer.getLine());:}
+argumentsList ::= argument:a                                                            {:RESULT = new AST_LIST<AST_ARGUMENT>(a, null, aleft);:}
+                  | argument:a COMMA argumentsList:al                                   {:RESULT = new AST_LIST<AST_ARGUMENT>(a, al, aleft);:}
                   ;
 
-classDec    ::= CLASS ID:id LBRACE cFieldList:l RBRACE                                  {:RESULT = new AST_CLASS_DEC(id, l, lexer.getLine());:}
-                | CLASS ID:cId EXTENDS ID:eId LBRACE cFieldList:l RBRACE                {:RESULT = new AST_CLASS_DEC(cId, eId, l, lexer.getLine());:}
+classDec    ::= CLASS ID:id LBRACE cFieldList:l RBRACE                                  {:RESULT = new AST_CLASS_DEC(id, l, idleft);:}
+                | CLASS ID:cId EXTENDS ID:eId LBRACE cFieldList:l RBRACE                {:RESULT = new AST_CLASS_DEC(cId, eId, l, cIdleft);:}
                 ;
 
-cFieldList  ::= cField:c                                                                {:RESULT = new AST_LIST<AST_CFIELD>(c, null, lexer.getLine());:}
-                | cField:c cFieldList:cl                                                {:RESULT = new AST_LIST<AST_CFIELD>(c, cl, lexer.getLine());:}
+cFieldList  ::= cField:c                                                                {:RESULT = new AST_LIST<AST_CFIELD>(c, null, cleft);:}
+                | cField:c cFieldList:cl                                                {:RESULT = new AST_LIST<AST_CFIELD>(c, cl, cleft);:}
                 ;
 
-stmt        ::=     varDec:v                                                            {: RESULT = new AST_STMT_VAR_DEC(v, lexer.getLine()); :}
-                    | var:v ASSIGN exp:e SEMICOLON                                      {: RESULT = new AST_STMT_ASSIGN<AST_EXP>(v, e, lexer.getLine()); :}
-                    | var:v ASSIGN newExp:e SEMICOLON                                   {: RESULT = new AST_STMT_ASSIGN<AST_NEW_EXP>(v, e, lexer.getLine()); :}
+stmt        ::=     varDec:v                                                            {: RESULT = new AST_STMT_VAR_DEC(v, vleft); :}
+                    | var:v ASSIGN exp:e SEMICOLON                                      {: RESULT = new AST_STMT_ASSIGN<AST_EXP>(v, e, vleft); :}
+                    | var:v ASSIGN newExp:e SEMICOLON                                   {: RESULT = new AST_STMT_ASSIGN<AST_NEW_EXP>(v, e, vleft); :}
                     | RETURN SEMICOLON                                                  {: RESULT = new AST_STMT_RET(null, lexer.getLine()); :}
-                    | RETURN exp:e SEMICOLON                                            {: RESULT = new AST_STMT_RET(e, lexer.getLine()); :}
-                    | IF LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE                   {: RESULT = new AST_STMT_IF(e, l, lexer.getLine()); :}
-                    | WHILE LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE                {: RESULT = new AST_STMT_WHILE(e, l, lexer.getLine()); :}
-                    | ID:id LPAREN RPAREN SEMICOLON                                     {: RESULT = new AST_STMT_ID(null, id, null, lexer.getLine()); :}
-                    | ID:id LPAREN commaExpList:l RPAREN SEMICOLON                      {: RESULT = new AST_STMT_ID(null, id, l, lexer.getLine()); :}
-                    | var:v DOT ID:id LPAREN RPAREN SEMICOLON                           {: RESULT = new AST_STMT_ID(v, id, null, lexer.getLine()); :}
-                    | var:v DOT ID:id LPAREN commaExpList:l RPAREN SEMICOLON            {: RESULT = new AST_STMT_ID(v, id, l, lexer.getLine()); :}
+                    | RETURN exp:e SEMICOLON                                            {: RESULT = new AST_STMT_RET(e, eleft); :}
+                    | IF LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE                   {: RESULT = new AST_STMT_IF(e, l, eleft); :}
+                    | WHILE LPAREN exp:e RPAREN LBRACE stmtList:l RBRACE                {: RESULT = new AST_STMT_WHILE(e, l, eleft); :}
+                    | ID:id LPAREN RPAREN SEMICOLON                                     {: RESULT = new AST_STMT_ID(null, id, null, idleft); :}
+                    | ID:id LPAREN commaExpList:l RPAREN SEMICOLON                      {: RESULT = new AST_STMT_ID(null, id, l, idleft); :}
+                    | var:v DOT ID:id LPAREN RPAREN SEMICOLON                           {: RESULT = new AST_STMT_ID(v, id, null, vleft); :}
+                    | var:v DOT ID:id LPAREN commaExpList:l RPAREN SEMICOLON            {: RESULT = new AST_STMT_ID(v, id, l, vleft); :}
                     ;
 
-stmtList	::=		stmt:s	stmtList:l		                                            {: RESULT = new AST_LIST<AST_STMT>(s, l, lexer.getLine());    :}
-                    | stmt:s			                                                {: RESULT = new AST_LIST<AST_STMT>(s, null, lexer.getLine()); :}
+stmtList	::=		stmt:s	stmtList:l		                                            {: RESULT = new AST_LIST<AST_STMT>(s, l, sleft);    :}
+                    | stmt:s			                                                {: RESULT = new AST_LIST<AST_STMT>(s, null, sleft); :}
 					;
 
-commaExpList ::=     exp:e COMMA commaExpList:l                                         {: RESULT = new AST_LIST<AST_EXP>(e, l, lexer.getLine()); :}
-                    | exp:e                                                             {: RESULT = new AST_LIST<AST_EXP>(e, null, lexer.getLine()); :}
+commaExpList ::=     exp:e COMMA commaExpList:l                                         {: RESULT = new AST_LIST<AST_EXP>(e, l, eleft); :}
+                    | exp:e                                                             {: RESULT = new AST_LIST<AST_EXP>(e, null, eleft); :}
                     ;
 
-newExp      ::=     NEW type:t                                                          {: RESULT = new AST_NEW_EXP_NEW_TYPE_EXP(t, null, lexer.getLine()); :}
-                    | NEW type:t LBRACK exp:e RBRACK                                    {: RESULT = new AST_NEW_EXP_NEW_TYPE_EXP(t, e, lexer.getLine()); :}
+newExp      ::=     NEW type:t                                                          {: RESULT = new AST_NEW_EXP_NEW_TYPE_EXP(t, null, tleft); :}
+                    | NEW type:t LBRACK exp:e RBRACK                                    {: RESULT = new AST_NEW_EXP_NEW_TYPE_EXP(t, e, tleft); :}
                     ;
 
-cField      ::=     varDec:v                                                            {: RESULT = new AST_CFIELD_DEC<AST_VAR_DEC>(v, lexer.getLine()); :}
-                    | funcDec:f                                                         {: RESULT = new AST_CFIELD_DEC<AST_FUNC_DEC>(f, lexer.getLine()); :}
+cField      ::=     varDec:v                                                            {: RESULT = new AST_CFIELD_DEC<AST_VAR_DEC>(v, vleft); :}
+                    | funcDec:f                                                         {: RESULT = new AST_CFIELD_DEC<AST_FUNC_DEC>(f, fleft); :}
                     ;
 
-exp         ::= var:v                                                                   {:RESULT = new AST_EXP_VAR(v, lexer.getLine()); :}
-                | LPAREN exp:e RPAREN                                                   {:RESULT = new AST_EXP_EXP(e, lexer.getLine()); :}
+exp         ::= var:v                                                                   {:RESULT = new AST_EXP_VAR(v, vleft); :}
+                | LPAREN exp:e RPAREN                                                   {:RESULT = new AST_EXP_EXP(e, eleft); :}
 
-                | exp:e1 PLUS exp:e2                                                    {:RESULT = new AST_EXP_BINOP(e1, e2, 0, lexer.getLine()); :}
-                | exp:e1 MINUS exp:e2                                                   {:RESULT = new AST_EXP_BINOP(e1, e2, 1, lexer.getLine()); :}
-                | exp:e1 TIMES exp:e2                                                   {:RESULT = new AST_EXP_BINOP(e1, e2, 2, lexer.getLine()); :}
-                | exp:e1 DIVIDE exp:e2                                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 3, lexer.getLine()); :}
-                | exp:e1 LT exp:e2                                                      {:RESULT = new AST_EXP_BINOP(e1, e2, 4, lexer.getLine()); :}
-                | exp:e1 GT exp:e2                                                      {:RESULT = new AST_EXP_BINOP(e1, e2, 5, lexer.getLine()); :}
-                | exp:e1 EQ exp:e2                                                      {:RESULT = new AST_EXP_BINOP(e1, e2, 6, lexer.getLine()); :}
+                | exp:e1 PLUS exp:e2                                                    {:RESULT = new AST_EXP_BINOP(e1, e2, 0, e1left); :}
+                | exp:e1 MINUS exp:e2                                                   {:RESULT = new AST_EXP_BINOP(e1, e2, 1, e1left); :}
+                | exp:e1 TIMES exp:e2                                                   {:RESULT = new AST_EXP_BINOP(e1, e2, 2, e1left); :}
+                | exp:e1 DIVIDE exp:e2                                                  {:RESULT = new AST_EXP_BINOP(e1, e2, 3, e1left); :}
+                | exp:e1 LT exp:e2                                                      {:RESULT = new AST_EXP_BINOP(e1, e2, 4, e1left); :}
+                | exp:e1 GT exp:e2                                                      {:RESULT = new AST_EXP_BINOP(e1, e2, 5, e1left); :}
+                | exp:e1 EQ exp:e2                                                      {:RESULT = new AST_EXP_BINOP(e1, e2, 6, e1left); :}
 
-                | ID:id LPAREN RPAREN                                                   {:RESULT = new AST_EXP_ID(id, null, null, lexer.getLine()); :}
-                | var:v DOT ID:id LPAREN RPAREN                                         {:RESULT = new AST_EXP_ID(id, v, null, lexer.getLine()); :}
-                | ID:id LPAREN commaExpList:l RPAREN                                    {:RESULT = new AST_EXP_ID(id, null, l, lexer.getLine()); :}
-                | var:v DOT ID:id LPAREN commaExpList:l RPAREN                          {:RESULT = new AST_EXP_ID(id, v, l, lexer.getLine()); :}
+                | ID:id LPAREN RPAREN                                                   {:RESULT = new AST_EXP_ID(id, null, null, idleft); :}
+                | var:v DOT ID:id LPAREN RPAREN                                         {:RESULT = new AST_EXP_ID(id, v, null, vleft); :}
+                | ID:id LPAREN commaExpList:l RPAREN                                    {:RESULT = new AST_EXP_ID(id, null, l, idleft); :}
+                | var:v DOT ID:id LPAREN commaExpList:l RPAREN                          {:RESULT = new AST_EXP_ID(id, v, l, vleft); :}
 
-                | MINUS INT:i                                                           {:RESULT = new AST_EXP_OPT(i, null, "MINUS INT", lexer.getLine()); :}
-                | INT:i                                                                 {:RESULT = new AST_EXP_OPT(i, null, "INT", lexer.getLine()); :}
-                | STRING:s                                                              {:RESULT = new AST_EXP_OPT(null, s, "STRING", lexer.getLine()); :}
+                | MINUS INT:i                                                           {:RESULT = new AST_EXP_OPT(i, null, "MINUS INT", ileft); :}
+                | INT:i                                                                 {:RESULT = new AST_EXP_OPT(i, null, "INT", ileft); :}
+                | STRING:s                                                              {:RESULT = new AST_EXP_OPT(null, s, "STRING", sleft); :}
                 | NIL                                                                   {:RESULT = new AST_EXP_OPT(null, null, "NIL", lexer.getLine()); :}
                 ;
 
-var          ::= ID:id                                                                  {: RESULT = new AST_VAR_ID(id, lexer.getLine()); :}
-                 | var:v DOT ID:id                                                      {: RESULT = new AST_VAR_VAR_ID(v, id, lexer.getLine()); :}
-                 | var:v LBRACK exp:e RBRACK                                            {: RESULT = new AST_VAR_EXP(v, e, lexer.getLine()); :}
+var          ::= ID:id                                                                  {: RESULT = new AST_VAR_ID(id, idleft); :}
+                 | var:v DOT ID:id                                                      {: RESULT = new AST_VAR_VAR_ID(v, id, vleft); :}
+                 | var:v LBRACK exp:e RBRACK                                            {: RESULT = new AST_VAR_EXP(v, e, vleft); :}
                  ;
