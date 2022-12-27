@@ -51,6 +51,6 @@ public class AST_TYPE extends AST_Node{
         if (!SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.idValue))
             throw new SemanticException(this);
         /* typeCanBeInstanced(idValue) == true then this the type with this name is exist */
-        return SYMBOL_TABLE.getInstance().find(this.idValue);
+        return SYMBOL_TABLE.getInstance().findInGlobal(this.idValue);
     }
 }
