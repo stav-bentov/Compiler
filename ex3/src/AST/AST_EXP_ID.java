@@ -55,7 +55,7 @@ public class AST_EXP_ID extends AST_EXP
 		//find type - assuming this is a method of class.
 		//either method of the current class scope, or a method of already defined class.
 		if (var == null) {
-			typeFound = SYMBOL_TABLE.getInstance().find(this.id);
+			typeFound = SYMBOL_TABLE.getInstance().findWithPriority(this.id);
 		} else {
 			//if var != null then this is a method of a class. we get the class, and then find the method in its inheritance tree
 			TYPE typeOfVar = ((TYPE_VAR) var.SemantMe()).type;
