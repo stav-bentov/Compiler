@@ -29,7 +29,7 @@ public class AST_VAR_ID extends AST_VAR
 
 	public TYPE SemantMe() throws SemanticException{
 		//simple case of var: id. get the var from symbol table according to the id, and then check that it is indeed a var
-		TYPE var = SYMBOL_TABLE.getInstance().find(this.id);
+		TYPE var = SYMBOL_TABLE.getInstance().findWithPriority(this.id);
 		if(var == null || !var.isVar())
 			throw new SemanticException(this);
 
