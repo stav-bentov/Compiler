@@ -35,7 +35,7 @@ public class AST_STMT_WHILE extends AST_STMT {
 	public TYPE SemantMe() throws SemanticException {
 		TYPE condType = cond.SemantMe();
 
-		if (condType instanceof TYPE_INT) {
+		if (!(condType instanceof TYPE_INT)) {
 			throw new SemanticException(this);
 		}
 
