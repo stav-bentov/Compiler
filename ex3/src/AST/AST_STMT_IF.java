@@ -44,6 +44,7 @@ public class AST_STMT_IF extends AST_STMT {
 		/* Begin a new scope */
 		SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.IF, null);
 		body.SemantMe();
+		SYMBOL_TABLE.getInstance().endScope();
 		return null;
 	}
 }
