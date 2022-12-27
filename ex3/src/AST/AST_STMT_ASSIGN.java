@@ -52,13 +52,12 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 
 	@Override
 	public TYPE SemantMe() throws SemanticException {
-		TYPE varType = ((TYPE_VAR)var.SemantMe()).type;
-		TYPE expType = exp.SemantMe();
+		TYPE_VAR assignVar = (TYPE_VAR) this.var.SemantMe();
+		TYPE expType = this.exp.SemantMe();
 
-		if (varType.checkAssign(expType)) {
-			return null;
-		}
+		if (!checkAssign(assignVar, expType, this.exp))
+			throw new SemanticException(this);
 
-		throw new SemanticException(this);
+		return null;
 	}
 }
