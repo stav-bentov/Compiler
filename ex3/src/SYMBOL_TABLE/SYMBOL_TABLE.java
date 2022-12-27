@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 /* PROJECT IMPORTS */
 /*******************/
 import TYPES.*;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 /****************/
 /* SYMBOL TABLE */
@@ -103,6 +104,35 @@ public class SYMBOL_TABLE
 		return null;
 	}
 
+	public TYPE findNotGlobal(String name){
+		SYMBOL_TABLE_ENTRY e;
+
+		for (e = table[hash(name)]; e != null; e = e.next)
+		{
+			if(e.scopeEnum == ScopeTypeEnum.GLOBAL) break;
+			if (name.equals(e.name))
+			{
+				return e.type;
+			}
+		}
+
+		return null;
+	}
+
+	//first searches in not global (nesting func/class), then inheritance and finally global scope.
+	public TYPE findWithPriority(String name){
+		TYPE type;
+		type = findNotGlobal(name);
+
+		if(type == null) {
+			type = findInInheritance(name);
+		}
+
+		if(type == null){
+			type = findInGlobal(name);
+		}
+		return type;
+	}
 	/***************************************************************************/
 	/* begine scope = Enter the <SCOPE-BOUNDARY> element to the data structure
 	* ScopeTypeEnum scopeType: class, func, if, while global
