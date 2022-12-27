@@ -20,22 +20,11 @@ public class AST_VAR_ID extends AST_VAR
 	/* The printing message for a field var AST node */
 	/*************************************************/
 	public void PrintMe() {
-		/*********************************/
-		/* AST NODE TYPE = AST ID VAR */
-		/*********************************/
-		System.out.print("AST NODE VAR ID\n");
+		System.out.print("var id\n");
 
-		/**********************************************/
-		/* RECURSIVELY PRINT VAR, then FIELD NAME ... */
-		/**********************************************/
-		System.out.format("ID(%s)\n",id);
-
-		/***************************************/
-		/* PRINT Node to AST GRAPHVIZ DOT file */
-		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("ID(%s)",id));
+			String.format("var id: %s",id));
 	}
 
 	public TYPE SemantMe() throws SemanticException{

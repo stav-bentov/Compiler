@@ -28,15 +28,18 @@ public class AST_EXP_OPT extends AST_EXP
 	/* The printing message for a binop exp AST node */
 	/*************************************************/
 	public void PrintMe() {
-		/*************************************/
-		/* AST NODE TYPE = AST EXP OPT*/
-		/*************************************/
-		System.out.print("AST NODE EXP OPT\n");
-		
-		/***************************************/
-		/* PRINT Node to AST GRAPHVIZ DOT file */
-		/***************************************/
-		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, opt);
+		System.out.format("exp");
+		String str = "";
+		if (opt.equals("INT"))
+			str = String.format("%d", i);
+		if (opt.equals("MINUS INT"))
+			str = String.format("-%d", i);
+		if (opt.equals("STRING"))
+			str = s;
+		System.out.format("exp: %s", str);
+
+		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, String.format("exp: %s", str));
+		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, String.format("%s: %s",opt,str));
 	}
 
 	public TYPE SemantMe() throws SemanticException{

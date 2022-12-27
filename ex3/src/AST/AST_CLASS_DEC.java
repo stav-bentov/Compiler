@@ -25,29 +25,20 @@ public class AST_CLASS_DEC extends AST_Node{
     }
 
     public void PrintMe() {
-        /*********************************/
-        /* AST NODE TYPE = AST FIELD VAR */
-        /*********************************/
-        System.out.print("AST_CLASS_DEC\n");
+        System.out.print("classDec\n");
 
-        /**********************************************/
-        /* RECURSIVELY PRINT VAR, then FIELD NAME ... */
-        /**********************************************/
-        if(cFieldList != null) cFieldList.PrintMe();
-        if (extendsName == null) System.out.format("AST_CLASS_DEC %s\n", className);
-        else System.out.format("AST_CLASS_DEC %s extends %s\n", className, extendsName);
+        if (extendsName == null)
+            System.out.format("classDec: %s\n", className);
+        else
+            System.out.format("classDec: %s extends: %s\n", className, extendsName);
+        if(cFieldList != null)
+            cFieldList.PrintMe();
 
-        /***************************************/
-        /* PRINT Node to AST GRAPHVIZ DOT file */
-        /***************************************/
         String nodeName = extendsName == null ?
-                String.format("class_dec %s\n", className) : String.format("class_dec %s extends %s\n", className, extendsName);
+                String.format("classDec: %s\n", className) : String.format("classDec: %s extends: %s\n", className, extendsName);
         AST_GRAPHVIZ.getInstance().logNode(SerialNumber, nodeName);
-
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
-        if (cFieldList != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cFieldList.SerialNumber);
+        if (cFieldList != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cFieldList.SerialNumber);
     }
 
     public TYPE SemantMe() throws SemanticException
@@ -73,6 +64,7 @@ public class AST_CLASS_DEC extends AST_Node{
         if(this.extendsName != null){
             TYPE father = SYMBOL_TABLE.getInstance().findInGlobal(this.extendsName);
             if(father == null){
+                System.out.println(this.line);
                 throw new SemanticException(this);
             }
             if(!father.isClass()) {

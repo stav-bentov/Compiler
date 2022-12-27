@@ -31,30 +31,21 @@ public class AST_EXP_ID extends AST_EXP
 	/* The default message for an exp var AST node */
 	/***********************************************/
 	public void PrintMe() {
-		/************************************/
-		/* AST NODE TYPE = EXP VAR AST NODE */
-		/************************************/
-		System.out.print("AST NODE EXP ID\n");
+		System.out.format("exp\n");
 
-		/*****************************/
-		/* RECURSIVELY PRINT Non-Terminals ... */
-		/*****************************/
-		if (var != null) var.PrintMe();
-		System.out.format("ID(%s)\n",id);
-		if (l != null) l.PrintMe();
-		
-		/*********************************/
-		/* Print to AST GRAPHIZ DOT file */
-		/*********************************/
+		if (var != null)
+			var.PrintMe();
+		System.out.format("exp ID: %s\n", this.id);
+		if (l != null)
+			l.PrintMe();
+
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("VAR\n%s\nCOMMA_EXP_LIST\n", id));
-
-		/****************************************/
-		/* PRINT Edges to AST GRAPHVIZ DOT file */
-		/****************************************/
-		if (var != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, var.SerialNumber);
-		if (l != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, l.SerialNumber);
+			String.format("exp ID: %s\n", this.id));
+		if (var != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, var.SerialNumber);
+		if (l != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, l.SerialNumber);
 	}
 
 	//calling a function

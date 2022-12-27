@@ -19,27 +19,18 @@ public class AST_STMT_IF extends AST_STMT {
 
 	public void PrintMe()
 	{
-		/********************************************/
-		/* AST NODE TYPE = AST ASSIGNMENT STATEMENT */
-		/********************************************/
-		System.out.print("AST_STMT_IF\n");
+		System.out.print("stmt if\n");
 
-		/***********************************/
-		/* RECURSIVELY PRINT VAR + EXP ... */
-		/***********************************/
-		if (cond != null) cond.PrintMe();
-		if (body != null) body.PrintMe();
+		if (cond != null)
+			cond.PrintMe();
+		if (body != null)
+			body.PrintMe();
 
-		/***************************************/
-		/* PRINT Node to AST GRAPHVIZ DOT file */
-		/***************************************/
-		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "if statement\n");
-
-		/****************************************/
-		/* PRINT Edges to AST GRAPHVIZ DOT file */
-		/****************************************/
-		if(cond != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cond.SerialNumber);
-		if(body != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, body.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "stmt if\n");
+		if(cond != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, cond.SerialNumber);
+		if(body != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, body.SerialNumber);
 	}
 
 	@Override

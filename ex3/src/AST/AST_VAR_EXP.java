@@ -25,28 +25,19 @@ public class AST_VAR_EXP extends AST_VAR
 	/* The printing message for a field var AST node */
 	/*************************************************/
 	public void PrintMe() {
-		/*********************************/
-		/* AST NODE TYPE = AST FIELD VAR */
-		/*********************************/
-		System.out.print("AST NODE VAR EXP\n");
+		System.out.print("var exp\n");
 
-		/**********************************************/
-		/* RECURSIVELY PRINT VAR, then FIELD NAME ... */
-		/**********************************************/
-		if (var != null) var.PrintMe();
-		if (exp != null) exp.PrintMe();
+		if (var != null)
+			var.PrintMe();
+		if (exp != null)
+			exp.PrintMe();
 
-		/***************************************/
-		/* PRINT Node to AST GRAPHVIZ DOT file */
-		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(
-			SerialNumber, "VAR\nEXP\n");
-		
-		/****************************************/
-		/* PRINT Edges to AST GRAPHVIZ DOT file */
-		/****************************************/
-		if (var != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
-		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
+			SerialNumber, "var exp\n");
+		if (var != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
+		if (exp != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
 	}
 
 	public TYPE SemantMe() throws SemanticException{

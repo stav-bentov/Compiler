@@ -15,28 +15,17 @@ public class AST_ARGUMENT extends AST_Node{
     }
 
     public void PrintMe() {
-        /*********************************/
-        /* AST NODE TYPE = AST FIELD VAR */
-        /*********************************/
-        System.out.print("AST_ARGUMENT\n");
+        System.out.print("argument\n");
 
-        /**********************************************/
-        /* RECURSIVELY PRINT VAR, then FIELD NAME ... */
-        /**********************************************/
-        if(type != null) type.PrintMe();
-        System.out.format("ID( %s )\n",this.id);
+        if(type != null)
+            type.PrintMe();
+        System.out.format("argument: %s\n",this.id);
 
-        /***************************************/
-        /* PRINT Node to AST GRAPHVIZ DOT file */
-        /***************************************/
         AST_GRAPHVIZ.getInstance().logNode(
                 SerialNumber,
                 String.format("argument: %s",this.id));
-
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
-        if (type != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,type.SerialNumber);
+        if (type != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,type.SerialNumber);
     }
 
     public TYPE SemantMe() throws SemanticException

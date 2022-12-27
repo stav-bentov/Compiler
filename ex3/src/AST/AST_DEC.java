@@ -18,26 +18,14 @@ public class AST_DEC<T extends AST_Node> extends AST_Node
 	}
 
 	public void PrintMe() {
-		/*********************************/
-		/* AST NODE TYPE = AST FIELD VAR */
-		/*********************************/
-		System.out.format("AST_DEC %s\n", type);
+		System.out.format("dec\n");
 
-		/**********************************************/
-		/* RECURSIVELY PRINT VAR, then FIELD NAME ... */
-		/**********************************************/
-		dec.PrintMe();
+		if (dec != null)
+			dec.PrintMe();
 
-		/***************************************/
-		/* PRINT Node to AST GRAPHVIZ DOT file */
-		/***************************************/
-		AST_GRAPHVIZ.getInstance().logNode(SerialNumber,
-				String.format("dec: %s\n", type));
-
-		/****************************************/
-		/* PRINT Edges to AST GRAPHVIZ DOT file */
-		/****************************************/
-		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, dec.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, String.format("dec<%s>", type));
+		if (dec != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, dec.SerialNumber);
 	}
 
 	public TYPE SemantMe() throws SemanticException

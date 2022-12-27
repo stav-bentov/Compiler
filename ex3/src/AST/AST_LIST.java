@@ -21,25 +21,17 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
 
     public void PrintMe() {
         System.out.format("AST_LIST<%s>\n", type);
-
-        /*****************************/
-        /* RECURSIVELY PRINT var ... */
-        /*****************************/
         head.PrintMe();
-        if (tail != null) tail.PrintMe();
+        if (tail != null)
+            tail.PrintMe();
 
-        /*********************************/
-        /* Print to AST GRAPHIZ DOT file */
-        /*********************************/
         AST_GRAPHVIZ.getInstance().logNode(
                 SerialNumber,
                 String.format("AST_LIST<%s>:\n", type));
 
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
         AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, head.SerialNumber);
-        if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, tail.SerialNumber);
+        if (tail != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, tail.SerialNumber);
     }
 
     public TYPE SemantMe() throws SemanticException

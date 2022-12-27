@@ -18,26 +18,21 @@ public class AST_STMT_RET extends AST_STMT {
     }
 
     public void PrintMe() {
-        System.out.print("AST_STMT_RET\n");
+        System.out.print("stmt return\n");
 
-        /*****************************/
-        /* RECURSIVELY PRINT var ... */
-        /*****************************/
-        exp.PrintMe();
+        if (exp != null) {
+            exp.PrintMe();
+        }
 
-        /*********************************/
-        /* Print to AST GRAPHIZ DOT file */
-        /*********************************/
         AST_GRAPHVIZ.getInstance().logNode(SerialNumber, "return stmt\n");
-
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
-        AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, exp.SerialNumber);
+        if (exp != null) {
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, exp.SerialNumber);
+        }
     }
 
     @Override
     public TYPE SemantMe() throws SemanticException {
+        System.out.println("BEFORE ==========================");
         TYPE expectedReturnType = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc()).returnType;
 
         if (exp == null) { // Returns nothing, return type should be void

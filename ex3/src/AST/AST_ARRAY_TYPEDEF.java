@@ -15,28 +15,15 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
     }
 
     public void PrintMe() {
-        /*********************************/
-        /* AST NODE TYPE = AST FIELD VAR */
-        /*********************************/
-        System.out.print("AST ARRAY_TYPEDEF\n");
+        System.out.format("arrayTypedef: %s\n", this.name);
+        if (type != null)
+            type.PrintMe();
 
-        /**********************************************/
-        /* RECURSIVELY PRINT VAR, then FIELD NAME ... */
-        /**********************************************/
-        if(type != null) type.PrintMe();
-        System.out.format("ID( %s )\n",this.name);
-
-        /***************************************/
-        /* PRINT Node to AST GRAPHVIZ DOT file */
-        /***************************************/
         AST_GRAPHVIZ.getInstance().logNode(
                 SerialNumber,
-                String.format("array_typedef: %s",this.name));
-
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
-        if (type != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,type.SerialNumber);
+                String.format("arrayTypedef: %s",this.name));
+        if (type != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,type.SerialNumber);
     }
 
     public TYPE SemantMe() throws SemanticException

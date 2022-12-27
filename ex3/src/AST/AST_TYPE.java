@@ -22,12 +22,13 @@ public class AST_TYPE extends AST_Node{
     }
 
     public void PrintMe() {
-        System.out.format("AST_TYPE: %s\n", type);
-        /*********************************/
-        /* Print to AST GRAPHIZ DOT file */
-        /*********************************/
+        System.out.format("type: %s\n", type);
+
         AST_GRAPHVIZ.getInstance().logNode(SerialNumber,
-                String.format("type %s\n", type));
+                String.format("type: %s\n", type));
+        if (idValue != "")
+            AST_GRAPHVIZ.getInstance().logNode(SerialNumber,
+                    String.format("%s\n",idValue));
     }
 
     public TYPE SemantMe() throws SemanticException

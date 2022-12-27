@@ -47,10 +47,7 @@ public class AST_EXP_BINOP extends AST_EXP
 	/* The printing message for a binop exp AST node */
 	/*************************************************/
 	public void PrintMe() {
-		
-		/*********************************/
-		/* CONVERT OP to a printable sOP */
-		/*********************************/
+		System.out.format("exp BINOP");
 		switch(OP) {
 			case 0:
 				sOP = "+";
@@ -74,29 +71,21 @@ public class AST_EXP_BINOP extends AST_EXP
 				sOP = "=";
 				break;
 		}
-		/*************************************/
-		/* AST NODE TYPE = AST BINOP EXP */
-		/*************************************/
-		System.out.print("AST NODE EXP BINOP\n");
 
-		/**************************************/
-		/* RECURSIVELY PRINT left + right ... */
-		/**************************************/
-		if (left != null) left.PrintMe();
-		if (right != null) right.PrintMe();
-		
-		/***************************************/
-		/* PRINT Node to AST GRAPHVIZ DOT file */
-		/***************************************/
+		System.out.format("exp BINOP: %s\n", sOP);
+
+		if (left != null)
+			left.PrintMe();
+		if (right != null)
+			right.PrintMe();
+
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("BINOP(%s)",sOP));
-		
-		/****************************************/
-		/* PRINT Edges to AST GRAPHVIZ DOT file */
-		/****************************************/
-		if (left  != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,left.SerialNumber);
-		if (right != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,right.SerialNumber);
+			String.format("exp BINOP: %s",sOP));
+		if (left  != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,left.SerialNumber);
+		if (right != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,right.SerialNumber);
 	}
 
 	public TYPE SemantMe() throws SemanticException{

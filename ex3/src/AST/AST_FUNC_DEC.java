@@ -31,28 +31,24 @@ public class AST_FUNC_DEC extends AST_Node {
     }
 
     public void PrintMe() {
-        System.out.print("AST_FUNC_DEC\n");
+        System.out.format("funcDec: %s\n", this.name);
 
-        /*****************************/
-        /* RECURSIVELY PRINT var ... */
-        /*****************************/
-        return_type.PrintMe();
-        if (argList != null) argList.PrintMe();
-        stmtList.PrintMe();
+        if (return_type != null)
+            return_type.PrintMe();
+        if (argList != null)
+            argList.PrintMe();
+        if (stmtList != null)
+            stmtList.PrintMe();
 
-        /*********************************/
-        /* Print to AST GRAPHIZ DOT file */
-        /*********************************/
         AST_GRAPHVIZ.getInstance().logNode(
                 SerialNumber,
-                String.format("func_dec: %s\n", name));
-
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
-        AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, return_type.SerialNumber);
-        if (argList != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, argList.SerialNumber);
-        AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, stmtList.SerialNumber);
+                String.format("funcDec: %s\n", this.name));
+        if (return_type != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, return_type.SerialNumber);
+        if (argList != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, argList.SerialNumber);
+        if (stmtList != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, stmtList.SerialNumber);
     }
 
     public TYPE SemantMe() throws SemanticException

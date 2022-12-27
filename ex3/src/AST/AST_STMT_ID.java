@@ -26,29 +26,18 @@ public class AST_STMT_ID extends AST_STMT{
 
     public void PrintMe()
     {
-        /********************************************/
-        /* AST NODE TYPE = AST ASSIGNMENT STATEMENT */
-        /********************************************/
-        System.out.format("AST_STMT_ID %s\n", id);
+        System.out.format("stmt id %s\n", id);
 
-        /***********************************/
-        /* RECURSIVELY PRINT VAR + EXP ... */
-        /***********************************/
-        if (var != null) var.PrintMe();
-        if (l != null) l.PrintMe();
+        if (var != null)
+            var.PrintMe();
+        if (l != null)
+            l.PrintMe();
 
-        /***************************************/
-        /* PRINT Node to AST GRAPHVIZ DOT file */
-        /***************************************/
-        AST_GRAPHVIZ.getInstance().logNode(
-                SerialNumber,
-                String.format("ASSIGN\nID(%s) := right\n", id));
-
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
-        if(var != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
-        if(l != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,l.SerialNumber);
+        AST_GRAPHVIZ.getInstance().logNode(SerialNumber, String.format("stmt id %s\n", id));
+        if(var != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
+        if(l != null)
+            AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,l.SerialNumber);
     }
 
     @Override
