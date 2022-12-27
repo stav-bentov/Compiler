@@ -119,27 +119,31 @@ public class AST_EXP_BINOP extends AST_EXP
 				return left_type;
 
 			case "=":
-				// Only classes and arrays can be compared to NIL
-				if((left_type instanceof TYPE_NIL && !(right_type instanceof TYPE_CLASS || right_type instanceof TYPE_ARRAY))
-				|| (right_type instanceof TYPE_NIL && !(left_type instanceof TYPE_CLASS || left_type instanceof TYPE_ARRAY)))
-					throw new SemanticException(this);
 
-				// Equality testing must happen between two objects of the same type
+				// Equality testing must happen between two objects of the same type (besides the option of nil and class/array
 				if(!are_same_type)
-					throw new SemanticException(this);
-
-				// If the two objects are classes, we need to check that they are percisly the same class, or inherit from one another
-				if(left_type instanceof TYPE_CLASS){
-					boolean leftInheritsFromRight = ((TYPE_CLASS) left_type).inheritsFrom((TYPE_CLASS) right_type);
-					boolean rightInheritsFromLeft = ((TYPE_CLASS) left_type).inheritsFrom((TYPE_CLASS) right_type);
-					if(!leftInheritsFromRight && !rightInheritsFromLeft)
+				{
+					// Only classes and arrays can be compared to NIL
+					boolean leftIsNull = left_type instanceof TYPE_NIL && (right_type instanceof TYPE_CLASS || right_type instanceof TYPE_ARRAY);
+					boolean rightIsNull = right_type instanceof TYPE_NIL && (left_type instanceof TYPE_CLASS || left_type instanceof TYPE_ARRAY);
+					if (!leftIsNull && !rightIsNull)
 						throw new SemanticException(this);
 				}
+				else //are_same_type
+				{
+					// If the two objects are classes, we need to check that they are percisly the same class, or inherit from one another
+					if(left_type instanceof TYPE_CLASS){
+						boolean leftInheritsFromRight = ((TYPE_CLASS) left_type).inheritsFrom((TYPE_CLASS) right_type);
+						boolean rightInheritsFromLeft = ((TYPE_CLASS) right_type).inheritsFrom((TYPE_CLASS) left_type);
+						if(!leftInheritsFromRight && !rightInheritsFromLeft)
+							throw new SemanticException(this);
+					}
 
-				//arrays have to be precisely the same. using equals between them to check they are the same array
-				if(left_type instanceof TYPE_ARRAY){
-					if(!(left_type == right_type))
-						throw new SemanticException(this);
+					//arrays have to be precisely the same. using equals between them to check they are the same array
+					if(left_type instanceof TYPE_ARRAY){
+						if(!(left_type == right_type))
+							throw new SemanticException(this);
+					}
 				}
 
 				//equality always returns TYPE_INT

@@ -76,22 +76,25 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             /* vardec is CFIELD- just const string/int/null assignments*/
             if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS)
             {
-                if (!(this.exp instanceof AST_EXP_OPT))
+                if (!(this.exp instanceof AST_EXP_OPT)) {
                     throw new SemanticException(this);
+                }
 
                 /* TYPE_NIL only on TYPE_CLASS or TYPE_ARRAY*/
                 if (expType instanceof TYPE_NIL)
                 {
-                    if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY))
+                    if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY)) {
                         throw new SemanticException(this);
+                    }
                 }
             }
             else
             {
                 /* We are inside a function/ method/ global scope/ if/ while
                 * check that the assigned type is matched*/
-                if (!typeToAssign.checkAssign(expType))
+                if (!typeToAssign.checkAssign(expType)) {
                     throw new SemanticException(this);
+                }
             }
         }
 
