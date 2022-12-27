@@ -36,9 +36,20 @@ public class TYPE_FUNCTION extends TYPE
 					2. return types
 					3. parameter's types */
 		if (!(this.name.equals(compered_func.name))) return false;
+
 		/* TODO: check if inherited return type is an override */
 		if (this.returnType != compered_func.returnType) return false;
-		if (!(this.params.equalsForComparingSignature(compered_func.params))) return false;
+
+		//if one function has no params and other have params then they are not equal
+		if((this.params == null && compered_func.params != null) || (compered_func.params == null && this.params != null)){
+			return false;
+		}
+
+		//perform this check only if both are not null
+		if(this.params != null && compered_func.params != null){
+			if (!(this.params.equalsForComparingSignature(compered_func.params))) return false;
+		}
+
 		return true;
 	}
 }
