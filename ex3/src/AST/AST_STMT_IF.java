@@ -46,15 +46,13 @@ public class AST_STMT_IF extends AST_STMT {
 	public TYPE SemantMe() throws SemanticException {
 		TYPE condType = cond.SemantMe();
 
-		if (condType instanceof TYPE_INT) {
+		if (!(condType instanceof TYPE_INT)) {
 			throw new SemanticException(this);
 		}
 
 		/* Begin a new scope */
 		SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.IF, null);
-
 		body.SemantMe();
-
 		return null;
 	}
 }
