@@ -63,7 +63,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
          *             2. assign array variable
          *             3. assign int
          *             4. assign string
-         * BUT- if it's vardec in CFIELD(we are in a class), can only assign string, int, null*/
+         * BUT- if it's vardec in CFIELD (we are in a class), can only assign string, int, null*/
         if (this.exp != null)
         {
             TYPE expType = this.exp.SemantMe();
@@ -86,7 +86,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             {
                 /* We are inside a function/ method/ global scope/ if/ while
                 * check that the assigned type is matched*/
-                if (!typeToAssign.checkAssign(expType)) {
+                if (!checkAssign(new TYPE_VAR(this.id, typeToAssign), expType, this.exp)) {
                     throw new SemanticException(this);
                 }
             }
