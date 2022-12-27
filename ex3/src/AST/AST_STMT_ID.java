@@ -84,13 +84,20 @@ public class AST_STMT_ID extends AST_STMT{
         return null;
     }
 
-    private void CallToFuncMatchesFunc(TYPE_FUNCTION func) throws SemanticException {
-        /* Check if parameters match expected parameters */
-        TYPE_LIST params = (TYPE_LIST)l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
-        if (!func.params.equalsForValidatingGivenParams(params)) {
+    //appears in both AST_STMT_ID and AST_EXP_ID
+    private void CallToFuncMatchesFunc(TYPE_FUNCTION func) throws SemanticException{
+        //if our func has no params and the called func has params - throw error
+        if((this.l == null && func.params != null) || (func.params == null && this.l != null)){
             throw new SemanticException(this);
         }
 
-        /* No need to check return type - no assignment is done here */
+        //if they are both null all is good darling
+        if(this.l != null && func.params != null){
+            /* Check if parameters match expected parameters */
+            TYPE_LIST params = (TYPE_LIST) this.l.SemantMe(); // l.SemantMe() supposed to return TYPE_LIST
+            if (!func.params.equalsForValidatingGivenParams(params)) {
+                throw new SemanticException(this);
+            }
+        }
     }
 }

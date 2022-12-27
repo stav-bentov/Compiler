@@ -32,7 +32,6 @@ public class AST_STMT_RET extends AST_STMT {
 
     @Override
     public TYPE SemantMe() throws SemanticException {
-        System.out.println("BEFORE ==========================");
         TYPE expectedReturnType = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc()).returnType;
 
         if (exp == null) { // Returns nothing, return type should be void
