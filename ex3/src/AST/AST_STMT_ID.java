@@ -42,6 +42,7 @@ public class AST_STMT_ID extends AST_STMT{
 
     @Override
     public TYPE SemantMe() throws SemanticException {
-        return CheckCallToFunc(id, var, l);
+        CheckCallToFunc(id, var, l);
+        return null;
     }
 }

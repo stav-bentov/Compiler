@@ -124,7 +124,7 @@ public abstract class AST_Node
 		/* Check call */
 		CallToFuncMatchesFunc((TYPE_FUNCTION)typeFound, l); // We've already made sure typeFound is of TYPE_FUNC
 
-		return null;
+		return ((TYPE_FUNCTION) typeFound).returnType;
 	}
 
 	private void CallToFuncMatchesFunc(TYPE_FUNCTION func, AST_LIST<AST_EXP> l) throws SemanticException{
