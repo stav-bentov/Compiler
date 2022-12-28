@@ -77,21 +77,22 @@ public abstract class AST_Node
 			}
 			else
 			{ // expType != null
+				/* In this case: assignVar = something with type expType*/
 				if (assignVar.type instanceof TYPE_CLASS)
-				{
+				{/* className a = b -> b is from TYPE_CLASS and equal or inheritance from the className*/
 					if (expType instanceof TYPE_CLASS && ((TYPE_CLASS) expType).inheritsFrom((TYPE_CLASS) assignVar.type))
 						return true;
 				}
-
+				/* arrayName a = b -> b is from type array and equal to arrayName*/
 				else if (assignVar.type instanceof TYPE_ARRAY)
 				{
 					if (expType instanceof TYPE_ARRAY)
 					{
-						if (((TYPE_ARRAY) assignVar.type).arrayType == expType)
+						if (assignVar.type == expType)
 							return true;
 					}
 				}
-
+				/* string/int a*/
 				else
 				{
 					if (assignVar.type == expType)
