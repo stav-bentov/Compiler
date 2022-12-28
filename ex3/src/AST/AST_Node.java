@@ -98,7 +98,7 @@ public abstract class AST_Node
 
 		/* Find type */
 		if (var == null) {
-			typeFound = SYMBOL_TABLE.getInstance().findInInheritance(id);
+			typeFound = SYMBOL_TABLE.getInstance().find(id);
 		}
 		else {
 			TYPE typeOfVar = ((TYPE_VAR)var.SemantMe()).type;
@@ -111,16 +111,7 @@ public abstract class AST_Node
 
 		/* Check if type was found */
 		if (typeFound == null) {
-			/* If not found, and it can be a global function, check in global scope */
-			if (var == null) { // If var is null it can be a global function
-				typeFound = SYMBOL_TABLE.getInstance().findInGlobal(id);
-			}
-
-			/* Check if it is still not found */
-			if (typeFound == null) {
-				/* Now it really does not exist */
-				throw new SemanticException(this);
-			}
+			throw new SemanticException(this);
 		}
 
 		/* Check if it's a method */

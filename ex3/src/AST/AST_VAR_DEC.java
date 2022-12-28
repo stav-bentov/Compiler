@@ -41,14 +41,10 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     {
         /* Check: 1. No other variable with this name in current scope
                   2. If we are in class- no variable with this name in parent class*/
-        if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null)
-            throw new SemanticException(this);
 
         /* If we are not in a class check there is no variable (CFIELD) with this name in parents classes */
-        if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS){
-            if (SYMBOL_TABLE.getInstance().findInInheritance(this.id) != null) {
+        if (SYMBOL_TABLE.getInstance().find(this.id) != null) {
                 throw new SemanticException(this);
-            }
         }
 
         /* Check: type can be instanced (is in AST_TYPE) but not VOID */

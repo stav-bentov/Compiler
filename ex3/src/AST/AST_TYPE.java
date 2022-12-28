@@ -48,9 +48,10 @@ public class AST_TYPE extends AST_Node{
         }
         /* Check if it's a name of existing array or a class */
         /* Assumption- If we are in a class then the class is already entered to the symbol table*/
-        if (!SYMBOL_TABLE.getInstance().typeCanBeInstanced(this.idValue))
+        TYPE instancedType = SYMBOL_TABLE.getInstance().findInstanced(this.idValue);
+        if (instancedType == null)
             throw new SemanticException(this);
         /* typeCanBeInstanced(idValue) == true then this the type with this name is exist */
-        return SYMBOL_TABLE.getInstance().findInGlobal(this.idValue);
+        return instancedType;
     }
 }

@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 /* PROJECT IMPORTS */
 /*******************/
 import TYPES.*;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 /****************/
 /* SYMBOL TABLE */
@@ -86,25 +85,7 @@ public class SYMBOL_TABLE
 		PrintMe();
 	}
 
-	/***********************************************/
-	/* Find the inner-most scope element with name */
-	/***********************************************/
-	public TYPE find(String name)
-	{
-		SYMBOL_TABLE_ENTRY e;
-				
-		for (e = table[hash(name)]; e != null; e = e.next)
-		{
-			if (name.equals(e.name))
-			{
-				return e.type;
-			}
-		}
-		
-		return null;
-	}
-
-	public TYPE findNotGlobal(String name){
+	private TYPE findNotGlobal(String name){
 		SYMBOL_TABLE_ENTRY e;
 
 		for (e = table[hash(name)]; e != null; e = e.next)
@@ -120,19 +101,45 @@ public class SYMBOL_TABLE
 	}
 
 	//first searches in not global (nesting func/class), then inheritance and finally global scope.
-	public TYPE findWithPriority(String name){
+	public TYPE find(String name){
 		TYPE type;
-		type = findNotGlobal(name);
+		type = findNotGlobal(name); // Up until and including class / global func
 
 		if(type == null) {
 			type = findInInheritance(name);
 		}
 
 		if(type == null){
-			type = findInGlobal(name);
+			SYMBOL_TABLE_ENTRY e = findInGlobal(name);
+			type = e != null ? e.type : null;
 		}
 		return type;
 	}
+
+	/* Returns a type that can be instanced, else- returns null */
+	public TYPE findInstanced(String name){
+		TYPE type = null;
+		type = findNotGlobal(name); // Up until and including class / global func
+
+		if(type == null) {
+			type = findInInheritance(name);
+		}
+		else {
+			return null; // Found *not* in global -> cannot be instanced
+		}
+
+		if(type == null){
+			SYMBOL_TABLE_ENTRY e = findInGlobal(name);
+			if (e != null)
+				type = e.canBeInstanced ? e.type : null;
+		}
+		else {
+			return null; // Found in inheritance -> cannot be instanced
+		}
+
+		return type;
+	}
+
 	/***************************************************************************/
 	/* begine scope = Enter the <SCOPE-BOUNDARY> element to the data structure
 	* ScopeTypeEnum scopeType: class, func, if, while global
@@ -233,11 +240,11 @@ public class SYMBOL_TABLE
 
 	/* Receives: name
 	   Returns the TYPE of entry named "name" in the global scope*/
-	public TYPE findInGlobal(String name)
+	private SYMBOL_TABLE_ENTRY findInGlobal(String name)
 	{
 		SYMBOL_TABLE_ENTRY e = findEntryInGlobal(name);
 		if (e == null) return null;
-		return e.type;
+		return e;
 	}
 
 	public boolean typeCanBeInstanced(String name)
@@ -267,7 +274,7 @@ public class SYMBOL_TABLE
 	/* Receives: name
 	   Returns the TYPE of the data member named "name" by searching in current open class and fathers
 	   If we are not in a class OR there is no data member with this name- returns null*/
-	public TYPE findInInheritance(String name)
+	private TYPE findInInheritance(String name)
 	{
 		TYPE_CLASS current_class= getCurrentClass();
 		return findInInheritance(name, current_class);

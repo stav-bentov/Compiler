@@ -47,7 +47,7 @@ public class AST_CLASS_DEC extends AST_Node{
             throw new SemanticException(this);
         }
 
-        if(SYMBOL_TABLE.getInstance().findInGlobal(this.className) != null)
+        if(SYMBOL_TABLE.getInstance().find(this.className) != null)
             throw new SemanticException(this);
 
         /*************************/
@@ -62,7 +62,7 @@ public class AST_CLASS_DEC extends AST_Node{
         /***************************/
 
         if(this.extendsName != null){
-            TYPE father = SYMBOL_TABLE.getInstance().findInGlobal(this.extendsName);
+            TYPE father = SYMBOL_TABLE.getInstance().find(this.extendsName);
             if(father == null){
                 System.out.println(this.line);
                 throw new SemanticException(this);
