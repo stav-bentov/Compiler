@@ -274,7 +274,7 @@ public class SYMBOL_TABLE
 	/* Receives: name
 	   Returns the TYPE of the data member named "name" by searching in current open class and fathers
 	   If we are not in a class OR there is no data member with this name- returns null*/
-	private TYPE findInInheritance(String name)
+	public TYPE findInInheritance(String name)
 	{
 		TYPE_CLASS current_class= getCurrentClass();
 		return findInInheritance(name, current_class);
