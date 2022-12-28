@@ -78,7 +78,7 @@ public abstract class AST_Node
 				{
 					if (expType instanceof TYPE_ARRAY)
 					{
-						if (((TYPE_ARRAY) assignVar.type).arrayType == ((TYPE_ARRAY) expType).arrayType)
+						if (((TYPE_ARRAY) assignVar.type).arrayType == expType)
 							return true;
 					}
 				}
