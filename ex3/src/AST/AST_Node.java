@@ -39,7 +39,16 @@ public abstract class AST_Node
 				/* A = new type[exp] -> check A.arrayType = type*/
 				if (((AST_NEW_EXP_NEW_TYPE_EXP) exp).exp != null)
 				{
-					if (((TYPE_ARRAY) assignVar.type).arrayType == expType)
+					TYPE arrayType = ((TYPE_ARRAY) assignVar.type).arrayType;
+					// Allow inheritance
+					if (arrayType instanceof TYPE_CLASS)
+					{
+						if (expType instanceof TYPE_CLASS && ((TYPE_CLASS) expType).inheritsFrom((TYPE_CLASS) arrayType))
+						{
+							return true;
+						}
+					}
+					else if (arrayType == expType)
 					{
 						return true;
 					}
