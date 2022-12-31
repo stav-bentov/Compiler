@@ -53,7 +53,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 
 		//type has to be a var or class (type is class in case of something like: house.room.size - so house.room is a class)
 		//type is a method is handled in AST_EXP_ID
-		if(!type.isVar() && !type.isClass()){
+		if(!type.isVar()){
 			throw new SemanticException(this);
 		}
 

@@ -120,6 +120,11 @@ public class AST_EXP_BINOP extends AST_EXP
 				}
 				else //are_same_type
 				{
+					//if left_type is of TYPE_VOID it means both right and left are of type_void, and comparing two type voids is an error
+					if(left_type instanceof TYPE_VOID){
+						throw new SemanticException(this);
+					}
+
 					// If the two objects are classes, we need to check that they are percisly the same class, or inherit from one another
 					if(left_type instanceof TYPE_CLASS){
 						boolean leftInheritsFromRight = ((TYPE_CLASS) left_type).inheritsFrom((TYPE_CLASS) right_type);

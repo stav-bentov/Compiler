@@ -53,7 +53,6 @@ public class AST_FUNC_DEC extends AST_Node {
 
     public TYPE SemantMe() throws SemanticException
     {
-        System.out.println("in function");
         boolean validName, isMethod, isFunction;
         TYPE_FUNCTION currTypeFunc;
         ScopeTypeEnum scopeType;
