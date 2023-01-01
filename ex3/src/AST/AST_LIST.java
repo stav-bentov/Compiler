@@ -37,7 +37,7 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
     public TYPE SemantMe() throws SemanticException
     {
         /* No need to create TYPE_LIST*/
-        if (this.head instanceof AST_STMT || this.head instanceof AST_DEC)
+        if (this.head instanceof AST_STMT || this.head instanceof AST_DEC || this.head instanceof AST_CFIELD_DEC<?>)
         {
             this.head.SemantMe();
             if (this.tail != null)
@@ -49,7 +49,6 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
         TYPE_LIST tailType = null;
 
         /* AST_EXP (TYPE_LIST of TYPE)
-           AST_CFIELD (TYPE_LIST of TYPE_VAR and TYPE_FUNCTION)
            AST_ARGUMENT (TYPE_LIST of TYPE_VAR)*/
         /* CASE AST_ARGUMENT: parameters list check parameters:(checked in AST_TYPE) parameter's type can be
                                instanced (only a "string"/ "int"/ previous declared class/ previous declared array)*/

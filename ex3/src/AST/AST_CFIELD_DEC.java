@@ -31,6 +31,12 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
     }
 
     public TYPE SemantMe() throws SemanticException {
-        return dec.SemantMe();
+        TYPE dataMemberToAdd = dec.SemantMe();
+
+        /* Add new data member to data_members of current class */
+        TYPE_LIST dataMembers = SYMBOL_TABLE.getInstance().getCurrentClass().data_members;
+        SYMBOL_TABLE.getInstance().getCurrentClass().data_members = new TYPE_LIST(dataMemberToAdd, dataMembers);
+
+        return null;
     }
 }

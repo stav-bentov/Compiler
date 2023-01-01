@@ -78,7 +78,7 @@ public class AST_CLASS_DEC extends AST_Node{
         SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, type_class);
 
         //SemantMe will check if illegal inheritance or duplicated names in the same scope
-        type_class.data_members = (TYPE_LIST) cFieldList.SemantMe();
+        cFieldList.SemantMe();
 
         /*****************/
         /* [3] End Scope */
