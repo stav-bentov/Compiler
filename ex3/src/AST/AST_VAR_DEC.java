@@ -40,22 +40,28 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public TYPE SemantMe() throws SemanticException
     {
         /* Check: 1. No other variable with this name in current scope
-                  2. If we are in class- no variable with this name in parent class*/
+                  2. If we are in class- need to make sure that there is only overriding*/
         if (SYMBOL_TABLE.getInstance().findInLastScope(this.id) != null)
             throw new SemanticException(this);
-
-        /* If we are not in a class check there is no variable (CFIELD) with this name in parents classes */
-        if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS){
-            if (SYMBOL_TABLE.getInstance().findInInheritance(this.id) != null) {
-                throw new SemanticException(this);
-            }
-        }
 
         /* Check: type can be instanced (is in AST_TYPE) but not VOID */
         TYPE typeToAssign = this.type.SemantMe();
         if (typeToAssign instanceof TYPE_VOID)
         {
             throw new SemanticException(this);
+        }
+
+
+        /* Check that if there is a CFIELD with this name- it has the same type */
+        if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS){
+            TYPE searchInInheritance = SYMBOL_TABLE.getInstance().findInInheritance(this.id);
+            if (searchInInheritance != null) {
+                /* Error: 1. There is a CFIELD with this name and it's not TYPE_VAR- it's TYPE_FUNCTION
+                          2. There is a CFIELD with this name and it's TYPE_VAR- check it's the same type
+                 */
+                if ((!(searchInInheritance.isVar() && ((TYPE_VAR) searchInInheritance).type == typeToAssign)) || (!searchInInheritance.isVar()))
+                    throw new SemanticException(this);
+            }
         }
 
         /*  Compare types if there is an ASSIGNMENT
