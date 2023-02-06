@@ -13,6 +13,8 @@ import java.io.PrintWriter;
 /*******************/
 import TEMP.*;
 
+import javax.swing.text.Segment;
+
 public class MIPSGenerator
 {
 	private int WORD_SIZE=4;
@@ -67,8 +69,8 @@ public class MIPSGenerator
 	}
 	public void li(TEMP t,int value)
 	{
-		int idx=t.getSerialNumber();
-		fileWriter.format("\tli Temp_%d,%d\n",idx,value);
+		open_segment(SegmentType.CODE);
+		fileWriter.format("\tli $t%d, %d\n", t.register_serial, value);
 	}
 	public void add(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{

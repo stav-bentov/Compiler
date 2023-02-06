@@ -1,6 +1,8 @@
 package AST;
+import IR.IR;
 import TYPES.*;
-import SYMBOL_TABLE.*;
+import TEMP.*;
+import IR.*;
 
 public class AST_EXP_OPT extends AST_EXP
 {
@@ -59,5 +61,27 @@ public class AST_EXP_OPT extends AST_EXP
 		}
 
 		return type;
+	}
+
+	public TEMP IRme() {
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		switch (this.opt)
+		{
+			case "MINUS INT":
+				IR.getInstance().Add_IRcommand(new IRcommand_Int(t, (-1) * this.i));
+				break;
+			case "INT":
+				IR.getInstance().Add_IRcommand(new IRcommand_Int(t, this.i));
+				break;
+			case "STRING":
+				String str_label = IRcommand.getFreshLabel("str");
+				IR.getInstance().Add_IRcommand(new IRcommand_String(t, this.s, str_label));
+				break;
+			case "NIL":
+				IR.getInstance().Add_IRcommand(new IRcommand_Nil(t));
+				break;
+		}
+
+		return t;
 	}
 }

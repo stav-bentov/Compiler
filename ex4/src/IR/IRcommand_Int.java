@@ -13,12 +13,12 @@ package IR;
 import TEMP.*;
 import MIPS.*;
 
-public class IRcommandConstInt extends IRcommand
+public class IRcommand_Int extends IRcommand
 {
 	TEMP t;
 	int value;
 	
-	public IRcommandConstInt(TEMP t,int value)
+	public IRcommand_Int(TEMP t, int value)
 	{
 		this.t = t;
 		this.value = value;
@@ -29,6 +29,6 @@ public class IRcommandConstInt extends IRcommand
 	/***************/
 	public void MIPSme()
 	{
-		MIPSGenerator.getInstance().li(t,value);
+		MIPSGenerator.getInstance().li(t, value);
 	}
 }
