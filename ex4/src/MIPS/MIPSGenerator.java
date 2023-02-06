@@ -91,22 +91,26 @@ public class MIPSGenerator
 		fileWriter.format(".data\n");
 		fileWriter.format("\tglobal_%s: .word 721\n",var_name);
 	}
+
 	public void load(TEMP dst,String var_name)
 	{
 		int idxdst=dst.getSerialNumber();
 		fileWriter.format("\tlw Temp_%d,global_%s\n",idxdst,var_name);
 	}
+
 	public void store(String var_name,TEMP src)
 	{
 		int idxsrc=src.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,global_%s\n",idxsrc,var_name);		
 	}
+
 	public void li(TEMP t,int value)
 	{
 		open_segment(SegmentType.CODE);
 		int idx=t.getRegisterSerialNumber();
 		fileWriter.format("\tli $t%d,%d\n", idx, value);
 	}
+
 	public void add(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
 		int i1 = oprnd1.getRegisterSerialNumber();
@@ -115,6 +119,16 @@ public class MIPSGenerator
 
 		fileWriter.format("\tadd t%d, t%d, t%d\n", dstidx, i1, i2);
 	}
+
+	public void sub(TEMP dst,TEMP oprnd1,TEMP oprnd2)
+	{
+		int i1 = oprnd1.getRegisterSerialNumber();
+		int i2 = oprnd2.getRegisterSerialNumber();
+		int dstidx = dst.getRegisterSerialNumber();
+
+		fileWriter.format("\tsub t%d, t%d, t%d\n", dstidx, i1, i2);
+	}
+
 	public void mul(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
 		int i1 = oprnd1.getRegisterSerialNumber();
@@ -123,6 +137,16 @@ public class MIPSGenerator
 
 		fileWriter.format("\tmul t%d, t%d, t%d\n", dstidx, i1, i2);
 	}
+
+	public void div(TEMP dst,TEMP oprnd1,TEMP oprnd2)
+	{
+		int i1 = oprnd1.getRegisterSerialNumber();
+		int i2 = oprnd2.getRegisterSerialNumber();
+		int dstidx = dst.getRegisterSerialNumber();
+
+		fileWriter.format("\tdiv t%d, t%d, t%d\n", dstidx, i1, i2);
+	}
+
 	public void label(String inlabel)
 	{
 		if (inlabel.equals("main"))
@@ -134,11 +158,13 @@ public class MIPSGenerator
 		{
 			fileWriter.format("%s:\n",inlabel);
 		}
-	}	
+	}
+
 	public void jump(String inlabel)
 	{
 		fileWriter.format("\tj %s\n",inlabel);
-	}	
+	}
+
 	public void blt(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
@@ -146,6 +172,7 @@ public class MIPSGenerator
 		
 		fileWriter.format("\tblt Temp_%d,Temp_%d,%s\n",i1,i2,label);				
 	}
+
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
@@ -153,6 +180,7 @@ public class MIPSGenerator
 		
 		fileWriter.format("\tbge Temp_%d,Temp_%d,%s\n",i1,i2,label);				
 	}
+
 	public void bne(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
@@ -160,6 +188,7 @@ public class MIPSGenerator
 		
 		fileWriter.format("\tbne Temp_%d,Temp_%d,%s\n",i1,i2,label);				
 	}
+
 	public void beq(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
@@ -167,6 +196,7 @@ public class MIPSGenerator
 		
 		fileWriter.format("\tbeq Temp_%d,Temp_%d,%s\n",i1,i2,label);				
 	}
+
 	public void beqz(TEMP oprnd1,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
