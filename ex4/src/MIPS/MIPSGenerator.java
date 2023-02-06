@@ -13,7 +13,11 @@ import java.io.PrintWriter;
 /*******************/
 import TEMP.*;
 
-import javax.swing.text.Segment;
+enum SegmentType{
+	NONE = 0,
+	DATA = 1,
+	CODE = 2
+}
 
 public class MIPSGenerator
 {
@@ -22,6 +26,7 @@ public class MIPSGenerator
 	/* The file writer ... */
 	/***********************/
 	private PrintWriter fileWriter;
+	private SegmentType current_segment = SegmentType.NONE;
 
 	/***********************/
 	/* The file writer ... */
@@ -52,6 +57,35 @@ public class MIPSGenerator
 	//	
 	//	return t;
 	//}
+
+	/*==================================== Stav ====================================*/
+	public void lstr(TEMP t,String str, String str_label)
+	{
+		/* Ceate string value as a global variable in data*/
+		open_segment(SegmentType.DATA);
+		fileWriter.format("%s: .asciiz %s\n", str_label, str);
+
+		/* TODO: if t!= null */
+		/* Point to the seted string*/
+		open_segment(SegmentType.CODE);
+		fileWriter.format("\tla $t%d, %s\n", t.getRegisterSerialNumber(), str_label);
+	}
+
+	public void open_segment(SegmentType segment_type)
+	{
+		String segment = "data";
+		if (segment_type == SegmentType.CODE)
+		{
+			segment = "code";
+		}
+
+		if (this.current_segment != segment_type)
+		{
+			fileWriter.format(".%s\n", segment);
+		}
+		this.current_segment = segment_type;
+	}
+
 	public void allocate(String var_name)
 	{
 		fileWriter.format(".data\n");
@@ -69,8 +103,8 @@ public class MIPSGenerator
 	}
 	public void li(TEMP t,int value)
 	{
-		open_segment(SegmentType.CODE);
-		fileWriter.format("\tli $t%d, %d\n", t.register_serial, value);
+		int idx=t.getSerialNumber();
+		fileWriter.format("\tli Temp_%d,%d\n",idx,value);
 	}
 	public void add(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{

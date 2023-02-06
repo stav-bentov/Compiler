@@ -15,11 +15,13 @@ public class AST_EXP_OPT extends AST_EXP
 	/******************/
 	public AST_EXP_OPT(Integer i, String s, String opt, int line) {
 		SerialNumber = AST_Node_Serial_Number.getFresh();
+
 		System.out.format("====================== exp -> %s", opt);
 		if (opt.equals("INT") || opt.equals("MINUS INT"))
 			System.out.format("(%d)\n", i);
 		if(opt.equals("STRING"))
 			System.out.format("(%s)\n", s);
+
 		this.i = i;
 		this.s = s;
 		this.opt = opt;
@@ -44,7 +46,8 @@ public class AST_EXP_OPT extends AST_EXP
 		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, String.format("%s: %s",opt,str));
 	}
 
-	public TYPE SemantMe() throws SemanticException{
+	public TYPE SemantMe() throws SemanticException
+	{
 		TYPE type = null;
 		switch (this.opt)
 		{
@@ -65,6 +68,7 @@ public class AST_EXP_OPT extends AST_EXP
 
 	public TEMP IRme() {
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+
 		switch (this.opt)
 		{
 			case "MINUS INT":
