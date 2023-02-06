@@ -14,9 +14,9 @@ import java.io.PrintWriter;
 import TEMP.*;
 
 enum SegmentType{
-	NONE = 0,
-	DATA = 1,
-	CODE = 2
+	NONE,
+	DATA,
+	CODE
 }
 
 public class MIPSGenerator
@@ -103,24 +103,25 @@ public class MIPSGenerator
 	}
 	public void li(TEMP t,int value)
 	{
-		int idx=t.getSerialNumber();
-		fileWriter.format("\tli Temp_%d,%d\n",idx,value);
+		open_segment(SegmentType.CODE);
+		int idx=t.getRegisterSerialNumber();
+		fileWriter.format("\tli $t%d,%d\n", idx, value);
 	}
 	public void add(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
-		int i1 =oprnd1.getSerialNumber();
-		int i2 =oprnd2.getSerialNumber();
-		int dstidx=dst.getSerialNumber();
+		int i1 = oprnd1.getRegisterSerialNumber();
+		int i2 = oprnd2.getRegisterSerialNumber();
+		int dstidx = dst.getRegisterSerialNumber();
 
-		fileWriter.format("\tadd Temp_%d,Temp_%d,Temp_%d\n",dstidx,i1,i2);
+		fileWriter.format("\tadd t%d, t%d, t%d\n", dstidx, i1, i2);
 	}
 	public void mul(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
-		int i1 =oprnd1.getSerialNumber();
-		int i2 =oprnd2.getSerialNumber();
-		int dstidx=dst.getSerialNumber();
+		int i1 = oprnd1.getRegisterSerialNumber();
+		int i2 = oprnd2.getRegisterSerialNumber();
+		int dstidx = dst.getRegisterSerialNumber();
 
-		fileWriter.format("\tmul Temp_%d,Temp_%d,Temp_%d\n",dstidx,i1,i2);
+		fileWriter.format("\tmul t%d, t%d, t%d\n", dstidx, i1, i2);
 	}
 	public void label(String inlabel)
 	{

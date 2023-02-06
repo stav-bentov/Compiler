@@ -23,11 +23,11 @@ public class IRcommand_String extends IRcommand
 	{
 		this.t = t;
 		this.str = str;
-		this.str_lable = label;
+		this.str_label = label;
 	}
 
 	public void MIPSme()
 	{
-		MIPSGenerator.getInstance().lstr(t,value);
+		MIPSGenerator.getInstance().lstr(t, str, str_label);
 	}
 }
