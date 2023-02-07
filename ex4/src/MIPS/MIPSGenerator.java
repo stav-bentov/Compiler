@@ -504,20 +504,20 @@ public class MIPSGenerator
 		label(label_end); // add label
 	}
 
-	public void LTIntegers(TEMP dst, TEMP t1, TEMP t2) {
+	public void GTIntegers(TEMP dst, TEMP t1, TEMP t2) {
 		/*******************************/
 		/* [1] Allocate 2 fresh labels */
 		/*******************************/
 		String label_end        = IRcommand.getFreshLabel("end");
-		String label_AssignOne  = IRcommand.getFreshLabel("AssignOne");
-		String label_AssignZero = IRcommand.getFreshLabel("AssignZero");
+		String label_assign_one  = IRcommand.getFreshLabel("assign_one");
+		String label_assign_zero = IRcommand.getFreshLabel("assign_zero");
 
 		/******************************************/
 		/* [2] if (t1> t2) goto label_AssignOne;  */
 		/*     if (t1<=t2) goto label_AssignZero; */
 		/******************************************/
-		bgt(t1,t2,label_AssignOne);
-		ble(t1,t2,label_AssignZero);
+		bgt(t1,t2,label_assign_one);
+		ble(t1,t2,label_assign_zero);
 
 		/************************/
 		/* [3] label_AssignOne: */
@@ -526,7 +526,7 @@ public class MIPSGenerator
 		/*         goto end;    */
 		/*                      */
 		/************************/
-		label(label_AssignOne);
+		label(label_assign_one);
 		li(dst,1);
 		jump(label_end);
 
@@ -537,7 +537,7 @@ public class MIPSGenerator
 		/*         goto end;     */
 		/*                       */
 		/*************************/
-		label(label_AssignZero);
+		label(label_assign_zero);
 		li(dst,0);
 		jump(label_end);
 
@@ -547,20 +547,20 @@ public class MIPSGenerator
 		label(label_end);
 	}
 
-	public void GTIntegers(TEMP dst, TEMP t1, TEMP t2) {
+	public void LTIntegers(TEMP dst, TEMP t1, TEMP t2) {
 		/*******************************/
 		/* [1] Allocate 2 fresh labels */
 		/*******************************/
 		String label_end        = IRcommand.getFreshLabel("end");
-		String label_AssignOne  = IRcommand.getFreshLabel("AssignOne");
-		String label_AssignZero = IRcommand.getFreshLabel("AssignZero");
+		String label_assign_one  = IRcommand.getFreshLabel("assign_one");
+		String label_assign_zero = IRcommand.getFreshLabel("assign_zero");
 
 		/******************************************/
 		/* [2] if (t1< t2) goto label_AssignOne;  */
 		/*     if (t1>=t2) goto label_AssignZero; */
 		/******************************************/
-		bgt(t1,t2,label_AssignOne);
-		bge(t1,t2,label_AssignZero);
+		bgt(t1,t2,label_assign_one);
+		bge(t1,t2,label_assign_zero);
 
 		/************************/
 		/* [3] label_AssignOne: */
@@ -569,7 +569,7 @@ public class MIPSGenerator
 		/*         goto end;    */
 		/*                      */
 		/************************/
-		label(label_AssignOne);
+		label(label_assign_one);
 		li(dst,1);
 		jump(label_end);
 
@@ -580,7 +580,7 @@ public class MIPSGenerator
 		/*         goto end;     */
 		/*                       */
 		/*************************/
-		label(label_AssignZero);
+		label(label_assign_zero);
 		li(dst,0);
 		jump(label_end);
 
@@ -595,15 +595,15 @@ public class MIPSGenerator
 		/* [1] Allocate 3 fresh labels */
 		/*******************************/
 		String label_end        = IRcommand.getFreshLabel("end");
-		String label_AssignOne  = IRcommand.getFreshLabel("AssignOne");
-		String label_AssignZero = IRcommand.getFreshLabel("AssignZero");
+		String label_assign_one  = IRcommand.getFreshLabel("assign_one");
+		String label_assign_zero = IRcommand.getFreshLabel("assign_zero");
 
 		/******************************************/
 		/* [2] if (t1==t2) goto label_AssignOne;  */
 		/*     if (t1!=t2) goto label_AssignZero; */
 		/******************************************/
-		beq(t1,t2,label_AssignOne);
-		bne(t1,t2,label_AssignZero);
+		beq(t1,t2,label_assign_one);
+		bne(t1,t2,label_assign_zero);
 
 		/************************/
 		/* [3] label_AssignOne: */
@@ -612,7 +612,7 @@ public class MIPSGenerator
 		/*         goto end;    */
 		/*                      */
 		/************************/
-		label(label_AssignOne);
+		label(label_assign_one);
 		li(dst,1);
 		jump(label_end);
 
@@ -623,7 +623,7 @@ public class MIPSGenerator
 		/*         goto end;     */
 		/*                       */
 		/*************************/
-		label(label_AssignZero);
+		label(label_assign_zero);
 		li(dst,0);
 		jump(label_end);
 
