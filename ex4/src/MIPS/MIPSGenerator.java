@@ -589,6 +589,49 @@ public class MIPSGenerator
 		/******************/
 		label(label_end);
 	}
+
+	public void EQIntegers(TEMP dst, TEMP t1, TEMP t2) {
+		/*******************************/
+		/* [1] Allocate 3 fresh labels */
+		/*******************************/
+		String label_end        = IRcommand.getFreshLabel("end");
+		String label_AssignOne  = IRcommand.getFreshLabel("AssignOne");
+		String label_AssignZero = IRcommand.getFreshLabel("AssignZero");
+
+		/******************************************/
+		/* [2] if (t1==t2) goto label_AssignOne;  */
+		/*     if (t1!=t2) goto label_AssignZero; */
+		/******************************************/
+		beq(t1,t2,label_AssignOne);
+		bne(t1,t2,label_AssignZero);
+
+		/************************/
+		/* [3] label_AssignOne: */
+		/*                      */
+		/*         t3 := 1      */
+		/*         goto end;    */
+		/*                      */
+		/************************/
+		label(label_AssignOne);
+		li(dst,1);
+		jump(label_end);
+
+		/*************************/
+		/* [4] label_AssignZero: */
+		/*                       */
+		/*         t3 := 1       */
+		/*         goto end;     */
+		/*                       */
+		/*************************/
+		label(label_AssignZero);
+		li(dst,0);
+		jump(label_end);
+
+		/******************/
+		/* [5] label_end: */
+		/******************/
+		label(label_end);
+	}
 	
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */

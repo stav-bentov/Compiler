@@ -192,11 +192,11 @@ public class AST_EXP_BINOP extends AST_EXP
 			case 5: // >
 				IR.getInstance().Add_IRcommand(new IRcommand_Binop_GT_Integers(dst, t1, t2));
 				break;
-			case 6:
+			case 6: // ==
 				if (type instanceof TYPE_STRING) {
 					//TODO: add implementation
 				}
-				else { // TYPE_INT
+				else { // TYPE_INT, object, array (when comparing obj/array we're comparing the addresses (= int cmp)
 					IR.getInstance().Add_IRcommand(new IRcommand_Binop_EQ_Integers(dst, t1, t2));
 				}
 				break;
