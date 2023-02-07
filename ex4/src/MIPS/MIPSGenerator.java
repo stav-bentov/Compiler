@@ -143,12 +143,12 @@ public class MIPSGenerator
 	}
 
 	/* Receives strings of dst_register, src_register and offset (for src)
-	   make the mips instruction lb: dst_register[offset] <- src_register
+	   make the mips instruction sb: dst_register[offset] <- src_register
 	 */
 	public void sb(String src_register, String dst_register, int offset)
 	{
 		/* lb: transfers one byte of data from main memory to a register */
-		fileWriter.format("\tsb %s, %d(%s)\n", dst_register, offset, src_register);
+		fileWriter.format("\tsb %s, %d(%s)\n", src_register, offset, dst_register);
 	}
 
 	/* Receives strings of reg1, reg2 and jump label
@@ -156,7 +156,7 @@ public class MIPSGenerator
 	 */
 	public void beq(String reg1, String reg2, String label)
 	{
-		fileWriter.format("\tbeq %s, %s, %s\n", label);
+		fileWriter.format("\tbeq %s, %s, %s\n", reg1, reg2, label);
 	}
 
 	/* Receives strings of reg1, reg2 and jump label
@@ -164,7 +164,7 @@ public class MIPSGenerator
 	 */
 	public void bne(String reg1, String reg2, String label)
 	{
-		fileWriter.format("\tbne %s, %s, %s\n", label);
+		fileWriter.format("\tbne %s, %s, %s\n", reg1, reg2, label);
 	}
 
 	/* Receives strings of dst_register, reg and int inc
@@ -253,7 +253,7 @@ public class MIPSGenerator
 	{
 		/* Body of len_func: using $v0 to calculate the len of the argument */
 		String start_label = IRcommand.getFreshLabel("start_compare_loop");
-		String set_dst_0 = IRcommand.getFreshLabel("set_dst_0");
+		String set_dst_0 = IRcommand.getFreshLabel("assign_zero");
 		String end_label = IRcommand.getFreshLabel("end_compare_loop");
 
 		/* Set registers */
