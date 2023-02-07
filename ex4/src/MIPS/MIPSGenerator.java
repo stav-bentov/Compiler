@@ -559,8 +559,8 @@ public class MIPSGenerator
 		/* [2] if (t1< t2) goto label_AssignOne;  */
 		/*     if (t1>=t2) goto label_AssignZero; */
 		/******************************************/
-		bgt(t1,t2,label_assign_one);
-		bge(t1,t2,label_assign_zero);
+		blt(t1,t2,label_assign_one);
+		ble(t1,t2,label_assign_zero);
 
 		/************************/
 		/* [3] label_AssignOne: */
