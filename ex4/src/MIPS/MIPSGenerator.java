@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 /*******************/
 /* PROJECT IMPORTS */
 /*******************/
+import IR.IRcommand;
 import TEMP.*;
 
 enum SegmentType{
@@ -202,6 +203,33 @@ public class MIPSGenerator
 		int i1 =oprnd1.getSerialNumber();
 				
 		fileWriter.format("\tbeq Temp_%d,$zero,%s\n",i1,label);				
+	}
+
+	/* Fixes result of binop to match semantics of L language.
+	   In case of overflow, will assign max value,
+	   In case of underflow, will assign min value.
+	 */
+	public void standardBinopToLBinop(TEMP t) {
+		int MAX_VALUE = 32767;
+		int MIN_VALUE = -32768;
+
+		String checkOverflowLabel = IRcommand.getFreshLabel("check_overflow");
+		String endLabel = IRcommand.getFreshLabel("end_overflow_underflow_fix");
+
+		fileWriter.format("\tli $s0, %d\n", MIN_VALUE); // $s0 := MIN_VALUE
+		fileWriter.format("\tli $s1, %d\n", MAX_VALUE); // $s1 := MAX_VALUE
+
+		fileWriter.format("\tbge $t%d, $s0, %s\n", t.getRegisterSerialNumber(), checkOverflowLabel); // t >= MIN_VALUE
+		// here t < MIN_VALUE
+		fileWriter.format("\tli $t%d, %d\n", t.getRegisterSerialNumber(), MIN_VALUE); // t := MIN_VALUE
+		fileWriter.format("\tj %s\n", endLabel); // it's underflow, of course it's not and overflow
+
+		fileWriter.format("%s:\n", checkOverflowLabel); // add label
+		fileWriter.format("\tble $t%d, $s1, %s\n", t.getRegisterSerialNumber(), endLabel); // t <= MAX_VALUE
+		// here t > MAX_VALUE
+		fileWriter.format("\tli $t%d, %d\n", t.getRegisterSerialNumber(), MAX_VALUE); // t := MAX_VALUE
+
+		fileWriter.format("%s:\n", endLabel); // add label
 	}
 	
 	/**************************************/
