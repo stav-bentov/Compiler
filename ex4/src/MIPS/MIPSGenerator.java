@@ -28,6 +28,7 @@ public class MIPSGenerator
 	/***********************/
 	private PrintWriter fileWriter;
 	private SegmentType current_segment = SegmentType.NONE;
+	private String zero = "$zero";
 
 	/***********************/
 	/* The file writer ... */
@@ -49,15 +50,6 @@ public class MIPSGenerator
 		fileWriter.format("\tli $v0,11\n");
 		fileWriter.format("\tsyscall\n");
 	}
-	//public TEMP addressLocalVar(int serialLocalVarNum)
-	//{
-	//	TEMP t  = TEMP_FACTORY.getInstance().getFreshTEMP();
-	//	int idx = t.getSerialNumber();
-	//
-	//	fileWriter.format("\taddi Temp_%d,$fp,%d\n",idx,-serialLocalVarNum*WORD_SIZE);
-	//	
-	//	return t;
-	//}
 
 	/*==================================== Stav ====================================*/
 	public void lstr(TEMP t,String str, String str_label)
@@ -86,6 +78,242 @@ public class MIPSGenerator
 		}
 		this.current_segment = segment_type;
 	}
+
+	public void add_strings(TEMP dst,TEMP str1,TEMP str2)
+	{
+		String a0 = "$a0";
+		String len_str1 = "$s1";
+		String len_str2 = "$s0";
+		String return_register = "$v0";
+		String syscall_num_and_return = "$v0";
+		String dst_register = "$t" + dst.getRegisterSerialNumber();
+		String copy_pointer = "$s1";
+
+		/* calculate str1's length */
+		len(str1);
+		/* len of str1 now in len_str1*/
+		move(len_str1, return_register);
+
+		/* calculate str2's length */
+		len(str2);
+		/* len of str1 now in len_str1*/
+		move(len_str2, return_register);
+
+		/* Calculate str1's length + str2's length to $a0*/
+		add_registers(a0, len_str1, len_str2);
+		/* Add null termination to the united length (for allocation)*/
+		addu_registers(a0, a0, 1);
+
+		/* Allocate space for concatenated string, the pointer will be at syscall_num*/
+		li(syscall_num_and_return, 9);
+		fileWriter.format("\tsyscall\n");
+
+		/* Make dst point to the beginning of the concatenated string.*/
+		move(dst_register,syscall_num_and_return);
+
+		/* Now we need to build it- copy str1 and then str2,
+		* the copy_pointer will help us to copy each str's char in the right place */
+
+		move(copy_pointer, dst_register);
+		copy(str1, copy_pointer);
+		copy(str2, copy_pointer);
+
+		/* Now copy_pointer points to the end of the string- add null terminator*/
+		sb(zero, copy_pointer, 0);
+
+		/* dst = concatenated string */
+		fileWriter.format("\tmove $t%d, $s1\n", dst.getRegisterSerialNumber());
+	}
+
+	/* Receives strings of dst_register and src_register
+	   make the mips instruction: dst_register <- src_register
+	 */
+	public void move(String dst_register, String src_register)
+	{
+		fileWriter.format("\tmove %s, %s\n", dst_register, src_register);
+	}
+
+	/* Receives strings of dst_register, src_register and offset (for src)
+	   make the mips instruction lb: dst_register <- src_register[offset]
+	 */
+	public void lb(String dst_register, String src_register, int offset)
+	{
+		/* lb: transfers one byte of data from main memory to a register */
+		fileWriter.format("\tlb %s, %d(%s)\n", dst_register, offset, src_register);
+	}
+
+	/* Receives strings of dst_register, src_register and offset (for src)
+	   make the mips instruction lb: dst_register[offset] <- src_register
+	 */
+	public void sb(String src_register, String dst_register, int offset)
+	{
+		/* lb: transfers one byte of data from main memory to a register */
+		fileWriter.format("\tsb %s, %d(%s)\n", dst_register, offset, src_register);
+	}
+
+	/* Receives strings of reg1, reg2 and jump label
+	   make the mips instruction beq: if the data: reg1 == reg2 then jump label
+	 */
+	public void beq_registers(String dst_register, String src_register, String label)
+	{
+		fileWriter.format("\tbeq %s, %s, %s\n", label);
+	}
+
+	/* Receives strings of dst_register, reg and int inc
+	   make the mips instruction addu: dst_register = (the data) reg + inc
+	 */
+	public void addu_registers(String dst_register, String reg, int inc)
+	{
+		fileWriter.format("\taddu %s, %s, %d\n", dst_register, reg, inc);
+	}
+
+	/* Receives strings of dst_register, reg and int inc
+	   make the mips instruction addu: dst_register = (the data) reg1 + reg2
+	 */
+	public void add_registers(String dst_register, String reg1, String reg2)
+	{
+		fileWriter.format("\tadd %s, %s, %s\n", dst_register, reg1, reg2);
+	}
+
+	/* Receives Temp of str
+	   Returns str's length in $v0
+	   NOTE: this function is using $s0
+	 */
+	public void len(TEMP str)
+	{
+		/* Body of len_func: using $v0 to calculate the len of the argument */
+		String start_label = IRcommand.getFreshLabel("start_len_loop");
+		String end_label = IRcommand.getFreshLabel("end_len_loop");
+
+		/* Set registers */
+		String str_register = "$t" + str.getRegisterSerialNumber();
+		String len = "$v0";
+		String str_pointer = "$s0";
+
+		move(len, zero);
+		/* Add start label and check term for end loop */
+		fileWriter.format("%s:\n", start_label);
+		lb(str_pointer, str_register, 0);
+		beq_registers(str_pointer, zero, end_label);
+
+		/* Loop body: len += 1, str_pointer += 1 */
+		addu_registers(len, len, 1);
+		addu_registers(str_pointer, str_pointer, 1);
+		jump(start_label);
+
+		/* Add end label */
+		fileWriter.format("%s:\n", end_label);
+	}
+
+	/* Receives Temp of str
+	   Returns str's length in $v0
+	   NOTE: this function is using $s0 and $s2
+	   ASSUMPTION: $s1 points to the place that the chars need to be copied to
+	 */
+	public void copy(TEMP str, String dst_pointer)
+	{
+		/* Body of len_func: using $v0 to calculate the len of the argument */
+		String start_label = IRcommand.getFreshLabel("start_copy_loop");
+		String end_label = IRcommand.getFreshLabel("end_copy_loop");
+
+		/* Set registers */
+		String str_register = "$t" + str.getRegisterSerialNumber();
+		String copied_str_char = "$s0";
+		String copied_str_pointer = "$s2";
+
+		move(copied_str_pointer, str_register);
+
+		/* Add start label and check term for end loop */
+		fileWriter.format("%s:\n", start_label);
+		lb(copied_str_char, copied_str_pointer, 0);
+		beq_registers(copied_str_char, zero, end_label);
+
+		/* Loop body: [pointer] = copied_str_char, copied_str_pointer, pointer += 1 */
+		sb(copied_str_char, dst_pointer, 0);
+		addu_registers(dst_pointer, dst_pointer, 1);
+		addu_registers(copied_str_pointer, copied_str_pointer, 1);
+		jump(start_label);
+
+		/* Add end label */
+		fileWriter.format("\t%s:\n", end_label);
+
+	}
+
+	public void create_start_func(String label_name, int local_var_num)
+	{
+		open_segment(SegmentType.CODE);
+		/* Create the label for the new created function*/
+		label(label_name);
+		/* Make function prologue */
+		func_prologue(local_var_num);
+	}
+
+	public void create_end_func(String label_name)
+	{
+		open_segment(SegmentType.CODE);
+		/* Create the label for the end of new created function*/
+		label(label_name);
+		/* Make function prologue */
+		func_epilogue();
+	}
+
+	public void func_prologue(int local_var_num)
+	{
+		/* For Us- Based on practice_10 */
+		open_segment(SegmentType.CODE);
+
+		/* Store return address in $ra */
+		fileWriter.format("\tsubu $sp, $sp, 4\n");
+		fileWriter.format("\tsw $ra, 0($sp), 4\n");
+		/* Backup $fp of called func */
+		fileWriter.format("\tsubu $sp, $sp, 4\n");
+		fileWriter.format("\tsw $fp, 0($sp), 4\n");
+		/* Update $fp = $sp */
+		fileWriter.format("\tmove $fp, $sp\n");
+		/* Backup all 10 temporaries */
+		for (int i = 0; i < 10; i++)
+		{
+			fileWriter.format("\tsubu $sp, $sp, 4\n");
+			fileWriter.format("\tsw $t%d, 0($sp)\n");
+		}
+		/* Save space for local_var_num local variables */
+		fileWriter.format("\tsubu $sp, $sp, %d\n", (local_var_num) * WORD_SIZE);
+	}
+
+	/* Function Prologue: update $sp, $fp
+                         restore %t0,...,$t9
+                         jump to $ra*/
+	public void func_epilogue()
+	{
+		/* For Us- Based on practice_10 */
+		open_segment(SegmentType.CODE);
+
+		/* Update $sp = $fp */
+		fileWriter.format("\tmove $sp, $fp\n");
+		/* Restore */
+		for (int i = 0; i < 10; i++)
+		{
+			fileWriter.format("\tlw $t%d, %d($sp)\n", i, (-(i + 1)) * WORD_SIZE);
+		}
+		/* Restore precious %fp */
+		fileWriter.format("\tlw $fp, 0($sp)\n");
+		/* Store return address in $ra */
+		fileWriter.format("\tlw $ra, 4($sp)\n");
+		fileWriter.format("\taddu $sp, $sp, 8\n");
+		/* jump to return address */
+		fileWriter.format("\tjr $ra\n");
+	}
+
+	/* TODO: change TEMP to temp list*/
+	public void set_arguments(TEMP parameter)
+	{
+		open_segment(SegmentType.CODE);
+		/* add arguments*/
+		fileWriter.format("\tsubu $sp, $sp, %d\n", 4);
+		fileWriter.format("\tsw $t%d, 0($sp)\n", parameter.getRegisterSerialNumber());
+	}
+
+
 
 	public void allocate(String var_name)
 	{
