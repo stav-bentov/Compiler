@@ -1,4 +1,7 @@
 package AST;
+import IR.IR;
+import IR.*;
+import TEMP.*;
 import TYPES.*;
 
 public class AST_EXP_BINOP extends AST_EXP
@@ -7,6 +10,8 @@ public class AST_EXP_BINOP extends AST_EXP
 	public AST_EXP left;
 	public AST_EXP right;
 	public String sOP;
+
+	private TYPE type;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -88,7 +93,7 @@ public class AST_EXP_BINOP extends AST_EXP
 			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,right.SerialNumber);
 	}
 
-	public TYPE SemantMe() throws SemanticException{
+	public TYPE SemantMe() throws SemanticException {
 		//figuring out the types of left and right using their SemantMe
 		TYPE left_type = this.left.SemantMe();
 		TYPE right_type = this.right.SemantMe();
@@ -105,7 +110,8 @@ public class AST_EXP_BINOP extends AST_EXP
 					throw new SemanticException(this);
 
 				// So left_type is the type we wanna return. if he is TYPE_INT we wil return TYPE_INT and same for TYPE_STRING
-				return left_type;
+				type = left_type;
+				break;
 
 			case "=":
 
@@ -136,7 +142,8 @@ public class AST_EXP_BINOP extends AST_EXP
 				}
 
 				//equality always returns TYPE_INT
-				return TYPE_INT.getInstance();
+				type = TYPE_INT.getInstance();
+				break;
 
 			default:
 				//the rest of binary operations (-, *, /, >, <) can happen only between two ints
@@ -146,8 +153,54 @@ public class AST_EXP_BINOP extends AST_EXP
 				//check that we do not divide by a constant 0
 				if(sOP.equals("/") && right instanceof AST_EXP_OPT && ((AST_EXP_OPT) right).i == 0)
 					throw new SemanticException(this);
-				return TYPE_INT.getInstance();
+
+				type = TYPE_INT.getInstance();
+				break;
 		}
 
+		return type;
+
+	}
+
+	@Override
+	public TEMP IRme() {
+		TEMP t1 = this.left.IRme();
+		TEMP t2 = this.right.IRme();
+		TEMP dst = TEMP_FACTORY.getInstance().getFreshTEMP();
+
+		switch(OP) {
+			case 0: // +
+				if (type instanceof TYPE_STRING) {
+					IR.getInstance().Add_IRcommand(new IRcommand_Binop_Add_Strings(dst, t1, t2));
+				}
+				else { // TYPE_INT
+					IR.getInstance().Add_IRcommand(new IRcommand_Binop_Add_Integers(dst, t1, t2));
+				}
+				break;
+			case 1: // -
+				IR.getInstance().Add_IRcommand(new IRcommand_Binop_Sub_Integers(dst, t1, t2));
+				break;
+			case 2: // *
+				IR.getInstance().Add_IRcommand(new IRcommand_Binop_Mul_Integers(dst, t1, t2));
+				break;
+			case 3: // /
+				IR.getInstance().Add_IRcommand(new IRcommand_Binop_Div_Integers(dst, t1, t2));
+				break;
+			case 4: // <
+				IR.getInstance().Add_IRcommand(new IRcommand_Binop_LT_Integers(dst, t1, t2));
+				break;
+			case 5: // >
+				//TODO: add implementation
+				break;
+			case 6:
+				if (type instanceof TYPE_STRING) {
+					//TODO: add implementation
+				}
+				else { // TYPE_INT
+					IR.getInstance().Add_IRcommand(new IRcommand_Binop_EQ_Integers(dst, t1, t2));
+				}
+				break;
+		}
+		return dst;
 	}
 }
