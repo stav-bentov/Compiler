@@ -100,9 +100,9 @@ public class MIPSGenerator
 		move(len_str2, return_register);
 
 		/* Calculate str1's length + str2's length to $a0*/
-		add_registers(a0, len_str1, len_str2);
+		add(a0, len_str1, len_str2);
 		/* Add null termination to the united length (for allocation)*/
-		addu_registers(a0, a0, 1);
+		addu(a0, a0, 1);
 
 		/* Allocate space for concatenated string, the pointer will be at syscall_num*/
 		li(syscall_num_and_return, 9);
@@ -154,15 +154,23 @@ public class MIPSGenerator
 	/* Receives strings of reg1, reg2 and jump label
 	   make the mips instruction beq: if the data: reg1 == reg2 then jump label
 	 */
-	public void beq_registers(String dst_register, String src_register, String label)
+	public void beq(String reg1, String reg2, String label)
 	{
 		fileWriter.format("\tbeq %s, %s, %s\n", label);
+	}
+
+	/* Receives strings of reg1, reg2 and jump label
+	   make the mips instruction beq: if the data: reg1 != reg2 then jump label
+	 */
+	public void bne(String reg1, String reg2, String label)
+	{
+		fileWriter.format("\tbne %s, %s, %s\n", label);
 	}
 
 	/* Receives strings of dst_register, reg and int inc
 	   make the mips instruction addu: dst_register = (the data) reg + inc
 	 */
-	public void addu_registers(String dst_register, String reg, int inc)
+	public void addu(String dst_register, String reg, int inc)
 	{
 		fileWriter.format("\taddu %s, %s, %d\n", dst_register, reg, inc);
 	}
@@ -170,7 +178,7 @@ public class MIPSGenerator
 	/* Receives strings of dst_register, reg and int inc
 	   make the mips instruction addu: dst_register = (the data) reg1 + reg2
 	 */
-	public void add_registers(String dst_register, String reg1, String reg2)
+	public void add(String dst_register, String reg1, String reg2)
 	{
 		fileWriter.format("\tadd %s, %s, %s\n", dst_register, reg1, reg2);
 	}
@@ -194,18 +202,18 @@ public class MIPSGenerator
 		/* Add start label and check term for end loop */
 		fileWriter.format("%s:\n", start_label);
 		lb(str_pointer, str_register, 0);
-		beq_registers(str_pointer, zero, end_label);
+		beq(str_pointer, zero, end_label);
 
 		/* Loop body: len += 1, str_pointer += 1 */
-		addu_registers(len, len, 1);
-		addu_registers(str_pointer, str_pointer, 1);
+		addu(len, len, 1);
+		addu(str_pointer, str_pointer, 1);
 		jump(start_label);
 
 		/* Add end label */
 		fileWriter.format("%s:\n", end_label);
 	}
 
-	/* Receives Temp of str
+	/* Receives Temp of str and dst_pointer (it's register name)
 	   Returns str's length in $v0
 	   NOTE: this function is using $s0 and $s2
 	   ASSUMPTION: $s1 points to the place that the chars need to be copied to
@@ -226,17 +234,64 @@ public class MIPSGenerator
 		/* Add start label and check term for end loop */
 		fileWriter.format("%s:\n", start_label);
 		lb(copied_str_char, copied_str_pointer, 0);
-		beq_registers(copied_str_char, zero, end_label);
+		beq(copied_str_char, zero, end_label);
 
 		/* Loop body: [pointer] = copied_str_char, copied_str_pointer, pointer += 1 */
 		sb(copied_str_char, dst_pointer, 0);
-		addu_registers(dst_pointer, dst_pointer, 1);
-		addu_registers(copied_str_pointer, copied_str_pointer, 1);
+		addu(dst_pointer, dst_pointer, 1);
+		addu(copied_str_pointer, copied_str_pointer, 1);
 		jump(start_label);
 
 		/* Add end label */
 		fileWriter.format("\t%s:\n", end_label);
+	}
 
+
+	/* Receives Temp of str and dst_pointer (it's register name)
+	   Returns 0 in dst if str1 != str2 OR 1 in dst if str1 == str2*/
+	public void compare_strings(TEMP dst, TEMP str1, TEMP str2)
+	{
+		/* Body of len_func: using $v0 to calculate the len of the argument */
+		String start_label = IRcommand.getFreshLabel("start_compare_loop");
+		String set_dst_0 = IRcommand.getFreshLabel("set_dst_0");
+		String end_label = IRcommand.getFreshLabel("end_compare_loop");
+
+		/* Set registers */
+		String dst_register = "$t" + dst.getRegisterSerialNumber();
+		String str1_register = "$t" + str1.getRegisterSerialNumber();
+		String str2_register = "$t" + str2.getRegisterSerialNumber();
+
+		String pointer_str1 = "$s0";
+		String char_str1 = "$s1";
+		String pointer_str2 = "$s2";
+		String char_str2 = "$s3";
+
+		/* Set the value of dst to 1, if we will find out a non matching letter- will set it to 0 and exit*/
+		li(dst_register, 1);
+
+		/* Set pointers for loops */
+		move(pointer_str1, str1_register);
+		move(pointer_str2, str2_register);
+
+		/* Add start label and check term for end loop */
+		fileWriter.format("%s:\n", start_label);
+		lb(char_str1, pointer_str1, 0);
+		lb(char_str2, pointer_str2, 0);
+		/* If str1[i] != str2[i] -> set dst to 0*/
+		bne(char_str1, char_str2, set_dst_0);
+		/* Else- if (str1[i] == str2[i]) and str1[i] == null- end */
+		beq(char_str1, zero, end_label);
+		/* Else- keep going */
+		addu(pointer_str1, pointer_str1, 1);
+		addu(pointer_str2, pointer_str2, 1);
+		jump(start_label);
+
+		/* Add set_dst_0 label and set dst to 0 */
+		fileWriter.format("%s:\n", set_dst_0);
+		li(dst_register, 0);
+
+		/* Add end label */
+		fileWriter.format("\t%s:\n", end_label);
 	}
 
 	public void create_start_func(String label_name, int local_var_num)
