@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 /*******************/
 /* PROJECT IMPORTS */
 /*******************/
+import IR.IRcommand;
 import TEMP.*;
 
 enum SegmentType{
@@ -101,18 +102,26 @@ public class MIPSGenerator
 	public void store(String var_name,TEMP src)
 	{
 		int idxsrc=src.getSerialNumber();
-		fileWriter.format("\tsw Temp_%d,global_%s\n",idxsrc,var_name);		
+		fileWriter.format("\tsw Temp_%d,global_%s\n",idxsrc,var_name);
 	}
 
 	public void li(TEMP t,int value)
 	{
 		open_segment(SegmentType.CODE);
+
 		int idx=t.getRegisterSerialNumber();
+
 		fileWriter.format("\tli $t%d,%d\n", idx, value);
+	}
+
+	private void li(String register, int value) {
+		fileWriter.format("\tli %s, %d\n", register, value);
 	}
 
 	public void add(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 = oprnd1.getRegisterSerialNumber();
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
@@ -122,6 +131,8 @@ public class MIPSGenerator
 
 	public void sub(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 = oprnd1.getRegisterSerialNumber();
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
@@ -131,6 +142,8 @@ public class MIPSGenerator
 
 	public void mul(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 = oprnd1.getRegisterSerialNumber();
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
@@ -140,6 +153,8 @@ public class MIPSGenerator
 
 	public void div(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 = oprnd1.getRegisterSerialNumber();
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
@@ -167,41 +182,84 @@ public class MIPSGenerator
 
 	public void blt(TEMP oprnd1,TEMP oprnd2,String label)
 	{
-		int i1 =oprnd1.getSerialNumber();
-		int i2 =oprnd2.getSerialNumber();
+		int i1 =oprnd1.getRegisterSerialNumber();
+		int i2 =oprnd2.getRegisterSerialNumber();
 		
 		fileWriter.format("\tblt Temp_%d,Temp_%d,%s\n",i1,i2,label);				
 	}
 
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
 	{
-		int i1 =oprnd1.getSerialNumber();
-		int i2 =oprnd2.getSerialNumber();
+		open_segment(SegmentType.CODE);
+
+		int i1 =oprnd1.getRegisterSerialNumber();
+		int i2 =oprnd2.getRegisterSerialNumber();
 		
-		fileWriter.format("\tbge Temp_%d,Temp_%d,%s\n",i1,i2,label);				
+		fileWriter.format("\tbge t%d,t%d,%s\n",i1,i2,label);
+	}
+
+	private void bge(String register1, String register2, String label)
+	{
+		fileWriter.format("\tbge %s, %s, %s\n", register1, register2, label);
 	}
 
 	public void bne(TEMP oprnd1,TEMP oprnd2,String label)
 	{
-		int i1 =oprnd1.getSerialNumber();
-		int i2 =oprnd2.getSerialNumber();
+		open_segment(SegmentType.CODE);
+
+		int i1 =oprnd1.getRegisterSerialNumber();
+		int i2 =oprnd2.getRegisterSerialNumber();
 		
-		fileWriter.format("\tbne Temp_%d,Temp_%d,%s\n",i1,i2,label);				
+		fileWriter.format("\tbne t%d,t%d,%s\n", i1, i2, label);
 	}
 
 	public void beq(TEMP oprnd1,TEMP oprnd2,String label)
 	{
-		int i1 =oprnd1.getSerialNumber();
-		int i2 =oprnd2.getSerialNumber();
+		int i1 =oprnd1.getRegisterSerialNumber();
+		int i2 =oprnd2.getRegisterSerialNumber();
 		
-		fileWriter.format("\tbeq Temp_%d,Temp_%d,%s\n",i1,i2,label);				
+		fileWriter.format("\tbeq t%d,t%d,%s\n",i1,i2,label);
 	}
 
 	public void beqz(TEMP oprnd1,String label)
 	{
-		int i1 =oprnd1.getSerialNumber();
+		int i1 =oprnd1.getRegisterSerialNumber();
 				
-		fileWriter.format("\tbeq Temp_%d,$zero,%s\n",i1,label);				
+		fileWriter.format("\tbeq t%d,$zero,%s\n",i1,label);
+	}
+
+	/* Fixes result of binop to match semantics of L language.
+	   In case of overflow, will assign max value,
+	   In case of underflow, will assign min value.
+	 */
+	public void standardBinopToLBinop(TEMP t) {
+		int MAX_VALUE = 32767;
+		int MIN_VALUE = -32768;
+
+		/* Allocate labels */
+		String label_check_overflow = IRcommand.getFreshLabel("check_overflow");
+		String label_end = IRcommand.getFreshLabel("end");
+
+		/* Assign registers' names to variables */
+		String t_register = String.format("$t%d", t.getRegisterSerialNumber());
+		String min_value_register = "$s0";
+		String max_value_register = "$s1";
+
+		/* Create code */
+		li(min_value_register, MIN_VALUE); // $s0 := MIN_VALUE
+		li(max_value_register, MAX_VALUE); // $s1 := MAX_VALUE
+
+		bge(t_register, min_value_register, label_check_overflow); // check if t >= MIN_VALUE
+		// here t < MIN_VALUE
+		li(t_register, MIN_VALUE); // t := MIN_VALUE
+		jump(label_end); // it's underflow, of course it's not and overflow
+
+		label(label_check_overflow); // add label
+		bge(max_value_register, t_register, label_end); // check if MAX_VALUE >= t
+		// here t > MAX_VALUE
+		li(t_register, MAX_VALUE); // t := MAX_VALUE
+
+		label(label_end); // add label
 	}
 	
 	/**************************************/

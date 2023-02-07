@@ -1,5 +1,6 @@
 package AST;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.TEMP;
 import TYPES.*;
 
 public abstract class AST_Node
@@ -23,6 +24,8 @@ public abstract class AST_Node
 	}
 	
 	public abstract TYPE SemantMe() throws SemanticException;
+
+	public abstract TEMP IRme();
 
 	public boolean checkAssign(TYPE_VAR assignVar, TYPE expType, AST_Node exp)
 	{
