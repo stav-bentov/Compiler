@@ -190,7 +190,7 @@ public class AST_EXP_BINOP extends AST_EXP
 				IR.getInstance().Add_IRcommand(new IRcommand_Binop_LT_Integers(dst, t1, t2));
 				break;
 			case 5: // >
-				//TODO: add implementation
+				IR.getInstance().Add_IRcommand(new IRcommand_Binop_GT_Integers(dst, t1, t2));
 				break;
 			case 6:
 				if (type instanceof TYPE_STRING) {

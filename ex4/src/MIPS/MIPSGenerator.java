@@ -413,17 +413,31 @@ public class MIPSGenerator
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 		
-		fileWriter.format("\tblt Temp_%d,Temp_%d,%s\n",i1,i2,label);				
+		fileWriter.format("\tblt t%d, t%d, %s\n",i1,i2,label);
+	}
+
+	public void bgt(TEMP oprnd1,TEMP oprnd2,String label)
+	{
+		int i1 =oprnd1.getRegisterSerialNumber();
+		int i2 =oprnd2.getRegisterSerialNumber();
+
+		fileWriter.format("\tbgt t%d, t%d,%s\n",i1,i2,label);
 	}
 
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
 	{
-		open_segment(SegmentType.CODE);
-
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 		
 		fileWriter.format("\tbge t%d,t%d,%s\n",i1,i2,label);
+	}
+
+	public void ble(TEMP oprnd1,TEMP oprnd2,String label)
+	{
+		int i1 =oprnd1.getRegisterSerialNumber();
+		int i2 =oprnd2.getRegisterSerialNumber();
+
+		fileWriter.format("\tble t%d,t%d,%s\n",i1,i2,label);
 	}
 
 	private void bge(String register1, String register2, String label)
@@ -488,6 +502,92 @@ public class MIPSGenerator
 		li(t_register, MAX_VALUE); // t := MAX_VALUE
 
 		label(label_end); // add label
+	}
+
+	public void LTIntegers(TEMP dst, TEMP t1, TEMP t2) {
+		/*******************************/
+		/* [1] Allocate 2 fresh labels */
+		/*******************************/
+		String label_end        = IRcommand.getFreshLabel("end");
+		String label_AssignOne  = IRcommand.getFreshLabel("AssignOne");
+		String label_AssignZero = IRcommand.getFreshLabel("AssignZero");
+
+		/******************************************/
+		/* [2] if (t1> t2) goto label_AssignOne;  */
+		/*     if (t1<=t2) goto label_AssignZero; */
+		/******************************************/
+		bgt(t1,t2,label_AssignOne);
+		ble(t1,t2,label_AssignZero);
+
+		/************************/
+		/* [3] label_AssignOne: */
+		/*                      */
+		/*         t3 := 1      */
+		/*         goto end;    */
+		/*                      */
+		/************************/
+		label(label_AssignOne);
+		li(dst,1);
+		jump(label_end);
+
+		/*************************/
+		/* [4] label_AssignZero: */
+		/*                       */
+		/*         t3 := 1       */
+		/*         goto end;     */
+		/*                       */
+		/*************************/
+		label(label_AssignZero);
+		li(dst,0);
+		jump(label_end);
+
+		/******************/
+		/* [5] label_end: */
+		/******************/
+		label(label_end);
+	}
+
+	public void GTIntegers(TEMP dst, TEMP t1, TEMP t2) {
+		/*******************************/
+		/* [1] Allocate 2 fresh labels */
+		/*******************************/
+		String label_end        = IRcommand.getFreshLabel("end");
+		String label_AssignOne  = IRcommand.getFreshLabel("AssignOne");
+		String label_AssignZero = IRcommand.getFreshLabel("AssignZero");
+
+		/******************************************/
+		/* [2] if (t1< t2) goto label_AssignOne;  */
+		/*     if (t1>=t2) goto label_AssignZero; */
+		/******************************************/
+		bgt(t1,t2,label_AssignOne);
+		bge(t1,t2,label_AssignZero);
+
+		/************************/
+		/* [3] label_AssignOne: */
+		/*                      */
+		/*         t3 := 1      */
+		/*         goto end;    */
+		/*                      */
+		/************************/
+		label(label_AssignOne);
+		li(dst,1);
+		jump(label_end);
+
+		/*************************/
+		/* [4] label_AssignZero: */
+		/*                       */
+		/*         t3 := 1       */
+		/*         goto end;     */
+		/*                       */
+		/*************************/
+		label(label_AssignZero);
+		li(dst,0);
+		jump(label_end);
+
+		/******************/
+		/* [5] label_end: */
+		/******************/
+		label(label_end);
 	}
 	
 	/**************************************/
