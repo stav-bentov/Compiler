@@ -31,6 +31,6 @@ public class IRcommand_Binop_EQ_Integers extends IRcommand
 	/***************/
 	public void MIPSme()
 	{
-
+		MIPSGenerator.getInstance().EQIntegers(dst, t1, t2);
 	}
 }
