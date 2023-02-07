@@ -30,6 +30,7 @@ public class IRcommand_Binop_Div_Integers extends IRcommand
 	/***************/
 	public void MIPSme()
 	{
-		MIPSGenerator.getInstance().div(dst,t1,t2);
+		MIPSGenerator.getInstance().div(this.dst, t1, t2);
+		MIPSGenerator.getInstance().standardBinopToLBinop(this.dst);
 	}
 }
