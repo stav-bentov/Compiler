@@ -1,5 +1,7 @@
 package AST;
+import IR.*;
 import SYMBOL_TABLE.*;
+import TEMP.TEMP;
 import TYPES.*;
 
 public class AST_STMT_WHILE extends AST_STMT {
@@ -43,6 +45,20 @@ public class AST_STMT_WHILE extends AST_STMT {
 		SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.WHILE, null);
 		body.SemantMe();
 		SYMBOL_TABLE.getInstance().endScope();
+		return null;
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		String while_cond_label = IRcommand.getFreshLabel("while_cond_label");
+		String end_while_label = IRcommand.getFreshLabel("end_while_label");
+		IR.getInstance().Add_IRcommand(new IRcommand_Label(while_cond_label));
+		TEMP cond_temp = this.cond.IRme();
+		IR.getInstance().Add_IRcommand(new IRcommand_Jump_If_Eq_To_Zero(cond_temp, end_while_label));
+		this.body.IRme();
+		IR.getInstance().Add_IRcommand(new IRcommand_Jump_Label(while_cond_label));
+		IR.getInstance().Add_IRcommand(new IRcommand_Label(end_while_label));
 		return null;
 	}
 }

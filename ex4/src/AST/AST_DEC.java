@@ -1,4 +1,5 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
 
 public class AST_DEC<T extends AST_Node> extends AST_Node
@@ -33,5 +34,11 @@ public class AST_DEC<T extends AST_Node> extends AST_Node
 		/* Assumption- the enter occur in SemantMe()*/
 		this.dec.SemantMe();
 		return null;
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		return this.dec.IRme();
 	}
 }

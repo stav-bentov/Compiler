@@ -1,4 +1,5 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
 
 public class AST_LIST<T extends AST_Node> extends AST_Node{
@@ -58,5 +59,17 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
         tailType = (this.tail == null) ? null : (TYPE_LIST) this.tail.SemantMe();
 
         return new TYPE_LIST(headType, tailType);
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        AST_LIST pointer = this;
+        while (pointer.head != null)
+        {
+            pointer.head.IRme();
+            pointer = pointer.tail;
+        }
+        return null;
     }
 }

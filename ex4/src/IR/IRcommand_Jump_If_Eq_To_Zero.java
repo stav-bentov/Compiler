@@ -13,22 +13,20 @@ package IR;
 import TEMP.*;
 import MIPS.*;
 
+/* "beq cond, 0, after_if_body_label"*/
 public class IRcommand_Jump_If_Eq_To_Zero extends IRcommand
 {
-	TEMP t;
-	String label_name;
+	TEMP cond;
+	String after_if_body_label;
 	
-	public IRcommand_Jump_If_Eq_To_Zero(TEMP t, String label_name)
+	public IRcommand_Jump_If_Eq_To_Zero(TEMP cond, String after_if_body_label)
 	{
-		this.t          = t;
-		this.label_name = label_name;
+		this.cond          = cond;
+		this.after_if_body_label = after_if_body_label;
 	}
-	
-	/***************/
-	/* MIPS me !!! */
-	/***************/
+
 	public void MIPSme()
 	{
-		MIPSGenerator.getInstance().beqz(t,label_name);
+		MIPSGenerator.getInstance().beqz(cond, after_if_body_label);
 	}
 }

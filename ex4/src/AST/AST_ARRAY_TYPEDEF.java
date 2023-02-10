@@ -1,4 +1,5 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -42,5 +43,11 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
         /* REMEMBER: Array can be instanced*/
         SYMBOL_TABLE.getInstance().enter(this.name, currArray, true);
         return null;
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        return this.type.IRme();
     }
 }

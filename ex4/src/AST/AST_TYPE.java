@@ -1,4 +1,5 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -53,5 +54,11 @@ public class AST_TYPE extends AST_Node{
             throw new SemanticException(this);
         /* typeCanBeInstanced(idValue) == true then this the type with this name is exist */
         return instancedType;
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        return null;
     }
 }

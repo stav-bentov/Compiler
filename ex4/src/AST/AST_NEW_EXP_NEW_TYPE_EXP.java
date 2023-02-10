@@ -1,6 +1,8 @@
 package AST;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.*;
 import TYPES.*;
+import IR.*;
 
 public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
     public AST_TYPE type;
@@ -76,5 +78,24 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         }
 
         return arrayMembersType;
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        TEMP result_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
+        /* 2 Cases: 1. array (this.exp!=null)
+                    2. class
+         */
+        if (this.exp != null)
+        {
+            TEMP array_size_temp = this.exp.IRme();
+            IR.getInstance().Add_IRcommand(new IRcommand_Set_Array(result_temp, array_size_temp));
+        }
+        else
+        {
+            /* TODO: For Lilach*/
+        }
+        return result_temp;
     }
 }

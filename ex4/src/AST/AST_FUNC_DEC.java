@@ -1,15 +1,22 @@
 package AST;
+import IR.IR;
+import MIPS.MIPSGenerator;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
-
-import java.util.HashSet;
-import java.util.Set;
+import IR.*;
 
 public class AST_FUNC_DEC extends AST_Node {
     public AST_TYPE return_type;
     public String name;
     public AST_LIST<AST_ARGUMENT> argList;
     public AST_LIST<AST_STMT> stmtList;
+    public String class_name = "";
+    public String start_func_label;
+    public String after_epilogue_label;
+    public String epilogue_func_label;
+    private int local_var_num;
+    private int argument_var_num;
 
     public AST_FUNC_DEC(AST_TYPE type, String name, AST_LIST<AST_STMT> stmtList, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -18,6 +25,7 @@ public class AST_FUNC_DEC extends AST_Node {
         this.name = name;
         this.stmtList = stmtList;
         this.line = line;
+        this.local_var_num = 0;
     }
 
     public AST_FUNC_DEC(AST_TYPE type, String name, AST_LIST<AST_ARGUMENT> argList, AST_LIST<AST_STMT> stmtList, int line) {
@@ -70,8 +78,7 @@ public class AST_FUNC_DEC extends AST_Node {
                                  if there is in a parent class- make sure it has the same signature
             case (global) function: check if there are previous declarations with this name in global scope
          */
-        /* TODO: because Im not sure - if this.name = string, void, int for method what to do?
-        *  validName = true if there is no variable with this name in current scope*/
+        /*  validName = true if there is no variable with this name in current scope*/
         validName = SYMBOL_TABLE.getInstance().findInLastScope(this.name) != null;
         isMethod = scopeType == ScopeTypeEnum.CLASS && !validName;
         isFunction = scopeType ==  ScopeTypeEnum.GLOBAL && !validName;
@@ -89,17 +96,48 @@ public class AST_FUNC_DEC extends AST_Node {
             if (this.argList != null)
             {
                 params = (TYPE_LIST) this.argList.SemantMe();
+
+                /* Set offsets of params (arguments) */
+                this.argument_var_num = 0;
+                TYPE_LIST type_pointer = currTypeFunc.params;
+                while (type_pointer.head != null)
+                {
+                    ((TYPE_VAR) type_pointer.head).set_argument(argument_var_num);
+                    argument_var_num++;
+                    type_pointer = type_pointer.tail;
+                }
             }
 
             currTypeFunc.params = params;
 
             /* Make sure there is only an override and no overload or using with function's name */
             if (isMethod)
+            {
                 isValidMethod(this.name, currTypeFunc);
+                this.class_name = SYMBOL_TABLE.getInstance().getCurrentClass().name;
+            }
+
+            /* Set labels */
+            /* Not a main global function */
+            if (!this.name.equals("main"))
+            {
+                /* Set the labels (all method will get a special one)*/
+                this.start_func_label = "start_" + this.name + "_" + this.class_name;
+                this.epilogue_func_label = "epilogue_" + this.name + "_" + this.class_name;
+                this.after_epilogue_label = "end_" + this.name + "_" + this.class_name;
+            }
+            else
+            {
+                this.start_func_label = this.name;
+                this.epilogue_func_label = "epilogue_" + this.name;
+                this.after_epilogue_label = "end_" + this.name;
+            }
+
             /* If the return type isn't match or if there is a semantic error inside the scope- SemantMe() will throw an error*/
             if (this.stmtList != null)
             {
                 this.stmtList.SemantMe();
+                this.local_var_num = currTypeFunc.num_local_variables;
             }
 
             SYMBOL_TABLE.getInstance().endScope();
@@ -127,6 +165,19 @@ public class AST_FUNC_DEC extends AST_Node {
                 throw new SemanticException(this);
             }
         }
+    }
 
+    @Override
+    public TEMP IRme()
+    {
+        /* Because we create a function, it's not part of the running code
+           So we first add a jump instruction to after_epilogue_label (it's a label that set at the end of the func- after the epilogue)
+           and after- start the writing of our function (prolog, body, epilogue), at the end- set after_epilogue_label*/
+        IR.getInstance().Add_IRcommand(new IRcommand_Jump_Label(this.after_epilogue_label));
+        IR.getInstance().Add_IRcommand(new IRcommand_Start_Func(this.start_func_label, this.local_var_num));
+        stmtList.IRme();
+        IR.getInstance().Add_IRcommand(new IRcommand_End_Func(this.epilogue_func_label));
+        IR.getInstance().Add_IRcommand(new IRcommand_Label(this.after_epilogue_label));
+        return null;
     }
 }

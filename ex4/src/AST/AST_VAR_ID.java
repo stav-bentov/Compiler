@@ -1,4 +1,6 @@
 package AST;
+import IR.*;
+import TEMP.*;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -33,6 +35,31 @@ public class AST_VAR_ID extends AST_VAR
 		if(var == null || !var.isVar())
 			throw new SemanticException(this);
 
+		/* Set values to type_var (and label/ offset), according to var from SYMBOL_TABLE*/
+		/* ASSUMPTION!!: var is TYPE_VAR!*/
+		((TYPE_VAR) var).set_AST_from_TYPE_VAR(this);
+
 		return var;
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		TEMP var_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		switch(this.var_type) {
+			case GLOBAL:
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Global_Var(this.global_var_label, var_temp));
+				break;
+			case LOCAL:
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Local_Var(this.var_offset, var_temp));
+				break;
+			case ARGUMENT:
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Argument_Var(this.var_offset, var_temp));
+				break;
+			case FIELD:
+				/*TODO: For Lilach*/
+				break;
+		}
+		return null;
 	}
 }

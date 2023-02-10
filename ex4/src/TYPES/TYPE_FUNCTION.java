@@ -12,6 +12,8 @@ public class TYPE_FUNCTION extends TYPE
 	/*************************/
 	public TYPE_LIST params;
 
+	public int num_local_variables;
+
 	/****************/
 	/* CTROR(S) ... */
 	/****************/
@@ -20,6 +22,7 @@ public class TYPE_FUNCTION extends TYPE
 		this.name = name;
 		this.returnType = returnType;
 		this.params = params;
+		this.num_local_variables = 0;
 	}
 
 	@Override

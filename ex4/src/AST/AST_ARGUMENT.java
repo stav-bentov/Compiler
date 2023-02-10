@@ -1,4 +1,5 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -44,5 +45,11 @@ public class AST_ARGUMENT extends AST_Node{
         }
         SYMBOL_TABLE.getInstance().enter(this.id, varType, false);
         return varType;
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        return null;
     }
 }
