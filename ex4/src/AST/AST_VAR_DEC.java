@@ -124,9 +124,10 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 currVar.set_global(this.id);
             }
             /* Class fields variable */
-            else /*TODO: For Lilach: Take care of class fields */
+            else
             {
-
+                currVar.set_field(current_class.numFields, exp);
+                current_class.numFields++;
             }
         }
         currVar.set_AST_from_TYPE_VAR(this);
@@ -138,6 +139,8 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     @Override
     public TEMP IRme()
     {
+        TEMP assigned_temp = null;
+
         switch(this.var_type) {
             case GLOBAL:
                 /* No assignment declaration */
@@ -169,7 +172,6 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 }
                 break;
             case LOCAL:
-                TEMP assigned_temp = null;
                 if (this.exp != null)
                 {/* there is an assignment */
                     assigned_temp = this.exp.IRme();
@@ -177,7 +179,8 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 IR.getInstance().Add_IRcommand(new IRcommand_Local_Var_Dec(this.var_offset, assigned_temp));
                 break;
             case FIELD:
-                /*TODO: For Lilach*/
+                TEMP val = exp.IRme(); // Assuming that a register that contains this value will be returned
+                IR.getInstance().Add_IRcommand(new IRcommand_Field_Var_Dec(assigned_temp, val));
                 break;
         }
         return null;

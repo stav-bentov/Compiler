@@ -147,6 +147,14 @@ public class MIPSGenerator
 		fileWriter.format("\tmove %s, %s\n", dst_register, src_register);
 	}
 
+	public void move(TEMP dst_register, TEMP src_register)
+	{
+		String dst = "$t" + dst_register.getRegisterSerialNumber();
+		String src = "$t" + src_register.getRegisterSerialNumber();
+
+		move(dst, src);
+	}
+
 	/* Receives strings of dst_register, src_register and offset (for src)
 	   make the mips instruction lb: dst_register <- src_register[offset]
 	 */

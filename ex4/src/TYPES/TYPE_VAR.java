@@ -22,6 +22,7 @@ public class TYPE_VAR extends TYPE{
         3. An array variable
      */
     public String global_var_label;
+    public AST_Node exp; // For fields. Can be AST_NEW_EXP or AST_EXP
     public int var_offset;
     public VarType var_type;
 
@@ -51,6 +52,13 @@ public class TYPE_VAR extends TYPE{
     {
         this.var_offset = -44 - (num_var * 4);
         this.var_type = VarType.LOCAL;
+    }
+
+    public void set_field(int num_fields, AST_Node exp)
+    {
+        this.var_offset = 4 + (num_fields * 4); // Offset in the runtime object
+        this.var_type = VarType.FIELD;
+        this.exp = exp;
     }
 
     /* TODO: For Lilach- take care of fields variables*/
