@@ -7,6 +7,7 @@ package MIPS;
 /* GENERAL IMPORTS */
 /*******************/
 import java.io.PrintWriter;
+import java.util.List;
 
 /*******************/
 /* PROJECT IMPORTS */
@@ -889,6 +890,20 @@ public class MIPSGenerator
 		/* [5] label_end: */
 		/******************/
 		label(label_end);
+	}
+
+	public void allocateVT(String label_vt, List<String> methodLabels) {
+		open_segment(SegmentType.DATA);
+
+		label(label_vt);
+
+		for (String l : methodLabels) {
+			globalWord(l);
+		}
+	}
+
+	private void globalWord(String s) {
+		fileWriter.format("\t.word %s\n", s);
 	}
 	
 	/**************************************/

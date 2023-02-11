@@ -14,6 +14,8 @@ public class TYPE_CLASS extends TYPE
 	/**************************************************/
 	public TYPE_LIST data_members;
 
+	public String label_VT; // Accessible for usage when creating a runtime object when instancing a class
+
 	/****************/
 	/* CTROR(S) ... */
 	/****************/
@@ -22,6 +24,7 @@ public class TYPE_CLASS extends TYPE
 		this.name = name;
 		this.father = father;
 		this.data_members = data_members;
+		this.label_VT = "vt_" + name;
 	}
 
 	/********************************************************/
