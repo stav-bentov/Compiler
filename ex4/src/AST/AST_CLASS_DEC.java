@@ -12,6 +12,7 @@ public class AST_CLASS_DEC extends AST_Node{
     public AST_LIST<AST_CFIELD> cFieldList;
 
     public List<String> methodLabels;
+    public List<AST_Node> fieldsExps;
     public String VTLabel;
 
     public AST_CLASS_DEC(String className, String extendsName, AST_LIST<AST_CFIELD> cFieldList, int line){
@@ -86,9 +87,10 @@ public class AST_CLASS_DEC extends AST_Node{
         //SemantMe will check if illegal inheritance or duplicated names in the same scope
         TYPE cFieldTypes = cFieldList.SemantMe();
 
-        /* Updates labels for IRme */
-        extractLabels((TYPE_LIST) cFieldTypes); // assuming it returns a list
-        VTLabel = type_class.label_VT;
+        /* Updates labels and field types for IRme/MIPSme later */
+        extractLabelsAndFieldTypes((TYPE_LIST) cFieldTypes); // assuming it returns a list
+        type_class.field_exps = this.fieldsExps;
+        VTLabel = type_class.label_VT; // for IRme
 
         /*****************/
         /* [3] End Scope */
@@ -107,7 +109,7 @@ public class AST_CLASS_DEC extends AST_Node{
         return null; // Doesn't create a temp that should be passed back
     }
 
-    private void extractLabels(TYPE_LIST types) {
+    private void extractLabelsAndFieldTypes(TYPE_LIST types) {
         TYPE head = types.head;
         TYPE_LIST tail = types.tail;
 
@@ -115,10 +117,16 @@ public class AST_CLASS_DEC extends AST_Node{
             return;
         }
 
-        if (head instanceof TYPE_FUNCTION) {
+        /* case class method */
+        if (head instanceof TYPE_FUNCTION) { // add it's label to labels list
             this.methodLabels.add(((TYPE_FUNCTION) head).func_label);
         }
 
-        extractLabels(tail);
+        /* case field */
+        else if (head instanceof TYPE_VAR) {
+            this.fieldsExps.add(((TYPE_VAR) head).exp);
+        }
+
+        extractLabelsAndFieldTypes(tail);
     }
 }

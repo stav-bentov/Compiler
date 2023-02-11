@@ -1,5 +1,10 @@
 package TYPES;
 
+import AST.AST_EXP;
+import AST.AST_Node;
+
+import java.util.List;
+
 public class TYPE_CLASS extends TYPE
 {
 	/*********************************************************************/
@@ -14,7 +19,10 @@ public class TYPE_CLASS extends TYPE
 	/**************************************************/
 	public TYPE_LIST data_members;
 
-	public String label_VT; // Accessible for usage when creating a runtime object when instancing a class
+	/* Accessible for usage when creating a runtime object when instancing a class */
+	public String label_VT;
+	public List<AST_Node> field_exps;
+	public int numFields;
 
 	/****************/
 	/* CTROR(S) ... */
@@ -25,6 +33,7 @@ public class TYPE_CLASS extends TYPE
 		this.father = father;
 		this.data_members = data_members;
 		this.label_VT = "vt_" + name;
+		this.numFields = 0;
 	}
 
 	/********************************************************/

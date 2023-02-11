@@ -14,6 +14,8 @@ import java.util.List;
 /*******************/
 import IR.IRcommand;
 import TEMP.*;
+import TYPES.TYPE;
+import TYPES.TYPE_INT;
 
 enum SegmentType{
 	NONE,
@@ -485,17 +487,73 @@ public class MIPSGenerator
 		/* ===========Call malloc syscall============*/
 		/* Set $a0 to the required allocated size*/
 		move(a0, array_size);
-		li(four, 4);
 		mul(a0, a0, four);
-		/* Set $v0*/
-		li(v0, 9);
-		fileWriter.format("\tsyscall\n");
+
+		malloc();
 
 		/* Set array_pointer ($v0 points to the allocated space)*/
 		move(array_pointer, v0);
 
 		/* Set array size in first cell */
 		store(array_size, array_pointer, 0);
+	}
+
+	/* Calls malloc syscall, assumes $a0 contains the desired size to allocate */
+	private void malloc() {
+		/* Set $v0*/
+		li("$v0", 9);
+
+		fileWriter.format("\tsyscall\n");
+	}
+
+	private void allocateClassRuntimeObject(TEMP classPtr, int numOfFields) {
+		String ptr = "$t" + classPtr.getRegisterSerialNumber();
+		String arg = "$a0";
+		String ret_val = "$v0";
+
+		/* Size to allocate:
+			+ each field of size 4 -> 4 * numOfFields
+			+ store vt ptr -> 4
+		 */
+		int size = 4 * numOfFields + 4;
+		li(arg, size);
+
+		malloc();
+
+		move(ptr, ret_val);
+	}
+
+	private void fillClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+		String obj_ptr = "$t" + classPtr.getRegisterSerialNumber();
+		String s0 = "$s0";
+
+		int offset = 0;
+
+		/* Pointer to VT at offset 0 */
+		la(s0, VTLabel);
+		store(s0, obj_ptr, offset);
+		offset++;
+
+		for (TEMP t : initialValueTemps) {
+			if (t != null) {
+				store(t, classPtr, offset);
+			}
+			else {
+				store(zero, obj_ptr, offset); //TODO: decide what to do with default values
+			}
+			offset++;
+		}
+	}
+
+	public void la(String reg, String label) {
+		fileWriter.format("\tla %s, %s\n", reg, label);
+	}
+
+	public void createClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+		open_segment(SegmentType.CODE);
+
+		allocateClassRuntimeObject(classPtr, initialValueTemps.size());
+		fillClassRuntimeObject(classPtr, initialValueTemps, VTLabel);
 	}
 
 	public void access_array(TEMP array_temp, TEMP array_index_temp, TEMP array_access_temp)
@@ -587,6 +645,14 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 		fileWriter.format("\tsw %s, %d(%s)\n",src, offset, dst);
+	}
+
+	public void store(TEMP src, TEMP dst, int offset)
+	{
+		String src_reg = "$t" + src.getRegisterSerialNumber();
+		String dst_reg = "$t" + dst.getRegisterSerialNumber();
+
+		store(src_reg, dst_reg, offset);
 	}
 
 	public void li(TEMP t,int value)

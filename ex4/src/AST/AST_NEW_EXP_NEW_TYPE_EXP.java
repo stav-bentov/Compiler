@@ -1,12 +1,18 @@
 package AST;
-import SYMBOL_TABLE.SYMBOL_TABLE;
 import TEMP.*;
 import TYPES.*;
 import IR.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
     public AST_TYPE type;
     public AST_EXP exp;
+
+    /* AST Annotations */
+    public List<AST_Node> fieldExps;
+    public String VTLabel;
 
     public AST_NEW_EXP_NEW_TYPE_EXP(AST_TYPE type, AST_EXP exp, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -51,6 +57,12 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
 
         /* New instance of a class */
         else if (instanceType instanceof TYPE_CLASS) {
+            TYPE_CLASS typeClass = (TYPE_CLASS) instanceType;
+
+            /* Update AST annotations */
+            this.fieldExps = typeClass.field_exps;
+            this.VTLabel = typeClass.label_VT;
+
             return instanceType;
         }
 
@@ -87,15 +99,33 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         /* 2 Cases: 1. array (this.exp!=null)
                     2. class
          */
+
+        /* case array */
         if (this.exp != null)
         {
             TEMP array_size_temp = this.exp.IRme();
             IR.getInstance().Add_IRcommand(new IRcommand_Set_Array(result_temp, array_size_temp));
         }
+
+        /* case class */
         else
         {
-            /* TODO: For Lilach*/
+
+            IR.getInstance().Add_IRcommand(new IRcommand_Instantiate_Class(result_temp, IRmeExpList(), VTLabel));
         }
         return result_temp;
+    }
+
+    /* Returns a list of temps. For uninitialized fields, contains null */
+    private List<TEMP> IRmeExpList() {
+        List<TEMP> temps = new ArrayList<>();
+
+        for (AST_Node exp : this.fieldExps) {
+            if (exp != null) {
+                temps.add(exp.IRme());
+            }
+        }
+
+        return temps;
     }
 }
