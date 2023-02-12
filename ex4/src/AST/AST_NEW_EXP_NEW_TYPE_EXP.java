@@ -110,7 +110,6 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         /* case class */
         else
         {
-
             IR.getInstance().Add_IRcommand(new IRcommand_Instantiate_Class(result_temp, IRmeExpList(), VTLabel));
         }
         return result_temp;

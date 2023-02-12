@@ -1,4 +1,6 @@
 package AST;
+import IR.*;
+import TEMP.*;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -57,11 +59,22 @@ public class AST_VAR_VAR_ID extends AST_VAR
 			throw new SemanticException(this);
 		}
 
+		first_var_type.set_AST_from_TYPE_VAR(this);
+
 		//return the TYPE_VAR type
 		return type;
 	}
 
-	//previous implementation. leaving it here in case it is neccesary for future implementation.
+	@Override
+	public TEMP IRme() {
+		TEMP var_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
+
+		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.VTLabel, this.var_offset, var_temp));
+
+		return var_temp;
+	}
+
+//previous implementation. leaving it here in case it is neccesary for future implementation.
 //	public TYPE_VAR GetDataMemberVarType(TYPE_CLASS type_class, String id) throws SemanticException{
 //		//iterate over all datamembers of type_class, check if id exists. if it does, get it from inheritance tree
 //		TYPE_LIST head = type_class.data_members.head;
