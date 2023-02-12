@@ -75,6 +75,9 @@ public class TYPE_VAR extends TYPE{
             case LOCAL:
                 curr_ast.set_local(this.var_offset);
                 break;
+            case FIELD:
+                curr_ast.set_field(this.var_offset);
+                break;
         }
     }
 }

@@ -9,6 +9,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public String id;
     public T exp;
     public TYPE expType = null;
+    public String VTLabel;
 
     public AST_VAR_DEC(AST_TYPE type, String id, T exp, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -128,6 +129,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             {
                 currVar.set_field(current_class.numFields, exp);
                 current_class.numFields++;
+                VTLabel = current_class.label_VT;
             }
         }
         currVar.set_AST_from_TYPE_VAR(this);
@@ -180,7 +182,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 break;
             case FIELD:
                 TEMP val = exp.IRme(); // Assuming that a register that contains this value will be returned
-                IR.getInstance().Add_IRcommand(new IRcommand_Field_Var_Dec(assigned_temp, val));
+                IR.getInstance().Add_IRcommand(new IRcommand_Field_Var_Dec(this.var_offset, val, this.VTLabel));
                 break;
         }
         return null;

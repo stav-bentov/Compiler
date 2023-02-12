@@ -199,6 +199,12 @@ public abstract class AST_Node
 		this.var_type = VarType.LOCAL;
 	}
 
+	public void set_field(int num_fields)
+	{
+		this.var_offset = 4 + (num_fields * 4); // Offset in the runtime object
+		this.var_type = VarType.FIELD;
+	}
+
 	public TEMP_LIST build_param_list(AST_LIST ast_param_list)
 	{
 		AST_LIST pointer = ast_param_list;

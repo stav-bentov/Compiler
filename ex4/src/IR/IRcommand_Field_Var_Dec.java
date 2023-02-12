@@ -5,15 +5,17 @@ import TEMP.TEMP;
 
 public class IRcommand_Field_Var_Dec extends IRcommand{
     TEMP valueToAssign;
-    TEMP assignedTemp;
+    int offset;
+    String VTLabel;
 
-    public IRcommand_Field_Var_Dec(TEMP assignedTemp, TEMP valueToAssign) {
-        this.assignedTemp = assignedTemp;
+    public IRcommand_Field_Var_Dec(int offset, TEMP valueToAssign, String VTLabel) {
+        this.offset = offset;
         this.valueToAssign = valueToAssign;
+        this.VTLabel = VTLabel;
     }
 
     @Override
     public void MIPSme() {
-        MIPSGenerator.getInstance().move(assignedTemp, valueToAssign);
+        MIPSGenerator.getInstance().field_var_dec(offset, valueToAssign, VTLabel);
     }
 }

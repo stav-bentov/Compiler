@@ -427,16 +427,27 @@ public class MIPSGenerator
 
 	public void local_var_dec(int var_offset, TEMP assigned_temp)
 	{
+		var_dec(var_offset, assigned_temp, "$fp");
+	}
+
+	public void field_var_dec(int var_offset, TEMP val_to_assign, String vt_label) {
+		la("$s1", vt_label);
+		var_dec(var_offset, val_to_assign, "$s1");
+	}
+
+	/* NOTE: uses $s0 */
+	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg) {
 		open_segment(SegmentType.CODE);
-		if (assigned_temp == null)
+		if (val_to_assign == null)
 		{
 			/* Assign zero (no assignment)*/
 			li("$s0", 0);
-			fileWriter.format("\tsw $s0, %d($fp)\n", var_offset);
+			store("$s0", base_reg, var_offset);
 		}
 		else
 		{
-			fileWriter.format("\tsw $t%d, %d($fp)\n", assigned_temp.getRegisterSerialNumber(), var_offset);
+			String val = "$t" + val_to_assign.getRegisterSerialNumber();
+			store(val, base_reg, var_offset);
 		}
 	}
 
