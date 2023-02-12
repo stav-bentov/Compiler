@@ -75,7 +75,8 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		 *  SemantMe on var will return TYPE_VAR */
 
 		/* Case 1: (var instance of AST_VAR_ID)*/
-		if (var instanceof AST_VAR_ID)
+		/* Case 2: (var instance of AST_VAR_VAR_ID) -> goes to case field as well */
+		if (var instanceof AST_VAR_ID || var instanceof AST_VAR_VAR_ID)
 		{
 			switch (var.var_type)
 			{
@@ -90,17 +91,12 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 					break;
 				case FIELD:
 					/* Update/Set class field variable*/
-					/* TODO: For Lilach*/
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(var.var_offset, exp_temp, var.VTLabel));
 					/* I think that it can't be a field but maybe I'm missing*/
 					break;
 			}
 		}
-		/* Case 2: (var instance of AST_VAR_VAR_ID)*/
-		/* TODO: For Lilach*/
-		if (var instanceof AST_VAR_VAR_ID)
-		{
 
-		}
 		/* Case 3: (var instance of AST_VAR_EXP)*/
 		if (var instanceof AST_VAR_EXP)
 		{

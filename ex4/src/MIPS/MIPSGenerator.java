@@ -428,7 +428,7 @@ public class MIPSGenerator
 		var_dec(var_offset, assigned_temp, "$fp");
 	}
 
-	public void field_var_dec(int var_offset, TEMP val_to_assign, String vt_label) {
+	public void assign_field(int var_offset, TEMP val_to_assign, String vt_label) {
 		la("$s0", vt_label);
 		var_dec(var_offset, val_to_assign, "$s0");
 	}

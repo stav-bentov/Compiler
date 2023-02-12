@@ -3,12 +3,12 @@ package IR;
 import MIPS.MIPSGenerator;
 import TEMP.TEMP;
 
-public class IRcommand_Field_Var_Dec extends IRcommand{
+public class IRcommand_Assign_Field extends IRcommand{
     TEMP valueToAssign;
     int offset;
     String VTLabel;
 
-    public IRcommand_Field_Var_Dec(int offset, TEMP valueToAssign, String VTLabel) {
+    public IRcommand_Assign_Field(int offset, TEMP valueToAssign, String VTLabel) {
         this.offset = offset;
         this.valueToAssign = valueToAssign;
         this.VTLabel = VTLabel;
@@ -16,6 +16,6 @@ public class IRcommand_Field_Var_Dec extends IRcommand{
 
     @Override
     public void MIPSme() {
-        MIPSGenerator.getInstance().field_var_dec(offset, valueToAssign, VTLabel);
+        MIPSGenerator.getInstance().assign_field(offset, valueToAssign, VTLabel);
     }
 }
