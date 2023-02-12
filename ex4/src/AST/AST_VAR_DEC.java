@@ -126,7 +126,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             /* Class fields variable */
             else
             {
-                currVar.set_field(current_class.numFields, exp, current_class.label_VT);
+                currVar.set_field(current_class.numFields, exp);
                 current_class.numFields++;
             }
         }
@@ -180,7 +180,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 break;
             case FIELD:
                 TEMP val = exp.IRme(); // Assuming that a register that contains this value will be returned
-                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.var_offset, val, this.VTLabel));
+                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.var_offset, val));
                 break;
         }
         return null;

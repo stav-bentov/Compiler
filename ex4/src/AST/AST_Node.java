@@ -178,7 +178,6 @@ public abstract class AST_Node
 	public String global_var_label;
 	public int var_offset;
 	public VarType var_type;
-	public String VTLabel;
 
 	public void set_global(String global_var_label)
 	{
@@ -200,11 +199,10 @@ public abstract class AST_Node
 		this.var_type = VarType.LOCAL;
 	}
 
-	public void set_field(int num_fields, String VTLabel)
+	public void set_field(int num_fields)
 	{
 		this.var_offset = 4 + (num_fields * 4); // Offset in the runtime object
 		this.var_type = VarType.FIELD;
-		this.VTLabel = VTLabel;
 	}
 
 	public TEMP_LIST build_param_list(AST_LIST ast_param_list)

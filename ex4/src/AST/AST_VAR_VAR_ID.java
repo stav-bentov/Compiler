@@ -68,8 +68,11 @@ public class AST_VAR_VAR_ID extends AST_VAR
 	@Override
 	public TEMP IRme() {
 		TEMP var_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		/* this.var is a class instance, were trying to assign a value to a field of that instance
+		   this.var.IRme will return the class pointer */
+		TEMP classPtr = this.var.IRme();
 
-		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.VTLabel, this.var_offset, var_temp));
+		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.var_offset, classPtr, var_temp));
 
 		return var_temp;
 	}

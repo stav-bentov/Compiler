@@ -33,6 +33,7 @@ public class MIPSGenerator
 	private String invalid_ptr_label = "string_invalid_ptr_dref";
 	private String access_violation_label = "string_access_violation";
 	private String div_by_0_label = "string_illegal_div_by_0";
+	private String this_reg = "$s9";
 
 	/***********************/
 	/* The file writer ... */
@@ -428,9 +429,13 @@ public class MIPSGenerator
 		var_dec(var_offset, assigned_temp, "$fp");
 	}
 
-	public void assign_field(int var_offset, TEMP val_to_assign, String vt_label) {
-		la("$s0", vt_label);
-		var_dec(var_offset, val_to_assign, "$s0");
+	/* When class_ptr is null, will use "this" instead */
+	public void assign_field(int var_offset, TEMP val_to_assign, TEMP class_ptr) {
+		/* If field is accessed using an instance of the class, use that instance.
+		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
+		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
+
+		var_dec(var_offset, val_to_assign, base_reg);
 	}
 
 	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg) {
@@ -447,13 +452,15 @@ public class MIPSGenerator
 		}
 	}
 
-	public void get_field(int offset, String vt_label, TEMP res) {
-		String vt_base = "$s0";
+	/* When class_ptr is null, will use "this" instead */
+	public void get_field(int offset, TEMP res, TEMP class_ptr) {
 		String res_reg = "$t" + res.getRegisterSerialNumber();
+		/* If field is accessed using an instance of the class, use that instance.
+		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
+		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
 
 		open_segment(SegmentType.CODE);
-		la(vt_base, vt_label);
-		load(res_reg, vt_base, offset);
+		load(res_reg, base_reg, offset);
 	}
 
 	/* Receives variable's offset and register to set the variable data in
