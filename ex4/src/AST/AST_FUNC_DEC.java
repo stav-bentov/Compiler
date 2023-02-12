@@ -115,6 +115,8 @@ public class AST_FUNC_DEC extends AST_Node {
             {
                 isValidMethod(this.name, currTypeFunc);
                 this.class_name = SYMBOL_TABLE.getInstance().getCurrentClass().name;
+                currTypeFunc.offset = 4 * (SYMBOL_TABLE.getInstance().getCurrentClass().numMethods++);
+                currTypeFunc.isMethod = true;
             }
 
             /* Set labels */

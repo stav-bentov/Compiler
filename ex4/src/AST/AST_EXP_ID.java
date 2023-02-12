@@ -1,8 +1,8 @@
 package AST;
 import IR.*;
+import SYMBOL_TABLE.SYMBOL_TABLE;
 import TEMP.*;
 import TYPES.*;
-import SYMBOL_TABLE.*;
 
 public class AST_EXP_ID extends AST_EXP
 {
@@ -11,6 +11,8 @@ public class AST_EXP_ID extends AST_EXP
 	public AST_LIST<AST_EXP> parmeters_list;
 	public String func_prologe_label;
 	public String class_name = "";
+	public int method_offset;
+	public boolean isMethod;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -54,33 +56,36 @@ public class AST_EXP_ID extends AST_EXP
 
 	//calling a function
 	public TYPE SemantMe() throws SemanticException {
-		/* TODO: for Lilach take care of class_name*/
-		if (this.var != null)
-		{
-			/*....*/
+		TYPE_FUNCTION func = CheckCallToFunc(id, var, parmeters_list);
+
+		if (func.isMethod) {
+			this.method_offset = func.offset;
+			this.isMethod = true;
 		}
 
-		/* Set func_label*/
-		if (!this.id.equals("main"))
-		{
-			this.func_prologe_label = "start_" + this.id + "_" + class_name;
-		}
-		else
-		{
-			this.func_prologe_label = this.id;
+		else {
+			/* Set func_label*/
+			if (!this.id.equals("main")) {
+				this.func_prologe_label = "start_" + this.id + "_" + class_name; //TODO: handle this label
+			} else {
+				this.func_prologe_label = this.id;
+			}
 		}
 
-		return CheckCallToFunc(id, var, parmeters_list);
+		return func.returnType;
 	}
 
 	@Override
 	public TEMP IRme()
 	{
 		TEMP result_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		TEMP_LIST temp_list = build_param_list(this.parmeters_list);
+		TEMP_LIST temp_list = this.parmeters_list == null ? null : build_param_list(this.parmeters_list);
 		if (this.var == null)
 		{
-			IR.getInstance().Add_IRcommand(new IRcommand_Call_Global_Func_With_Return(this.func_prologe_label, temp_list, result_temp));
+			if (isMethod) {
+				IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, result_temp, method_offset));
+			}
+			IR.getInstance().Add_IRcommand(new IRcommand_Call_Global_Func(temp_list, result_temp, this.func_prologe_label));
 			/* TODO: I don't think that function from type void will be called- ASK LILACH/ROTEM...*/
             /* Functions: 1. PrintString
                           2. PrintInt
@@ -99,11 +104,16 @@ public class AST_EXP_ID extends AST_EXP
 			{
 				IR.getInstance().Add_IRcommand(new IRcommand_Call_Global_Func_With_Return(this.func_prologe_label, temp_list, result_temp));
 			}*/
-		}
-		else
-		{/* TODO: For Lilach take care of methods */
 
 		}
-		return null;
+		else
+		{
+			/* this.var is a class instance, were trying to access its VT
+		       this.var.IRme will return the class pointer, which hase VT ptr in offset 0 */
+			TEMP classPtr = this.var.IRme();
+
+			IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, result_temp, method_offset, classPtr));
+		}
+		return result_temp;
 	}
 }

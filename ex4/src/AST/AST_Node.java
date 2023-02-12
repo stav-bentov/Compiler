@@ -108,7 +108,7 @@ public abstract class AST_Node
 		return false;
 	}
 
-	public TYPE CheckCallToFunc(String id, AST_VAR var, AST_LIST<AST_EXP> l) throws SemanticException {
+	public TYPE_FUNCTION CheckCallToFunc(String id, AST_VAR var, AST_LIST<AST_EXP> l) throws SemanticException {
 		TYPE typeFound;
 
 		/* Find type */
@@ -139,7 +139,7 @@ public abstract class AST_Node
 		/* Check call */
 		CallToFuncMatchesFunc((TYPE_FUNCTION)typeFound, l); // We've already made sure typeFound is of TYPE_FUNC
 
-		return ((TYPE_FUNCTION) typeFound).returnType;
+		return (TYPE_FUNCTION) typeFound;
 	}
 
 	private void CallToFuncMatchesFunc(TYPE_FUNCTION func, AST_LIST<AST_EXP> l) throws SemanticException{

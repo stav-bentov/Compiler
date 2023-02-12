@@ -15,6 +15,8 @@ public class TYPE_FUNCTION extends TYPE
 	public int num_local_variables;
 
 	public String func_label; // TODO: for Stav- initialize when declaring a function
+	public boolean isMethod;
+	public int offset;
 
 	/****************/
 	/* CTROR(S) ... */

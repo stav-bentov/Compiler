@@ -23,6 +23,7 @@ public class TYPE_CLASS extends TYPE
 	public String label_VT;
 	public List<AST_Node> field_exps;
 	public int numFields;
+	public int numMethods;
 
 	/****************/
 	/* CTROR(S) ... */

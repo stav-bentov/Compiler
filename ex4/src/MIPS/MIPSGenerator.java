@@ -404,6 +404,22 @@ public class MIPSGenerator
 		}
 	}
 
+	/* When class_ptr is null, will use "this" instead */
+	public void call_class_method(int method_offset, TEMP class_ptr) {
+		String vt = "$s0";
+		String class_ptr_reg = (class_ptr == null) ? this_reg : ("$t" + class_ptr);
+		String method_ptr_reg = "$s1";
+
+		load(vt, class_ptr_reg, 0); // VT at offset 0 in the runtime object
+		load(method_ptr_reg, vt, method_offset);
+
+		jalr(method_ptr_reg);
+	}
+
+	private void jalr(String reg) {
+		fileWriter.format("\tjalr %s\n", reg);
+	}
+
 	public void global_var_dec(String global_var_label, String str_value, int int_value)
 	{
 		open_segment(SegmentType.DATA);
@@ -751,6 +767,11 @@ public class MIPSGenerator
 	public void jump(String inlabel)
 	{
 		fileWriter.format("\tj %s\n",inlabel);
+	}
+
+	public void jal(String inlabel)
+	{
+		fileWriter.format("\tjal %s\n", inlabel);
 	}
 
 	public void blt(TEMP oprnd1,TEMP oprnd2,String label)
