@@ -25,7 +25,7 @@ public class TYPE_VAR extends TYPE{
     public AST_Node exp; // For fields. Can be AST_NEW_EXP or AST_EXP
     public int var_offset;
     public VarType var_type;
-
+    public String VTLabel;
     public TYPE type;
 
     public TYPE_VAR(String name, TYPE type){
@@ -54,11 +54,12 @@ public class TYPE_VAR extends TYPE{
         this.var_type = VarType.LOCAL;
     }
 
-    public void set_field(int num_fields, AST_Node exp)
+    public void set_field(int num_fields, AST_Node exp, String VTLabel)
     {
         this.var_offset = 4 + (num_fields * 4); // Offset in the runtime object
         this.var_type = VarType.FIELD;
         this.exp = exp;
+        this.VTLabel = VTLabel;
     }
 
     /* TODO: For Lilach- take care of fields variables*/
@@ -76,7 +77,7 @@ public class TYPE_VAR extends TYPE{
                 curr_ast.set_local(this.var_offset);
                 break;
             case FIELD:
-                curr_ast.set_field(this.var_offset);
+                curr_ast.set_field(this.var_offset, this.VTLabel);
                 break;
         }
     }

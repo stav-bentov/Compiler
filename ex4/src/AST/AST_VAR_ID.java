@@ -57,7 +57,7 @@ public class AST_VAR_ID extends AST_VAR
 				IR.getInstance().Add_IRcommand(new IRcommand_Get_Argument_Var(this.var_offset, var_temp));
 				break;
 			case FIELD:
-				/*TODO: For Lilach*/
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.VTLabel, this.var_offset, var_temp));
 				break;
 		}
 		return null;

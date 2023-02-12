@@ -451,6 +451,15 @@ public class MIPSGenerator
 		}
 	}
 
+	public void get_field(int offset, String vt_label, TEMP res) {
+		String vt_base = "$s0";
+		String res_reg = "$t" + res.getRegisterSerialNumber();
+
+		open_segment(SegmentType.CODE);
+		la(vt_base, vt_label);
+		load(res_reg, vt_base, offset);
+	}
+
 	/* Receives variable's offset and register to set the variable data in
 	*  Called on local variable or arguments (all access from stack)*/
 	public void get_var_with_offset(int var_offset, TEMP var_temp)
