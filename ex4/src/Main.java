@@ -5,6 +5,7 @@ import java_cup.runtime.Symbol;
 import AST.*;
 import IR.*;
 import MIPS.*;
+import src.IR.FunctionIRList;
 
 public class Main
 {
@@ -60,6 +61,8 @@ public class Main
 			/* [8] IR the AST ... */
 			/**********************/
 			AST.IRme();
+
+			Analysis.AnalyzeMe();
 			
 			/***********************/
 			/* [9] MIPS the IR ... */
