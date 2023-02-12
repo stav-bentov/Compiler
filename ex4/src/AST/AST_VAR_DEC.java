@@ -176,7 +176,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 {/* there is an assignment */
                     assigned_temp = this.exp.IRme();
                 }
-                IR.getInstance().Add_IRcommand(new IRcommand_Local_Var_Dec(this.var_offset, assigned_temp));
+                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.var_offset, assigned_temp));
                 break;
             case FIELD:
                 TEMP val = exp.IRme(); // Assuming that a register that contains this value will be returned

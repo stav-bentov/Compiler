@@ -14,8 +14,6 @@ import java.util.List;
 /*******************/
 import IR.IRcommand;
 import TEMP.*;
-import TYPES.TYPE;
-import TYPES.TYPE_INT;
 
 enum SegmentType{
 	NONE,
@@ -425,24 +423,22 @@ public class MIPSGenerator
 		fileWriter.format("\t%s: .word %d\n",global_var_label, 0);
 	}
 
-	public void local_var_dec(int var_offset, TEMP assigned_temp)
+	public void assign_stack_var(int var_offset, TEMP assigned_temp)
 	{
 		var_dec(var_offset, assigned_temp, "$fp");
 	}
 
 	public void field_var_dec(int var_offset, TEMP val_to_assign, String vt_label) {
-		la("$s1", vt_label);
-		var_dec(var_offset, val_to_assign, "$s1");
+		la("$s0", vt_label);
+		var_dec(var_offset, val_to_assign, "$s0");
 	}
 
-	/* NOTE: uses $s0 */
 	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg) {
 		open_segment(SegmentType.CODE);
 		if (val_to_assign == null)
 		{
 			/* Assign zero (no assignment)*/
-			li("$s0", 0);
-			store("$s0", base_reg, var_offset);
+			store(zero, base_reg, var_offset);
 		}
 		else
 		{
@@ -483,12 +479,6 @@ public class MIPSGenerator
 		fileWriter.format("\tla $s0, %s\n", global_var_label);
 		/* Store temp_to_assign in this address (update global..)*/
 		fileWriter.format("\tsw $t%d, 0($s0)\n", temp_to_assign.getRegisterSerialNumber());
-	}
-
-	/* Updates local var/ arguments*/
-	public void update_stack_var(int var_offset, TEMP temp_to_assign)
-	{
-		fileWriter.format("\tsw $t%d, %d($fp)\n", temp_to_assign.getRegisterSerialNumber(), var_offset);
 	}
 
 	/* First cell will contain array size, next cells- array cells

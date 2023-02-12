@@ -86,7 +86,7 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 				case LOCAL:
 				case ARGUMENT:
 					/* Update/Set argument/local variable*/
-					IR.getInstance().Add_IRcommand(new IRcommand_Update_Stack_Var(var.var_offset, exp_temp));
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(var.var_offset, exp_temp));
 					break;
 				case FIELD:
 					/* Update/Set class field variable*/
