@@ -62,7 +62,7 @@ public class FunctionIRList {
             //if it is some kind of jump label we would look for the label within the function. if the label is not here then we don't have to do anything.
             if(curr.head instanceof IR.IRcommand_Jump_Label || curr.head instanceof IR.IRcommand_Jump_If_Eq_Zero){
                 boolean has_found_current_label_in_function = false;
-                for(int j = 0; j < len; j++){
+                for(int j = 0; j < len; j++){//think whether to change implementation: save all labels in hash-table so we don't need to iterate over all commands
 
                     //if we found a label check if the current label is the label referenced by the jump cmd at arr[i]
                     if(arr[j].cmd instanceof IR.IRcommand_Label){
@@ -78,6 +78,7 @@ public class FunctionIRList {
                     }
                 }
             }
+            curr = curr.tail;
         }
 
         CFG = arr;
@@ -130,7 +131,7 @@ public class FunctionIRList {
     }
 
     private void BuildInterferenceGraph(){
-        graph = new HashMap<Integer, Set<Integer>>();
+        graph = new HashMap<Integer, Set<Integer>>();//key is node value is neighbours of the node
 
         //get all nodes for the graph
         Set<Integer> nodes = new HashSet<>();
@@ -178,12 +179,13 @@ public class FunctionIRList {
         }
 
         //according to heuristic in class, if cannot remove and graph is not empty it's not k-colorable
+        //ask if forum if this is ok
         if(!graph.isEmpty()){
             throw new Exception("Couldn't convert to 10 temporaries");
         }
 
         //init the coloring
-        coloring = new HashMap<Integer, Integer>();
+        coloring = new HashMap<Integer, Integer>();//key is node value is color
         for(Integer node : stack){
             coloring.put(node, -1);
         }
@@ -230,6 +232,7 @@ public class FunctionIRList {
 
             if(!has_neighbour_with_this_color){
                 coloring.replace(node, color);
+                return;
             }
         }
 
@@ -238,10 +241,10 @@ public class FunctionIRList {
 
     private void AssignTemps(){
         for(int i = 0; i < len; i++){
-            IR.IRcommand cmd = CFG[i].head;
+            IR.IRcommand cmd = CFG[i].cmd.head;//TODO: fix
             if(cmd != null && !(cmd instanceof IR.IRcommand_Label) && cmd.temps.size() > 0){//IRCommand needs to have a field temps - all the temps
                 for(TEMP.TEMP temp : cmd.temps){
-                    if (!coloring.containsKey(temp.getSerialNumber())){
+                    if (!coloring.containsKey(temp.getSerialNumber())){//TODO: understand why
                         temp.real = 0;
                     }
                     else{
