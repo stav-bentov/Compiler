@@ -11,32 +11,36 @@ public class Analysis {
         FunctionIRList ret = new FunctionIRList(null, 0);
         FunctionIRList temp = ret;
 
-        int len = 1;
-        if((firstCmd instanceof IRcommand_Label)){//IRCommand instance of IRCommandStartFunc
+        int len = 0;
+        if((firstCmd instanceof IRcommand_Start_Func)){//IRCommand instance of IRCommandStartFunc
             start = curr;
             len = 1;
         }
 
         while(curr != null){
             //if we go into this if clause we know we found a label that starts a function
-            if((curr.head instanceof IRcommand_Label) && ((IRcommand_Label curr.head).label_type == labelEnum.FUNCSTART)){//IRCommand instance of IRCommandStartFunc
+            if(curr.head instanceof IRcommand_Start_Func){//IRCommand instance of IRCommandStartFunc
                 start = curr;
                 len = 1;
             }
 
             //here we see a label that marks the end of a function
-            if((curr.head instanceof IRcommand_Label) && (IRcommand_Label curr.head).label_type == labelEnum.FUNCEND){
+            if(curr.head instanceof IRcommand_End_Func){
                 //if we also saw a start to that function we create a function ir list object and move to the next one
-                temp = new FunctionIRList(start, len);
+                temp.len = len;
+                temp.start = start;
+                temp.next = new FunctionIRList(null, 0);
+                temp = temp.next;
+
                 start = null;
                 len = 0;
-                temp = temp.next;
             }
 
             curr = curr.tail;
             len++;
         }
 
+        temp.next = null;
         return ret;
     }
 
