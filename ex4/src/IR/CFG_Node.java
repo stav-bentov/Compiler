@@ -8,7 +8,7 @@ public class CFG_Node {
     // when we reach a son we want to know his index. the node_num is his index.
     int node_num;
     IRcommand cmd;
-    List<CFG_Node> sons = new ArrayList<CFG_Node>();
+    List<CFG_Node> sons = new ArrayList<>();
     public CFG_Node(int node_num, IRcommand cmd){
         this.node_num = node_num;
         this.cmd = cmd;

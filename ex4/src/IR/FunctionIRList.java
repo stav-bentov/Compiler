@@ -1,6 +1,8 @@
 package IR;
 
 import IR.*;
+import TEMP.TEMP;
+
 import java.util.*;
 
 
@@ -36,10 +38,12 @@ public class FunctionIRList {
         CFG_Node[] arr = new CFG_Node[len];
         IRcommandList curr = start;
 
-        //first of all each one should point to the next cmd except for when next cmd in under a label
+        //init all nodes with their relevant command
         for(int i = 0; i < len; i++){
-            if((curr.head != null) && !(curr.head instanceof IRcommand_Label)){
-                arr[i] = new CFG_Node(curr.head.serialNumber, curr.head);//need to under what is the SerialNumber (meaning, number of the TEMP, before coloring)
+            //what if there is a return in the middle of a function?
+            //should CFG_node be created for a label cmd?
+            if(curr.head != null){//removed: !(curr.head instanceof IRcommand_Label)
+                arr[i] = new CFG_Node(i, curr.head);
             }
             curr = curr.tail;
         }
@@ -61,21 +65,16 @@ public class FunctionIRList {
             }
 
             //if it is some kind of jump label we would look for the label within the function. if the label is not here then we don't have to do anything.
-            if(curr.head instanceof IRcommand_Jump_Label || curr.head instanceof IRcommand_Jump_If_Eq_Zero){
-                boolean has_found_current_label_in_function = false;
+            if(curr.head instanceof IRcommand_Jump_Label || curr.head instanceof IRcommand_Jump_If_Eq_To_Zero){
                 for(int j = 0; j < len; j++){//think whether to change implementation: save all labels in hash-table so we don't need to iterate over all commands
 
                     //if we found a label check if the current label is the label referenced by the jump cmd at arr[i]
-                    if(arr[j].cmd instanceof IRcommand_Label){
+                    if(arr[j].cmd instanceof IRcommand_Label){//TODO: fix ifs to be more readable
                         if((arr[i].cmd instanceof IRcommand_Jump_Label &&  ((IRcommand_Jump_Label) arr[i].cmd).label_name.equals(((IRcommand_Label)arr[j].cmd).label_name)) ||
-                            (arr[i].cmd instanceof IRcommand_Jump_If_Eq_To_Zero &&  ((IRcommand_Jump_If_Eq_To_Zero) arr[i].cmd).label_name.equals(((IRcommand_Label)arr[j].cmd).label_name))){
-                            has_found_current_label_in_function = true;
+                            (arr[i].cmd instanceof IRcommand_Jump_If_Eq_To_Zero &&  ((IRcommand_Jump_If_Eq_To_Zero) arr[i].cmd).after_if_body_label.equals(((IRcommand_Label)arr[j].cmd).label_name))){
+                            arr[i].sons.add(arr[j]);
+                            break;
                         }
-                    }
-
-                    //if we found the label then arr[j] is the label command that arr[i] can jump to. we want to link arr[i[ to the command AFTER the label
-                    if(has_found_current_label_in_function && arr[j].cmd instanceof IRcommand_Label){
-                        arr[i].sons.add(arr[j + 1]);
                     }
                 }
             }
@@ -133,6 +132,7 @@ public class FunctionIRList {
 
     private void BuildInterferenceGraph(){
         graph = new HashMap<Integer, Set<Integer>>();//key is node value is neighbours of the node
+        copy_of_graph = new HashMap<Integer, Set<Integer>>();//key is node value is neighbours of the node
 
         //get all nodes for the graph
         Set<Integer> nodes = new HashSet<>();
@@ -164,7 +164,6 @@ public class FunctionIRList {
                 }
             }
         }
-
     }
 
     private void ColorGraph() throws Exception{
@@ -222,7 +221,7 @@ public class FunctionIRList {
     //according to the heuristic studied in class assigns the lowest color available
     private void AssignColor(Integer node) throws Exception{
         boolean has_neighbour_with_this_color;
-        Set<Integer> neighbours = graph.get(node);
+        Set<Integer> neighbours = copy_of_graph.get(node);
         for(int color = 0; color < num_of_registers; color++){
             has_neighbour_with_this_color = false;
             for(Integer neighbour : neighbours){
@@ -233,7 +232,7 @@ public class FunctionIRList {
 
             if(!has_neighbour_with_this_color){
                 coloring.replace(node, color);
-                return;
+                return;//thank you stav
             }
         }
 
@@ -242,19 +241,11 @@ public class FunctionIRList {
 
     private void AssignTemps(){
         for(int i = 0; i < len; i++){
-            IRcommand cmd = CFG[i].cmd.head;//TODO: fix
-            if(cmd != null && !(cmd instanceof IRcommand_Label) && cmd.temps.size() > 0){//IRCommand needs to have a field temps - all the temps
-                for(TEMP.TEMP temp : cmd.temps){
-                    if (!coloring.containsKey(temp.getSerialNumber())){//TODO: understand why
-                        temp.real = 0;
-                    }
-                    else{
-                        temp.real = coloring.get(temp.getSerialNumber());
-                    }
-
-                }
+            IRcommand cmd = CFG[i].cmd;
+            //IRCommand needs to have a field temps - all the temps in the IRCommand x = a + b (x,a,b)
+            for(TEMP temp : cmd.temps){
+                temp.SetRegisterSerialNumber(coloring.getOrDefault(temp.getSerialNumber(), 0));
             }
         }
-
     }
 }
