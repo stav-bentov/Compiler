@@ -24,6 +24,10 @@ public class IRcommand_Binop_Add_Integers extends IRcommand
 		this.dst = dst;
 		this.t1 = t1;
 		this.t2 = t2;
+
+		this.dest = dst.getSerialNumber();
+		this.depends_on.add(t1.getSerialNumber());
+		this.depends_on.add(t2.getSerialNumber());
 	}
 	/***************/
 	/* MIPS me !!! */

@@ -23,6 +23,8 @@ public class IRcommand_Jump_If_Eq_To_Zero extends IRcommand
 	{
 		this.cond          = cond;
 		this.after_if_body_label = after_if_body_label;
+
+		this.depends_on.add(cond.getSerialNumber());
 	}
 
 	public void MIPSme()

@@ -15,6 +15,8 @@ public class IRcommand_Update_Global_Var extends IRcommand
 	{
 		this.global_var_label = global_var_label;
 		this.temp_to_assign = temp_to_assign;
+
+		this.depends_on.add(temp_to_assign.getSerialNumber());
 	}
 
 	public void MIPSme()

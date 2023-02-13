@@ -9,6 +9,7 @@ public class IRcommand_Call_Print_Int extends IRcommand
 
     public IRcommand_Call_Print_Int(TEMP print_temp) {
         this.print_temp = print_temp;
+        this.depends_on.add(print_temp.getSerialNumber());
     }
 
     public void MIPSme()

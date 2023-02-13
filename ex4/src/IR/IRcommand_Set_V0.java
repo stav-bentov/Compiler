@@ -9,6 +9,8 @@ public class IRcommand_Set_V0 extends IRcommand
 
     public IRcommand_Set_V0(TEMP return_temp) {
         this.return_temp = return_temp;
+
+        this.depends_on.add(return_temp.getSerialNumber());
     }
 
     public void MIPSme()

@@ -18,6 +18,10 @@ public class IRcommand_Update_Array_Var extends IRcommand
 		this.array_temp = array_temp;
 		this.index_temp = index_temp;
 		this.temp_to_assign = temp_to_assign;
+
+		this.dest = array_temp.getSerialNumber();
+		this.depends_on.add(index_temp.getSerialNumber());
+		this.depends_on.add(temp_to_assign.getSerialNumber());
 	}
 
 	public void MIPSme()
