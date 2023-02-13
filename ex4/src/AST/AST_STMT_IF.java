@@ -1,5 +1,8 @@
 package AST;
+import IR.*;
+import IR.IRcommand;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.TEMP;
 import TYPES.*;
 
 public class AST_STMT_IF extends AST_STMT {
@@ -45,6 +48,18 @@ public class AST_STMT_IF extends AST_STMT {
 		SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.IF, null);
 		body.SemantMe();
 		SYMBOL_TABLE.getInstance().endScope();
+		return null;
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		TEMP cond_temp = this.cond.IRme();
+		String end_if_label = IRcommand.getFreshLabel("end_if");
+		/* If the cond_temp value is 1- make body, else- jump to the end of the body*/
+		IR.getInstance().Add_IRcommand(new IRcommand_Jump_If_Eq_To_Zero(cond_temp, end_if_label));
+		this.body.IRme();
+		IR.getInstance().Add_IRcommand(new IRcommand_Label(end_if_label));
 		return null;
 	}
 }

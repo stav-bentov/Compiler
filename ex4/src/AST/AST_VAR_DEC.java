@@ -1,4 +1,6 @@
 package AST;
+import IR.*;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -6,6 +8,8 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public AST_TYPE type;
     public String id;
     public T exp;
+    public TYPE expType = null;
+    public TYPE_VAR typeVar;
 
     public AST_VAR_DEC(AST_TYPE type, String id, T exp, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -72,7 +76,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
          * BUT- if it's vardec in CFIELD (we are in a class), can only assign string, int, null*/
         if (this.exp != null)
         {
-            TYPE expType = this.exp.SemantMe();
+            this.expType = this.exp.SemantMe();
             /* vardec is CFIELD- just const string/int/null assignments*/
             if (SYMBOL_TABLE.getInstance().getCurrentScopeType() == ScopeTypeEnum.CLASS)
             {
@@ -81,7 +85,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 }
 
                 /* TYPE_NIL only on TYPE_CLASS or TYPE_ARRAY*/
-                if (expType instanceof TYPE_NIL)
+                if (this.expType instanceof TYPE_NIL)
                 {
                     if (!(typeToAssign instanceof TYPE_CLASS || typeToAssign instanceof TYPE_ARRAY)) {
                         throw new SemanticException(this);
@@ -92,15 +96,94 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             {
                 /* We are inside a function/ method/ global scope/ if/ while
                 * check that the assigned type is matched*/
-                if (!checkAssign(new TYPE_VAR(this.id, typeToAssign), expType, this.exp)) {
+                if (!checkAssign(new TYPE_VAR(this.id, typeToAssign), this.expType, this.exp)) {
                     throw new SemanticException(this);
                 }
             }
         }
 
-        TYPE_VAR currVar = new TYPE_VAR(this.id, typeToAssign);
-        SYMBOL_TABLE.getInstance().enter(this.id, currVar, false);
-        return currVar;
+        /* 3 options: 1. variable is a local variable (in a function)
+                      2. variable is a global variable (outside a function or a class)
+                      3. variable is a class field (in a class, outside a function)
+         */
+        typeVar = new TYPE_VAR(this.id, typeToAssign);
+
+        /* If in a function, it's a local variable- Set right offsets */
+        TYPE_FUNCTION current_func = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc());
+        if (current_func != null)
+        {
+            /* Local variable */
+            typeVar.set_local(current_func.num_local_variables);
+            current_func.num_local_variables ++;
+        }
+        else
+        {
+            TYPE_CLASS current_class = ((TYPE_CLASS)SYMBOL_TABLE.getInstance().getCurrentClass());
+            /* Global variable */
+            if (current_class == null)
+            {
+                typeVar.set_global(this.id);
+            }
+            /* Class fields variable */
+            else
+            {
+                typeVar.set_field(current_class.numFields, exp);
+                current_class.numFields++;
+            }
+        }
+
+        SYMBOL_TABLE.getInstance().enter(this.id, typeVar, false);
+        return typeVar;
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        TEMP assigned_temp = null;
+
+        switch(this.typeVar.var_type) {
+            case GLOBAL:
+                /* No assignment declaration */
+                if (this.exp == null)
+                {
+                    IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label));
+                }
+                else
+                {/* "You may assume that if a global variable is initialized, then the initial value is a constant (i.e., string, integer, nil)."*/
+                    if (this.expType instanceof TYPE_INT)
+                    {
+                        /* If exp is not null and expType is TYPE_INT-> exp is instanceof AST_EXP_OPT*/
+                        int int_value = ((AST_EXP_OPT) this.exp).i;
+                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label, int_value));
+                    }
+                    else if (this.expType instanceof TYPE_STRING)
+                    {
+                        /* If exp is not null and expType is TYPE_STRING-> exp is instanceof AST_EXP_OPT*/
+                        String str_value = ((AST_EXP_OPT) this.exp).s;
+                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label, str_value));
+                    }
+                    else
+                    {
+                        /* it's TYPE_NIL */
+                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label));
+                    }
+                }
+                break;
+            case LOCAL:
+                if (this.exp != null)
+                {/* there is an assignment */
+                    assigned_temp = this.exp.IRme();
+                }
+                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, assigned_temp));
+                break;
+            case FIELD:
+                if (this.exp != null) {
+                    assigned_temp = exp.IRme(); // Assuming that a register that contains this value will be returned
+                }
+                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.typeVar.var_offset, assigned_temp));
+                break;
+        }
+        return null;
     }
 }
 

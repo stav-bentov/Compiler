@@ -1,11 +1,19 @@
 package AST;
+import IR.*;
+import TEMP.*;
 import TYPES.*;
 import SYMBOL_TABLE.*;
+
+import java.util.List;
 
 public class AST_CLASS_DEC extends AST_Node{
     public String className;
     public String extendsName;
     public AST_LIST<AST_CFIELD> cFieldList;
+
+    public List<String> methodLabels;
+    public List<AST_Node> fieldsExps;
+    public String VTLabel;
 
     public AST_CLASS_DEC(String className, String extendsName, AST_LIST<AST_CFIELD> cFieldList, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -54,7 +62,6 @@ public class AST_CLASS_DEC extends AST_Node{
         /* [1] Begin Class Scope */
         /*************************/
 
-
         TYPE_CLASS type_class = new TYPE_CLASS(null, this.className, null);
 
         /***************************/
@@ -78,7 +85,14 @@ public class AST_CLASS_DEC extends AST_Node{
         SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, type_class);
 
         //SemantMe will check if illegal inheritance or duplicated names in the same scope
-        cFieldList.SemantMe();
+        TYPE cFieldTypes = cFieldList.SemantMe();
+
+        /* Updates labels and field types for IRme/MIPSme later */
+        if (cFieldTypes != null) {
+            extractLabelsAndFieldTypes((TYPE_LIST) cFieldTypes); // assuming it returns a list
+        }
+        type_class.field_exps = this.fieldsExps;
+        VTLabel = type_class.label_VT; // for IRme
 
         /*****************/
         /* [3] End Scope */
@@ -86,5 +100,35 @@ public class AST_CLASS_DEC extends AST_Node{
         SYMBOL_TABLE.getInstance().endScope();
 
         return type_class;
+    }
+
+    @Override
+    public TEMP IRme() {
+        IR.getInstance().Add_IRcommand(new IRcommand_ClassDec_Allocate_VT(VTLabel, methodLabels)); //TODO: what to do in case of inheritance?
+
+        cFieldList.IRme();
+
+        return null; // Doesn't create a temp that should be passed back
+    }
+
+    private void extractLabelsAndFieldTypes(TYPE_LIST types) {
+        TYPE head = types.head;
+        TYPE_LIST tail = types.tail;
+
+        if (head == null) {
+            return;
+        }
+
+        /* case class method */
+        if (head instanceof TYPE_FUNCTION) { // add it's label to labels list
+            this.methodLabels.add(((TYPE_FUNCTION) head).func_label);
+        }
+
+        /* case field */
+        else if (head instanceof TYPE_VAR) {
+            this.fieldsExps.add(((TYPE_VAR) head).exp);
+        }
+
+        extractLabelsAndFieldTypes(tail);
     }
 }

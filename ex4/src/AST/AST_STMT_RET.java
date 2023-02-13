@@ -1,9 +1,12 @@
 package AST;
+import IR.*;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
 public class AST_STMT_RET extends AST_STMT {
     public AST_EXP exp;
+    public String epilogue_func_label;
 
     public AST_STMT_RET(AST_EXP exp, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -33,7 +36,6 @@ public class AST_STMT_RET extends AST_STMT {
     @Override
     public TYPE SemantMe() throws SemanticException {
         TYPE expectedReturnType = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc()).returnType;
-
         if (exp == null) { // Returns nothing, return type should be void
              return SemantMeCaseVoid(expectedReturnType);
         }
@@ -97,5 +99,19 @@ public class AST_STMT_RET extends AST_STMT {
 
         /* None of the above */
         throw new SemanticException(this);
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        TEMP return_temp;
+        /* If there is a return object (not "return;" - IRme on exp and set v0 to this temp */
+        if (this.exp != null)
+        {
+            return_temp = this.exp.IRme();
+            IR.getInstance().Add_IRcommand(new IRcommand_Set_V0(return_temp));
+        }
+        IR.getInstance().Add_IRcommand(new IRcommand_Jump_Label(this.epilogue_func_label)); // contains jump back to prev func
+        return null;
     }
 }

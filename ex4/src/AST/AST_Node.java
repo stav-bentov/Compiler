@@ -1,7 +1,9 @@
 package AST;
 import SYMBOL_TABLE.SYMBOL_TABLE;
-import TEMP.TEMP;
+import TEMP.*;
 import TYPES.*;
+import IR.IR;
+import IR.*;
 
 public abstract class AST_Node
 {
@@ -106,7 +108,7 @@ public abstract class AST_Node
 		return false;
 	}
 
-	public TYPE CheckCallToFunc(String id, AST_VAR var, AST_LIST<AST_EXP> l) throws SemanticException {
+	public TYPE_FUNCTION CheckCallToFunc(String id, AST_VAR var, AST_LIST<AST_EXP> l) throws SemanticException {
 		TYPE typeFound;
 
 		/* Find type */
@@ -137,7 +139,7 @@ public abstract class AST_Node
 		/* Check call */
 		CallToFuncMatchesFunc((TYPE_FUNCTION)typeFound, l); // We've already made sure typeFound is of TYPE_FUNC
 
-		return ((TYPE_FUNCTION) typeFound).returnType;
+		return (TYPE_FUNCTION) typeFound;
 	}
 
 	private void CallToFuncMatchesFunc(TYPE_FUNCTION func, AST_LIST<AST_EXP> l) throws SemanticException{
@@ -155,4 +157,32 @@ public abstract class AST_Node
 			}
 		}
 	}
+
+	public TEMP_LIST build_param_list(AST_LIST ast_param_list)
+	{
+		AST_LIST pointer = ast_param_list;
+		TEMP param_temp;
+		TEMP_LIST temp_list = null;
+		int temp_list_len = 0;
+
+		while (pointer != null)
+		{
+			param_temp = pointer.head.IRme();
+			temp_list = new TEMP_LIST(param_temp, null);
+			pointer = pointer.tail;
+			temp_list_len++;
+
+			while(pointer != null)
+			{
+				param_temp = pointer.head.IRme();
+				temp_list.tail = new TEMP_LIST(param_temp, temp_list.tail);
+				temp_list_len++;
+				pointer = pointer.tail;
+			}
+		}
+
+		temp_list.len = temp_list_len;
+		return temp_list;
+	}
+
 }
