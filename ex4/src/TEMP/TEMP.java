@@ -30,4 +30,6 @@ public class TEMP
 	{
 		return register_serial;
 	}
+
+	public void SetRegisterSerialNumber(int register_serial) { this.register_serial = register_serial; }
 }

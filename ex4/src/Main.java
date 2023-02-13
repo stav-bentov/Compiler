@@ -5,7 +5,6 @@ import java_cup.runtime.Symbol;
 import AST.*;
 import IR.*;
 import MIPS.*;
-import src.IR.FunctionIRList;
 
 public class Main
 {
