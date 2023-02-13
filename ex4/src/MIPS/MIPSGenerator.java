@@ -7,6 +7,7 @@ package MIPS;
 /* GENERAL IMPORTS */
 /*******************/
 import java.io.PrintWriter;
+import java.util.List;
 
 /*******************/
 /* PROJECT IMPORTS */
@@ -29,6 +30,13 @@ public class MIPSGenerator
 	private PrintWriter fileWriter;
 	private SegmentType current_segment = SegmentType.NONE;
 	private String zero = "$zero";
+	private String invalid_ptr_label = "string_invalid_ptr_dref";
+	private String access_violation_label = "string_access_violation";
+	private String div_by_0_label = "string_illegal_div_by_0";
+	private String this_reg = "$s9";
+	private String sp = "$sp";
+	private String ra = "$ra";
+	private String fp = "$fp";
 
 	/***********************/
 	/* The file writer ... */
@@ -39,13 +47,23 @@ public class MIPSGenerator
 		fileWriter.print("\tsyscall\n");
 		fileWriter.close();
 	}
-	public void print_int(TEMP t)
+
+	public void print_string(TEMP t)
 	{
-		int idx=t.getSerialNumber();
-		// fileWriter.format("\taddi $a0,Temp_%d,0\n",idx);
-		fileWriter.format("\tmove $a0,Temp_%d\n",idx);
+		int idx=t.getRegisterSerialNumber();
+		fileWriter.format("\tmove $a0,t_%d\n",idx);
 		fileWriter.format("\tli $v0,1\n");
 		fileWriter.format("\tsyscall\n");
+	}
+
+	public void print_int(TEMP t)
+	{
+		int idx=t.getRegisterSerialNumber();
+		// fileWriter.format("\taddi $a0,Temp_%d,0\n",idx);
+		fileWriter.format("\tmove $a0,t_%d\n",idx);
+		fileWriter.format("\tli $v0,1\n");
+		fileWriter.format("\tsyscall\n");
+		/* "When printing an integer, print an additional space at the end"*/
 		fileWriter.format("\tli $a0,32\n");
 		fileWriter.format("\tli $v0,11\n");
 		fileWriter.format("\tsyscall\n");
@@ -54,7 +72,7 @@ public class MIPSGenerator
 	/*==================================== Stav ====================================*/
 	public void lstr(TEMP t,String str, String str_label)
 	{
-		/* Ceate string value as a global variable in data*/
+		/* Create string value as a global variable in data*/
 		open_segment(SegmentType.DATA);
 		fileWriter.format("%s: .asciiz %s\n", str_label, str);
 
@@ -85,7 +103,6 @@ public class MIPSGenerator
 		String len_str1 = "$s1";
 		String len_str2 = "$s0";
 		String return_register = "$v0";
-		String syscall_num_and_return = "$v0";
 		String dst_register = "$t" + dst.getRegisterSerialNumber();
 		String copy_pointer = "$s1";
 
@@ -105,24 +122,19 @@ public class MIPSGenerator
 		addu(a0, a0, 1);
 
 		/* Allocate space for concatenated string, the pointer will be at syscall_num*/
-		li(syscall_num_and_return, 9);
-		fileWriter.format("\tsyscall\n");
+		malloc();
 
 		/* Make dst point to the beginning of the concatenated string.*/
-		move(dst_register,syscall_num_and_return);
+		move(dst_register,return_register);
 
 		/* Now we need to build it- copy str1 and then str2,
 		* the copy_pointer will help us to copy each str's char in the right place */
-
 		move(copy_pointer, dst_register);
 		copy(str1, copy_pointer);
 		copy(str2, copy_pointer);
 
 		/* Now copy_pointer points to the end of the string- add null terminator*/
 		sb(zero, copy_pointer, 0);
-
-		/* dst = concatenated string */
-		fileWriter.format("\tmove $t%d, $s1\n", dst.getRegisterSerialNumber());
 	}
 
 	/* Receives strings of dst_register and src_register
@@ -131,6 +143,14 @@ public class MIPSGenerator
 	public void move(String dst_register, String src_register)
 	{
 		fileWriter.format("\tmove %s, %s\n", dst_register, src_register);
+	}
+
+	public void move(TEMP dst_register, TEMP src_register)
+	{
+		String dst = "$t" + dst_register.getRegisterSerialNumber();
+		String src = "$t" + src_register.getRegisterSerialNumber();
+
+		move(dst, src);
 	}
 
 	/* Receives strings of dst_register, src_register and offset (for src)
@@ -200,7 +220,7 @@ public class MIPSGenerator
 
 		move(len, zero);
 		/* Add start label and check term for end loop */
-		fileWriter.format("%s:\n", start_label);
+		label(start_label);
 		lb(str_pointer, str_register, 0);
 		beq(str_pointer, zero, end_label);
 
@@ -210,7 +230,7 @@ public class MIPSGenerator
 		jump(start_label);
 
 		/* Add end label */
-		fileWriter.format("%s:\n", end_label);
+		label(end_label);
 	}
 
 	/* Receives Temp of str and dst_pointer (it's register name)
@@ -220,6 +240,7 @@ public class MIPSGenerator
 	 */
 	public void copy(TEMP str, String dst_pointer)
 	{
+		open_segment(SegmentType.CODE);
 		/* Body of len_func: using $v0 to calculate the len of the argument */
 		String start_label = IRcommand.getFreshLabel("start_copy_loop");
 		String end_label = IRcommand.getFreshLabel("end_copy_loop");
@@ -232,7 +253,7 @@ public class MIPSGenerator
 		move(copied_str_pointer, str_register);
 
 		/* Add start label and check term for end loop */
-		fileWriter.format("%s:\n", start_label);
+		label(start_label);
 		lb(copied_str_char, copied_str_pointer, 0);
 		beq(copied_str_char, zero, end_label);
 
@@ -243,7 +264,7 @@ public class MIPSGenerator
 		jump(start_label);
 
 		/* Add end label */
-		fileWriter.format("\t%s:\n", end_label);
+		label(end_label);
 	}
 
 
@@ -251,6 +272,8 @@ public class MIPSGenerator
 	   Returns 0 in dst if str1 != str2 OR 1 in dst if str1 == str2*/
 	public void compare_strings(TEMP dst, TEMP str1, TEMP str2)
 	{
+		open_segment(SegmentType.CODE);
+
 		/* Body of len_func: using $v0 to calculate the len of the argument */
 		String start_label = IRcommand.getFreshLabel("start_compare_loop");
 		String set_dst_0 = IRcommand.getFreshLabel("assign_zero");
@@ -274,7 +297,7 @@ public class MIPSGenerator
 		move(pointer_str2, str2_register);
 
 		/* Add start label and check term for end loop */
-		fileWriter.format("%s:\n", start_label);
+		label(start_label);
 		lb(char_str1, pointer_str1, 0);
 		lb(char_str2, pointer_str2, 0);
 		/* If str1[i] != str2[i] -> set dst to 0*/
@@ -287,105 +310,390 @@ public class MIPSGenerator
 		jump(start_label);
 
 		/* Add set_dst_0 label and set dst to 0 */
-		fileWriter.format("%s:\n", set_dst_0);
+		label(set_dst_0);
 		li(dst_register, 0);
 
 		/* Add end label */
-		fileWriter.format("\t%s:\n", end_label);
+		label(end_label);
 	}
 
-	public void create_start_func(String label_name, int local_var_num)
-	{
-		open_segment(SegmentType.CODE);
-		/* Create the label for the new created function*/
-		label(label_name);
-		/* Make function prologue */
-		func_prologue(local_var_num);
-	}
-
-	public void create_end_func(String label_name)
-	{
-		open_segment(SegmentType.CODE);
-		/* Create the label for the end of new created function*/
-		label(label_name);
-		/* Make function prologue */
-		func_epilogue();
-	}
-
-	public void func_prologue(int local_var_num)
+	public void func_prologue(String prologue_label, int local_var_num)
 	{
 		/* For Us- Based on practice_10 */
 		open_segment(SegmentType.CODE);
+		/* Create the label for the new created function*/
+		label(prologue_label);
 
+		/* Make function prologue */
 		/* Store return address in $ra */
-		fileWriter.format("\tsubu $sp, $sp, 4\n");
-		fileWriter.format("\tsw $ra, 0($sp), 4\n");
+		subu(sp, sp, 4);
+		store(ra, sp,0);
 		/* Backup $fp of called func */
-		fileWriter.format("\tsubu $sp, $sp, 4\n");
-		fileWriter.format("\tsw $fp, 0($sp), 4\n");
+		subu(sp, sp, 4);
+		store(fp, sp, 0);
 		/* Update $fp = $sp */
-		fileWriter.format("\tmove $fp, $sp\n");
+		move(fp, sp);
 		/* Backup all 10 temporaries */
 		for (int i = 0; i < 10; i++)
 		{
-			fileWriter.format("\tsubu $sp, $sp, 4\n");
-			fileWriter.format("\tsw $t%d, 0($sp)\n");
+			subu(sp, sp, 4);
+			store("$t" + i, sp, 0);
 		}
 		/* Save space for local_var_num local variables */
-		fileWriter.format("\tsubu $sp, $sp, %d\n", (local_var_num) * WORD_SIZE);
+		subu(sp, sp, (local_var_num) * WORD_SIZE);
+	}
+
+	/* Receives return register (return_temp) and set $v0 <- return_temp*/
+	public void set_v0(TEMP return_temp)
+	{
+		move("$v0", "$t\n" + return_temp.getRegisterSerialNumber());
+	}
+
+	/* Receives return register (assigned_temp) and set assigned_temp <- $v0*/
+	public void get_v0(TEMP assigned_temp)
+	{
+		move("$t" + assigned_temp.getRegisterSerialNumber(), "$v0");
 	}
 
 	/* Function Prologue: update $sp, $fp
                          restore %t0,...,$t9
                          jump to $ra*/
-	public void func_epilogue()
+	public void func_epilogue(String epilogue_label)
 	{
 		/* For Us- Based on practice_10 */
 		open_segment(SegmentType.CODE);
+		/* Create the label for the end of new created function*/
+		label(epilogue_label);
 
+		/* Make function prologue */
 		/* Update $sp = $fp */
-		fileWriter.format("\tmove $sp, $fp\n");
+		move(sp, fp);
 		/* Restore */
 		for (int i = 0; i < 10; i++)
 		{
-			fileWriter.format("\tlw $t%d, %d($sp)\n", i, (-(i + 1)) * WORD_SIZE);
+			load("$t" + i, sp, (-(i + 1)) * WORD_SIZE);
 		}
 		/* Restore precious %fp */
-		fileWriter.format("\tlw $fp, 0($sp)\n");
+		load(fp, sp, 0);
 		/* Store return address in $ra */
-		fileWriter.format("\tlw $ra, 4($sp)\n");
-		fileWriter.format("\taddu $sp, $sp, 8\n");
+		load(ra, sp, 4);
+		addu(sp, sp, 8);
 		/* jump to return address */
 		fileWriter.format("\tjr $ra\n");
 	}
 
-	/* TODO: change TEMP to temp list*/
-	public void set_arguments(TEMP parameter)
+	public void set_arguments(TEMP_LIST param_list)
 	{
 		open_segment(SegmentType.CODE);
-		/* add arguments*/
-		fileWriter.format("\tsubu $sp, $sp, %d\n", 4);
-		fileWriter.format("\tsw $t%d, 0($sp)\n", parameter.getRegisterSerialNumber());
+		TEMP_LIST pointer = param_list;
+
+		subu(sp, sp, 4 * param_list.len);
+
+		/* set arguments */
+		for (int i = param_list.len - 1; i >= 0; i--)
+		{
+			TEMP current_temp = pointer.head;
+			store("$t" + current_temp.getRegisterSerialNumber(), sp, 4 * i);
+			pointer = pointer.tail;
+		}
 	}
 
-
-
-	public void allocate(String var_name)
+	public void del_arguments(int param_nums)
 	{
-		fileWriter.format(".data\n");
-		fileWriter.format("\tglobal_%s: .word 721\n",var_name);
+		/* TODO: ask if it matter to use addi or addu*/
+		addu(sp, sp, 4 * param_nums);
 	}
 
-	public void load(TEMP dst,String var_name)
-	{
-		int idxdst=dst.getSerialNumber();
-		fileWriter.format("\tlw Temp_%d,global_%s\n",idxdst,var_name);
+	/* When class_ptr is null, will use "this" instead */
+	public void call_class_method(int method_offset, TEMP class_ptr) {
+		String vt = "$s0";
+		String class_ptr_reg = (class_ptr == null) ? this_reg : ("$t" + class_ptr.getRegisterSerialNumber());
+		String method_ptr_reg = "$s1";
+
+		load(vt, class_ptr_reg, 0); // VT at offset 0 in the runtime object
+		load(method_ptr_reg, vt, method_offset);
+
+		jalr(method_ptr_reg);
 	}
 
-	public void store(String var_name,TEMP src)
+	private void jalr(String reg) {
+		fileWriter.format("\tjalr %s\n", reg);
+	}
+
+	public void global_var_dec(String global_var_label, String str_value, int int_value)
 	{
-		int idxsrc=src.getSerialNumber();
-		fileWriter.format("\tsw Temp_%d,global_%s\n",idxsrc,var_name);
+		open_segment(SegmentType.DATA);
+		if (str_value != null)
+		{
+			fileWriter.format("\t%s: .word %s\n",global_var_label, str_value);
+		}
+		else
+		{
+			fileWriter.format("\t%s: .word %d\n",global_var_label, int_value);
+		}
+	}
+
+	/* Set an uninitialized global variable*/
+	public void global_var_dec(String global_var_label)
+	{
+		open_segment(SegmentType.DATA);
+		fileWriter.format("\t%s: .word %d\n",global_var_label, 0);
+	}
+
+	public void assign_stack_var(int var_offset, TEMP assigned_temp)
+	{
+		var_dec(var_offset, assigned_temp, "$fp");
+	}
+
+	/* When class_ptr is null, will use "this" instead */
+	public void assign_field(int var_offset, TEMP val_to_assign, TEMP class_ptr) {
+		/* If field is accessed using an instance of the class, use that instance.
+		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
+		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
+
+		var_dec(var_offset, val_to_assign, base_reg);
+	}
+
+	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg) {
+		open_segment(SegmentType.CODE);
+		if (val_to_assign == null)
+		{
+			/* Assign zero (no assignment)*/
+			store(zero, base_reg, var_offset);
+		}
+		else
+		{
+			String val = "$t" + val_to_assign.getRegisterSerialNumber();
+			store(val, base_reg, var_offset);
+		}
+	}
+
+	/* When class_ptr is null, will use "this" instead */
+	public void get_field(int offset, TEMP res, TEMP class_ptr) {
+		String res_reg = "$t" + res.getRegisterSerialNumber();
+		/* If field is accessed using an instance of the class, use that instance.
+		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
+		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
+
+		open_segment(SegmentType.CODE);
+		load(res_reg, base_reg, offset);
+	}
+
+	/* Receives variable's offset and register to set the variable data in
+	*  Called on local variable or arguments (all access from stack)*/
+	public void get_var_with_offset(int var_offset, TEMP var_temp)
+	{
+		open_segment(SegmentType.CODE);
+		load("$t" + var_temp.getRegisterSerialNumber(), fp, var_offset);
+	}
+
+	/* Receives variable's global label and register to set the global data in*/
+	public void get_global_var(String global_var_label, TEMP var_temp)
+	{
+		open_segment(SegmentType.CODE);
+		la("$s0", global_var_label);
+		load("$t" + var_temp.getRegisterSerialNumber(), "$s0", 0);
+	}
+
+	public void update_global_var(String global_var_label, TEMP temp_to_assign)
+	{
+		open_segment(SegmentType.CODE);
+		/* Load address of global_var_label to %s0 */
+		la("$s0", global_var_label);
+		/* Store temp_to_assign in this address (update global..)*/
+		store("$t" + temp_to_assign.getRegisterSerialNumber(), "$s0", 0);
+	}
+
+	/* First cell will contain array size, next cells- array cells
+	 *  Set array_size_temp to point to the allocated space (the array)*/
+	public void allocate_array(TEMP array_size_temp, TEMP array_temp)
+	{
+		open_segment(SegmentType.CODE);
+		String array_size = "$t" + array_size_temp.getRegisterSerialNumber();
+		String array_pointer = "$t" + array_temp.getRegisterSerialNumber();
+		String a0 = "$a0";
+		String v0 = "$v0";
+		String four = "$s0";
+
+		addu(array_size, array_size, 1);
+
+		/* ===========Call malloc syscall============*/
+		/* Set $a0 to the required allocated size*/
+		move(a0, array_size);
+		mul(a0, a0, four);
+
+		malloc();
+
+		/* Set array_pointer ($v0 points to the allocated space)*/
+		move(array_pointer, v0);
+
+		/* Set array size in first cell */
+		store(array_size, array_pointer, 0);
+	}
+
+	/* Calls malloc syscall, assumes $a0 contains the desired size to allocate */
+	private void malloc() {
+		/* Set $v0*/
+		li("$v0", 9);
+
+		fileWriter.format("\tsyscall\n");
+	}
+
+	private void printSyscall() {
+		/* Set $v0*/
+		li("$v0", 4);
+		fileWriter.format("\tsyscall\n");
+	}
+
+	private void exitSyscall() {
+		/* Set $v0*/
+		li("$v0", 10);
+		fileWriter.format("\tsyscall\n");
+	}
+
+	private void allocateClassRuntimeObject(TEMP classPtr, int numOfFields) {
+		String ptr = "$t" + classPtr.getRegisterSerialNumber();
+		String arg = "$a0";
+		String ret_val = "$v0";
+
+		/* Size to allocate:
+			+ each field of size 4 -> 4 * numOfFields
+			+ store vt ptr -> 4
+		 */
+		int size = 4 * numOfFields + 4;
+		li(arg, size);
+
+		malloc();
+
+		move(ptr, ret_val);
+	}
+
+	private void fillClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+		String obj_ptr = "$t" + classPtr.getRegisterSerialNumber();
+		String s0 = "$s0";
+
+		int offset = 0;
+
+		/* Pointer to VT at offset 0 */
+		la(s0, VTLabel);
+		store(s0, obj_ptr, offset);
+		offset += 4;
+
+		for (TEMP t : initialValueTemps) {
+			if (t != null) {
+				store(t, classPtr, offset);
+			}
+			else {
+				store(zero, obj_ptr, offset);
+			}
+			offset += 4;
+		}
+	}
+
+	public void la(String reg, String label) {
+		fileWriter.format("\tla %s, %s\n", reg, label);
+	}
+
+	public void createClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+		open_segment(SegmentType.CODE);
+
+		allocateClassRuntimeObject(classPtr, initialValueTemps.size());
+		fillClassRuntimeObject(classPtr, initialValueTemps, VTLabel);
+	}
+
+	public void access_array(TEMP array_temp, TEMP array_index_temp, TEMP array_access_temp)
+	{
+		String absolute_address = "$s0";
+		String result_register = "$t" + array_access_temp.getRegisterSerialNumber();
+
+		get_array_cell(array_temp, array_index_temp, absolute_address);
+
+		/* Access - Save the value in result_register*/
+		load(result_register, absolute_address, 0);
+	}
+
+	/* Receives array_temp (pointer to the start of the array), and array_index_temp (required index)
+	   Make absolute_address contain the absolute address of the required cell*/
+	public void get_array_cell(TEMP array_temp, TEMP array_index_temp, String absolute_address)
+	{
+		check_oob(array_temp, array_index_temp);
+		String array_register = "$t" + array_temp.getRegisterSerialNumber();
+		String index_register = "$t" + array_index_temp.getRegisterSerialNumber();
+		String four = "$s1";
+
+		/* Array cells are located one cell next (because first cell saves array size */
+		move(absolute_address, index_register);
+		/* absolute_address will contain the address of the required cell:
+		 		1. add 1 to the required index
+		 		2. multiply by 4
+		 		3. add array address*/
+		addu(absolute_address, absolute_address, 1);
+		li(four, 4);
+		/* absolute_address*=4 */
+		mul(absolute_address, absolute_address, four);
+		/* absolute_address = absolute_address + array address */
+		add(absolute_address, absolute_address, array_register);
+	}
+
+	public void update_array(TEMP array_temp, TEMP array_index_temp, TEMP temp_to_assign)
+	{
+		String absolute_address = "$s0";
+		String assigned_register = "$t" + temp_to_assign.getRegisterSerialNumber();
+
+		get_array_cell(array_temp, array_index_temp, absolute_address);
+
+		/* Access - Save the value in result_register*/
+		store(assigned_register, absolute_address, 0);
+	}
+
+	public void check_oob(TEMP array_temp, TEMP array_index_temp)
+	{
+		open_segment(SegmentType.CODE);
+
+		String start_check_oob = IRcommand.getFreshLabel("start_check_oob");
+		String end_check_oob = IRcommand.getFreshLabel("end_check_oob");
+		String error_check_oob = IRcommand.getFreshLabel("error_check_oob");
+
+		String temp_size = "$s0";
+		String array_pointer = "$t" + array_temp.getRegisterSerialNumber();
+		String array_index = "$t" + array_index_temp.getRegisterSerialNumber();
+
+		label(start_check_oob);
+		/* The size of an array is saved in first cell- then check if not 0 <= array_index_temp < size -> error*/
+		load(temp_size, array_pointer, 0);
+		/* 0 > array_index_temp*/
+		blt(array_index, zero, error_check_oob);
+		/* Here: 0 <= array_index_temp, if array_index_temp < size then- end check!*/
+		blt(array_index, temp_size, end_check_oob);
+
+		/* Else- if array_index_temp >= size then error_check_oob */
+		label(error_check_oob);
+		/* Print "Access Violation" and then exit*/
+		fileWriter.format("\tla $a0, %s\n",this.access_violation_label);
+		printSyscall();
+		exitSyscall();
+
+		label(end_check_oob);
+	}
+
+	public void load(String dst,String src, int offset)
+	{
+		open_segment(SegmentType.CODE);
+		fileWriter.format("\tlw %s, %d(%s)\n",dst, offset, src);
+	}
+
+	public void store(String src, String dst, int offset)
+	{
+		open_segment(SegmentType.CODE);
+		fileWriter.format("\tsw %s, %d(%s)\n",src, offset, dst);
+	}
+
+	public void store(TEMP src, TEMP dst, int offset)
+	{
+		String src_reg = "$t" + src.getRegisterSerialNumber();
+		String dst_reg = "$t" + dst.getRegisterSerialNumber();
+
+		store(src_reg, dst_reg, offset);
 	}
 
 	public void li(TEMP t,int value)
@@ -423,6 +731,12 @@ public class MIPSGenerator
 		fileWriter.format("\tsub t%d, t%d, t%d\n", dstidx, i1, i2);
 	}
 
+	public void subu(String dst,String oprnd,int sub_val)
+	{
+		open_segment(SegmentType.CODE);
+		fileWriter.format("\tsubu %s, %s, %d\n", dst, oprnd, sub_val);
+	}
+
 	public void mul(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
 		open_segment(SegmentType.CODE);
@@ -434,15 +748,39 @@ public class MIPSGenerator
 		fileWriter.format("\tmul t%d, t%d, t%d\n", dstidx, i1, i2);
 	}
 
+	public void mul(String dst,String oprnd1,String oprnd2)
+	{
+		open_segment(SegmentType.CODE);
+		fileWriter.format("\tmul %s, %s, %s\n", dst, oprnd1, oprnd2);
+	}
+
 	public void div(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
 		open_segment(SegmentType.CODE);
+
+		check_zero_div(oprnd2);
 
 		int i1 = oprnd1.getRegisterSerialNumber();
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
 
 		fileWriter.format("\tdiv t%d, t%d, t%d\n", dstidx, i1, i2);
+	}
+
+	public void check_zero_div(TEMP temp)
+	{
+		String end_error_handle = IRcommand.getFreshLabel("end_div_error");
+
+		/* if temp != 0 then pass over error handler*/
+		bne("$t" + temp.getRegisterSerialNumber(), zero, end_error_handle);
+
+		/* Error:
+		Print "Illegal Division By Zero" and then exit*/
+		la("$a0", this.div_by_0_label);
+		printSyscall();
+		exitSyscall();
+
+		label(end_error_handle);
 	}
 
 	public void label(String inlabel)
@@ -463,12 +801,22 @@ public class MIPSGenerator
 		fileWriter.format("\tj %s\n",inlabel);
 	}
 
+	public void jal(String inlabel)
+	{
+		fileWriter.format("\tjal %s\n", inlabel);
+	}
+
 	public void blt(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
-		
+
 		fileWriter.format("\tblt t%d, t%d, %s\n",i1,i2,label);
+	}
+
+	public void blt(String register1, String register2, String label)
+	{
+		fileWriter.format("\tblt %s, %s, %s\n",register1, register2, label);
 	}
 
 	public void bgt(TEMP oprnd1,TEMP oprnd2,String label)
@@ -483,7 +831,7 @@ public class MIPSGenerator
 	{
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
-		
+
 		fileWriter.format("\tbge t%d,t%d,%s\n",i1,i2,label);
 	}
 
@@ -686,6 +1034,20 @@ public class MIPSGenerator
 		/* [5] label_end: */
 		/******************/
 		label(label_end);
+	}
+
+	public void allocateVT(String label_vt, List<String> methodLabels) {
+		open_segment(SegmentType.DATA);
+
+		label(label_vt);
+
+		for (String l : methodLabels) {
+			globalWord(l);
+		}
+	}
+
+	private void globalWord(String s) {
+		fileWriter.format("\t.word %s\n", s);
 	}
 	
 	/**************************************/

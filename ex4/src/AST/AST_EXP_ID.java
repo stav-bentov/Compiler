@@ -1,12 +1,15 @@
 package AST;
+import IR.*;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.*;
 import TYPES.*;
-import SYMBOL_TABLE.*;
 
 public class AST_EXP_ID extends AST_EXP
 {
 	public String id;
 	public AST_VAR var;
-	public AST_LIST<AST_EXP> l;
+	public AST_LIST<AST_EXP> parmeters_list;
+	public TYPE_FUNCTION func;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -23,7 +26,7 @@ public class AST_EXP_ID extends AST_EXP
 			System.out.printf("====================== exp -> ID(%s)()", id);
 		this.id = id;
 		this.var = var;
-		this.l = l;
+		this.parmeters_list = l;
 		this.line = line;
 	}
 	
@@ -36,20 +39,48 @@ public class AST_EXP_ID extends AST_EXP
 		if (var != null)
 			var.PrintMe();
 		System.out.format("exp ID: %s\n", this.id);
-		if (l != null)
-			l.PrintMe();
+		if (parmeters_list != null)
+			parmeters_list.PrintMe();
 
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
 			String.format("exp ID: %s\n", this.id));
 		if (var != null)
 			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, var.SerialNumber);
-		if (l != null)
-			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, l.SerialNumber);
+		if (parmeters_list != null)
+			AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, parmeters_list.SerialNumber);
 	}
 
 	//calling a function
 	public TYPE SemantMe() throws SemanticException {
-		return CheckCallToFunc(id, var, l);
+		func = CheckCallToFunc(id, var, parmeters_list);
+
+		return func.returnType;
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		TEMP result_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		TEMP_LIST temp_list = this.parmeters_list == null ? null : build_param_list(this.parmeters_list);
+		if (this.var == null)
+		{
+			if (func.isMethod) {
+				IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, result_temp, func.offset));
+			}
+			else { // Is global func
+				IR.getInstance().Add_IRcommand(new IRcommand_Call_Global_Func(temp_list, result_temp, func.func_label));
+			}
+			/* TODO: I don't think that function from type void will be called- ASK SOMEONE...*/
+		}
+		else // Has to be a method
+		{
+			/* this.var is a class instance, were trying to access its VT
+		       this.var.IRme will return the class pointer, which hase VT ptr in offset 0 */
+			TEMP classPtr = this.var.IRme();
+
+			IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, result_temp, func.offset, classPtr));
+		}
+		return result_temp;
 	}
 }

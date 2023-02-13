@@ -1,4 +1,6 @@
 package AST;
+import IR.*;
+import TEMP.*;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -6,6 +8,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 {
 	public AST_VAR var;
 	public String id;
+	public TYPE_VAR typeVar;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -38,14 +41,14 @@ public class AST_VAR_VAR_ID extends AST_VAR
 	public TYPE SemantMe() throws SemanticException{
 		// first var should represent a var of a class. second should be a datamember of that class.
 		// SemantMe checks that this var exists, and it is indeed of TYPE_VAR
-		TYPE_VAR first_var_type = (TYPE_VAR)var.SemantMe();
+		typeVar = (TYPE_VAR)var.SemantMe();
 		//first_var_type.type is the desired class
-		if(!first_var_type.type.isClass()){
+		if(!typeVar.type.isClass()){
 			throw new SemanticException(this);
 		}
 
 		//find the field in the inheritance tree of the class
-		TYPE type = SYMBOL_TABLE.getInstance().findInInheritance(this.id, (TYPE_CLASS)first_var_type.type);
+		TYPE type = SYMBOL_TABLE.getInstance().findInInheritance(this.id, (TYPE_CLASS)typeVar.type);
 		//if not found throw error
 		if(type == null){
 			throw new SemanticException(this);
@@ -61,7 +64,19 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		return type;
 	}
 
-	//previous implementation. leaving it here in case it is neccesary for future implementation.
+	@Override
+	public TEMP IRme() {
+		TEMP var_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		/* this.var is a class instance, were trying to assign a value to a field of that instance
+		   this.var.IRme will return the class pointer */
+		TEMP classPtr = this.var.IRme();
+
+		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.typeVar.var_offset, classPtr, var_temp));
+
+		return var_temp;
+	}
+
+//previous implementation. leaving it here in case it is neccesary for future implementation.
 //	public TYPE_VAR GetDataMemberVarType(TYPE_CLASS type_class, String id) throws SemanticException{
 //		//iterate over all datamembers of type_class, check if id exists. if it does, get it from inheritance tree
 //		TYPE_LIST head = type_class.data_members.head;

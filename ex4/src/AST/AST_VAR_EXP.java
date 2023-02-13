@@ -1,4 +1,6 @@
 package AST;
+import TEMP.*;
+import IR.*;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -72,5 +74,17 @@ public class AST_VAR_EXP extends AST_VAR
 		//type_var.type is TYPE_ARRAY - which should have a field called type - which is why type of array it is.
 		//after speaking to lilach we realized the name does not matter. returning name null.
 		return new TYPE_VAR(null, arrayType);
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		TEMP array_temp = this.var.IRme();
+		TEMP index_temp = this.exp.IRme();
+		TEMP array_access_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
+
+		IR.getInstance().Add_IRcommand(new IRcommand_Array_Index_Access(array_temp, index_temp, array_access_temp));
+
+		return array_access_temp;
 	}
 }

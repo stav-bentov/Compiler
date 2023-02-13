@@ -1,4 +1,5 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -33,5 +34,11 @@ public class AST_EXP_VAR extends AST_EXP
 	public TYPE SemantMe() throws SemanticException{
 		//this class is of type expression and therefore should return TYPE of the var (and not TYPE_VAR)
 		return ((TYPE_VAR) this.var.SemantMe()).type;
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		return this.var.IRme();
 	}
 }

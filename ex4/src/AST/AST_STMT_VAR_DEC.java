@@ -1,4 +1,5 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
@@ -27,5 +28,11 @@ public class AST_STMT_VAR_DEC extends AST_STMT{
     public TYPE SemantMe() throws SemanticException {
         var.SemantMe();
         return null;
+    }
+
+    @Override
+    public TEMP IRme()
+    {
+        return this.var.IRme();
     }
 }

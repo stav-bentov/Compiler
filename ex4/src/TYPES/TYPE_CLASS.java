@@ -1,5 +1,12 @@
 package TYPES;
 
+import AST.AST_EXP;
+import AST.AST_Node;
+import IR.IRcommand;
+import MIPS.MIPSGenerator;
+
+import java.util.List;
+
 public class TYPE_CLASS extends TYPE
 {
 	/*********************************************************************/
@@ -14,6 +21,12 @@ public class TYPE_CLASS extends TYPE
 	/**************************************************/
 	public TYPE_LIST data_members;
 
+	/* Accessible for usage when creating a runtime object when instancing a class */
+	public String label_VT;
+	public List<AST_Node> field_exps;
+	public int numFields;
+	public int numMethods;
+
 	/****************/
 	/* CTROR(S) ... */
 	/****************/
@@ -22,6 +35,8 @@ public class TYPE_CLASS extends TYPE
 		this.name = name;
 		this.father = father;
 		this.data_members = data_members;
+		this.label_VT = IRcommand.getFreshLabel("vt_" + name);
+		this.numFields = 0;
 	}
 
 	/********************************************************/

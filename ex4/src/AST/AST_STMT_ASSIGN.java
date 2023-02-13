@@ -1,5 +1,7 @@
 package AST;
+import TEMP.TEMP;
 import TYPES.*;
+import IR.*;
 
 public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 {
@@ -8,6 +10,8 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 	/***************/
 	public AST_VAR var;
 	public T exp;
+
+	public TYPE_VAR typeVar;
 
 	/*******************/
 	/*  CONSTRUCTOR(S) */
@@ -52,11 +56,65 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 
 	@Override
 	public TYPE SemantMe() throws SemanticException {
-		TYPE_VAR assignVar = (TYPE_VAR) this.var.SemantMe();
+		typeVar = (TYPE_VAR) this.var.SemantMe();
 		TYPE expType = this.exp.SemantMe();
 
-		if (!checkAssign(assignVar, expType, this.exp))
+		if (!checkAssign(typeVar, expType, this.exp))
 			throw new SemanticException(this);
+
+		return null;
+	}
+
+	@Override
+	public TEMP IRme()
+	{
+		/* ASSUMPTION: this.exp != null*/
+		TEMP exp_temp = this.exp.IRme();
+
+		/*  Case 1: var = new exp (Only for class or array) or var = exp
+		 *  Case 2: var.id = new exp (Only for class or array) or var = exp
+		 *  Case 3: var[exp] = new exp (Only for class or array) or var = exp
+		 *  SemantMe on var will return TYPE_VAR */
+
+		/* Case 1: (var instance of AST_VAR_ID)*/
+		if (var instanceof AST_VAR_ID)
+		{
+			switch (typeVar.var_type)
+			{
+				case GLOBAL:
+					/* Update/Set global variable*/
+					IR.getInstance().Add_IRcommand(new IRcommand_Update_Global_Var(typeVar.global_var_label, exp_temp));
+					break;
+				case LOCAL:
+				case ARGUMENT:
+					/* Update/Set argument/local variable*/
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(typeVar.var_offset, exp_temp));
+					break;
+				case FIELD:
+					/* Update/Set class field variable*/
+					// var = this.field
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, exp_temp));
+					break;
+			}
+		}
+
+		/* Case 2: (var instance of AST_VAR_VAR_ID) */
+		// var = classInstance.field
+		if (var instanceof AST_VAR_VAR_ID) {
+			TEMP classPtr = ((AST_VAR_VAR_ID)this.var).var.IRme(); // classPtr is the ptr to the runtime obj of classInstance
+			IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, exp_temp, classPtr));
+		}
+
+		/* Case 3: (var instance of AST_VAR_EXP)*/
+		if (var instanceof AST_VAR_EXP)
+		{
+			/* Need to get the array (var.var.IRme()) and index (var.exp.IRme())
+			   because we need to CHANGE them (not to get their value..)*/
+			AST_VAR_EXP var_exp = (AST_VAR_EXP) this.var;
+			TEMP array_temp = var_exp.var.IRme();
+			TEMP index_temp = var_exp.exp.IRme();
+			IR.getInstance().Add_IRcommand(new IRcommand_Update_Array_Var(array_temp, index_temp, exp_temp));
+		}
 
 		return null;
 	}

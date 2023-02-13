@@ -1,5 +1,7 @@
 package TYPES;
 
+import IR.IRcommand;
+
 public class TYPE_FUNCTION extends TYPE
 {
 	/***********************************/
@@ -12,6 +14,13 @@ public class TYPE_FUNCTION extends TYPE
 	/*************************/
 	public TYPE_LIST params;
 
+	public int num_local_variables;
+
+	public boolean isMethod;
+	public int offset;
+	public String func_label;
+	public String epilogue_func_label;
+
 	/****************/
 	/* CTROR(S) ... */
 	/****************/
@@ -20,6 +29,9 @@ public class TYPE_FUNCTION extends TYPE
 		this.name = name;
 		this.returnType = returnType;
 		this.params = params;
+		this.num_local_variables = 0;
+		this.func_label = IRcommand.getFreshLabel("start_" + name); // TODO: check what to do in case of main
+		this.epilogue_func_label = IRcommand.getFreshLabel("epilogue_" + this.name);
 	}
 
 	@Override

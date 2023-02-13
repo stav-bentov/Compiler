@@ -1,5 +1,6 @@
 package AST;
 import SYMBOL_TABLE.*;
+import TEMP.TEMP;
 import TYPES.*;
 
 public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
@@ -38,5 +39,10 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         SYMBOL_TABLE.getInstance().getCurrentClass().data_members = new TYPE_LIST(dataMemberToAdd, dataMembers);
 
         return null;
+    }
+
+    @Override
+    public TEMP IRme() {
+        return dec.IRme();
     }
 }
