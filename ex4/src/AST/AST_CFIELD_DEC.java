@@ -3,6 +3,8 @@ import SYMBOL_TABLE.*;
 import TEMP.TEMP;
 import TYPES.*;
 
+import java.util.Map;
+
 public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
     public T dec;
     public String type;
@@ -37,6 +39,10 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         /* Add new data member to data_members of current class */
         TYPE_LIST dataMembers = SYMBOL_TABLE.getInstance().getCurrentClass().data_members;
         SYMBOL_TABLE.getInstance().getCurrentClass().data_members = new TYPE_LIST(dataMemberToAdd, dataMembers);
+
+        /* If inherited, the member's name is already in the map but will be overridden according to put's contract
+           If not inherited, will be added to the map according to puts implementation */
+        SYMBOL_TABLE.getInstance().getCurrentClass().data_members_including_inherited.put(dataMemberToAdd.name, dataMemberToAdd);
 
         return null;
     }

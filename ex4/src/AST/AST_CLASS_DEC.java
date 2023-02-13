@@ -12,8 +12,8 @@ public class AST_CLASS_DEC extends AST_Node{
     public AST_LIST<AST_CFIELD> cFieldList;
 
     public List<String> methodLabels;
-    public List<AST_Node> fieldsExps;
-    public String VTLabel;
+
+    public TYPE_CLASS typeClass;
 
     public AST_CLASS_DEC(String className, String extendsName, AST_LIST<AST_CFIELD> cFieldList, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -62,7 +62,7 @@ public class AST_CLASS_DEC extends AST_Node{
         /* [1] Begin Class Scope */
         /*************************/
 
-        TYPE_CLASS type_class = new TYPE_CLASS(null, this.className, null);
+        typeClass = new TYPE_CLASS(null, this.className, null);
 
         /***************************/
         /* [2] Semant Data Members */
@@ -78,57 +78,44 @@ public class AST_CLASS_DEC extends AST_Node{
                 throw new SemanticException(this);
             }
 
-            type_class.father = (TYPE_CLASS) father;
+            typeClass.father = (TYPE_CLASS) father;
         }
 
-        SYMBOL_TABLE.getInstance().enter(className, type_class, true);
-        SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, type_class);
+        SYMBOL_TABLE.getInstance().enter(className, typeClass, true);
+        SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, typeClass);
 
         //SemantMe will check if illegal inheritance or duplicated names in the same scope
-        TYPE cFieldTypes = cFieldList.SemantMe();
-
-        /* Updates labels and field types for IRme/MIPSme later */
-        if (cFieldTypes != null) {
-            extractLabelsAndFieldTypes((TYPE_LIST) cFieldTypes); // assuming it returns a list
-        }
-        type_class.field_exps = this.fieldsExps;
-        VTLabel = type_class.label_VT; // for IRme
+        cFieldList.SemantMe();
 
         /*****************/
         /* [3] End Scope */
         /*****************/
         SYMBOL_TABLE.getInstance().endScope();
 
-        return type_class;
+        return typeClass;
     }
 
     @Override
     public TEMP IRme() {
-        IR.getInstance().Add_IRcommand(new IRcommand_ClassDec_Allocate_VT(VTLabel, methodLabels)); //TODO: what to do in case of inheritance?
+        extractLabelsAndFieldTypes();
+        IR.getInstance().Add_IRcommand(new IRcommand_ClassDec_Allocate_VT(this.typeClass.label_VT, methodLabels));
 
         cFieldList.IRme();
 
         return null; // Doesn't create a temp that should be passed back
     }
 
-    private void extractLabelsAndFieldTypes(TYPE_LIST types) {
-        TYPE head = types.head;
-        TYPE_LIST tail = types.tail;
+    private void extractLabelsAndFieldTypes() {
+        for (TYPE type : this.typeClass.data_members_including_inherited.values()) {
+            /* case class method */
+            if (type instanceof TYPE_FUNCTION) { // add it's label to labels list
+                this.methodLabels.add(((TYPE_FUNCTION) type).func_label);
+            }
 
-        if (head == null) {
-            return;
+            /* case field */
+            else if (type instanceof TYPE_VAR) {
+                this.typeClass.field_exps.add(((TYPE_VAR) type).exp);
+            }
         }
-
-        /* case class method */
-        if (head instanceof TYPE_FUNCTION) { // add it's label to labels list
-            this.methodLabels.add(((TYPE_FUNCTION) head).func_label);
-        }
-
-        /* case field */
-        else if (head instanceof TYPE_VAR) {
-            this.fieldsExps.add(((TYPE_VAR) head).exp);
-        }
-
-        extractLabelsAndFieldTypes(tail);
     }
 }
