@@ -34,6 +34,9 @@ public class MIPSGenerator
 	private String access_violation_label = "string_access_violation";
 	private String div_by_0_label = "string_illegal_div_by_0";
 	private String this_reg = "$s9";
+	private String sp = "$sp";
+	private String ra = "$ra";
+	private String fp = "$fp";
 
 	/***********************/
 	/* The file writer ... */
@@ -100,7 +103,6 @@ public class MIPSGenerator
 		String len_str1 = "$s1";
 		String len_str2 = "$s0";
 		String return_register = "$v0";
-		String syscall_num_and_return = "$v0";
 		String dst_register = "$t" + dst.getRegisterSerialNumber();
 		String copy_pointer = "$s1";
 
@@ -120,24 +122,19 @@ public class MIPSGenerator
 		addu(a0, a0, 1);
 
 		/* Allocate space for concatenated string, the pointer will be at syscall_num*/
-		li(syscall_num_and_return, 9);
-		fileWriter.format("\tsyscall\n");
+		malloc();
 
 		/* Make dst point to the beginning of the concatenated string.*/
-		move(dst_register,syscall_num_and_return);
+		move(dst_register,return_register);
 
 		/* Now we need to build it- copy str1 and then str2,
 		* the copy_pointer will help us to copy each str's char in the right place */
-
 		move(copy_pointer, dst_register);
 		copy(str1, copy_pointer);
 		copy(str2, copy_pointer);
 
 		/* Now copy_pointer points to the end of the string- add null terminator*/
 		sb(zero, copy_pointer, 0);
-
-		/* dst = concatenated string */
-		fileWriter.format("\tmove $t%d, $s1\n", dst.getRegisterSerialNumber());
 	}
 
 	/* Receives strings of dst_register and src_register
@@ -223,7 +220,7 @@ public class MIPSGenerator
 
 		move(len, zero);
 		/* Add start label and check term for end loop */
-		fileWriter.format("%s:\n", start_label);
+		label(start_label);
 		lb(str_pointer, str_register, 0);
 		beq(str_pointer, zero, end_label);
 
@@ -233,7 +230,7 @@ public class MIPSGenerator
 		jump(start_label);
 
 		/* Add end label */
-		fileWriter.format("%s:\n", end_label);
+		label(end_label);
 	}
 
 	/* Receives Temp of str and dst_pointer (it's register name)
@@ -243,6 +240,7 @@ public class MIPSGenerator
 	 */
 	public void copy(TEMP str, String dst_pointer)
 	{
+		open_segment(SegmentType.CODE);
 		/* Body of len_func: using $v0 to calculate the len of the argument */
 		String start_label = IRcommand.getFreshLabel("start_copy_loop");
 		String end_label = IRcommand.getFreshLabel("end_copy_loop");
@@ -255,7 +253,7 @@ public class MIPSGenerator
 		move(copied_str_pointer, str_register);
 
 		/* Add start label and check term for end loop */
-		fileWriter.format("%s:\n", start_label);
+		label(start_label);
 		lb(copied_str_char, copied_str_pointer, 0);
 		beq(copied_str_char, zero, end_label);
 
@@ -266,7 +264,7 @@ public class MIPSGenerator
 		jump(start_label);
 
 		/* Add end label */
-		fileWriter.format("\t%s:\n", end_label);
+		label(end_label);
 	}
 
 
@@ -274,6 +272,8 @@ public class MIPSGenerator
 	   Returns 0 in dst if str1 != str2 OR 1 in dst if str1 == str2*/
 	public void compare_strings(TEMP dst, TEMP str1, TEMP str2)
 	{
+		open_segment(SegmentType.CODE);
+
 		/* Body of len_func: using $v0 to calculate the len of the argument */
 		String start_label = IRcommand.getFreshLabel("start_compare_loop");
 		String set_dst_0 = IRcommand.getFreshLabel("assign_zero");
@@ -297,7 +297,7 @@ public class MIPSGenerator
 		move(pointer_str2, str2_register);
 
 		/* Add start label and check term for end loop */
-		fileWriter.format("%s:\n", start_label);
+		label(start_label);
 		lb(char_str1, pointer_str1, 0);
 		lb(char_str2, pointer_str2, 0);
 		/* If str1[i] != str2[i] -> set dst to 0*/
@@ -310,11 +310,11 @@ public class MIPSGenerator
 		jump(start_label);
 
 		/* Add set_dst_0 label and set dst to 0 */
-		fileWriter.format("%s:\n", set_dst_0);
+		label(set_dst_0);
 		li(dst_register, 0);
 
 		/* Add end label */
-		fileWriter.format("\t%s:\n", end_label);
+		label(end_label);
 	}
 
 	public void func_prologue(String prologue_label, int local_var_num)
@@ -326,21 +326,21 @@ public class MIPSGenerator
 
 		/* Make function prologue */
 		/* Store return address in $ra */
-		fileWriter.format("\tsubu $sp, $sp, 4\n");
-		fileWriter.format("\tsw $ra, 0($sp), 4\n");
+		subu(sp, sp, 4);
+		store(ra, sp,0);
 		/* Backup $fp of called func */
-		fileWriter.format("\tsubu $sp, $sp, 4\n");
-		fileWriter.format("\tsw $fp, 0($sp), 4\n");
+		subu(sp, sp, 4);
+		store(fp, sp, 0);
 		/* Update $fp = $sp */
-		fileWriter.format("\tmove $fp, $sp\n");
+		move(fp, sp);
 		/* Backup all 10 temporaries */
 		for (int i = 0; i < 10; i++)
 		{
-			fileWriter.format("\tsubu $sp, $sp, 4\n");
-			fileWriter.format("\tsw $t%d, 0($sp)\n");
+			subu(sp, sp, 4);
+			store("$t" + i, sp, 0);
 		}
 		/* Save space for local_var_num local variables */
-		fileWriter.format("\tsubu $sp, $sp, %d\n", (local_var_num) * WORD_SIZE);
+		subu(sp, sp, (local_var_num) * WORD_SIZE);
 	}
 
 	/* Receives return register (return_temp) and set $v0 <- return_temp*/
@@ -367,17 +367,17 @@ public class MIPSGenerator
 
 		/* Make function prologue */
 		/* Update $sp = $fp */
-		fileWriter.format("\tmove $sp, $fp\n");
+		move(sp, fp);
 		/* Restore */
 		for (int i = 0; i < 10; i++)
 		{
-			fileWriter.format("\tlw $t%d, %d($sp)\n", i, (-(i + 1)) * WORD_SIZE);
+			load("$t" + i, sp, (-(i + 1)) * WORD_SIZE);
 		}
 		/* Restore precious %fp */
-		fileWriter.format("\tlw $fp, 0($sp)\n");
+		load(fp, sp, 0);
 		/* Store return address in $ra */
-		fileWriter.format("\tlw $ra, 4($sp)\n");
-		fileWriter.format("\taddu $sp, $sp, 8\n");
+		load(ra, sp, 4);
+		addu(sp, sp, 8);
 		/* jump to return address */
 		fileWriter.format("\tjr $ra\n");
 	}
@@ -386,22 +386,22 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 		TEMP_LIST pointer = param_list;
+
+		subu(sp, sp, 4 * param_list.len);
+
 		/* set arguments */
-		for (int i = 0; i < param_list.len; i++)
+		for (int i = param_list.len - 1; i >= 0; i--)
 		{
 			TEMP current_temp = pointer.head;
-			fileWriter.format("\tsubu $sp, $sp, %d\n", 4);
-			fileWriter.format("\tsw $t%d, 0($sp)\n", current_temp.getRegisterSerialNumber());
+			store("$t" + current_temp.getRegisterSerialNumber(), sp, 4 * i);
 			pointer = pointer.tail;
 		}
 	}
 
 	public void del_arguments(int param_nums)
 	{
-		for (int i = 0; i < param_nums; i++)
-		{
-			fileWriter.format("\taddi $sp, $sp, %d\n", 4);
-		}
+		/* TODO: ask if it matter to use addi or addu*/
+		addu(sp, sp, 4 * param_nums);
 	}
 
 	/* When class_ptr is null, will use "this" instead */
@@ -484,24 +484,24 @@ public class MIPSGenerator
 	public void get_var_with_offset(int var_offset, TEMP var_temp)
 	{
 		open_segment(SegmentType.CODE);
-		fileWriter.format("\tlw $t%d, %d($fp)\n", var_temp.getRegisterSerialNumber(), var_offset);
+		load("$t" + var_temp.getRegisterSerialNumber(), fp, var_offset);
 	}
 
 	/* Receives variable's global label and register to set the global data in*/
 	public void get_global_var(String global_var_label, TEMP var_temp)
 	{
 		open_segment(SegmentType.CODE);
-		fileWriter.format("\tla $s0, %s\n", global_var_label);
-		fileWriter.format("\tlw $t%d, 0($s0)\n", var_temp.getRegisterSerialNumber());
+		la("$s0", global_var_label);
+		load("$t" + var_temp.getRegisterSerialNumber(), "$s0", 0);
 	}
 
 	public void update_global_var(String global_var_label, TEMP temp_to_assign)
 	{
 		open_segment(SegmentType.CODE);
 		/* Load address of global_var_label to %s0 */
-		fileWriter.format("\tla $s0, %s\n", global_var_label);
+		la("$s0", global_var_label);
 		/* Store temp_to_assign in this address (update global..)*/
-		fileWriter.format("\tsw $t%d, 0($s0)\n", temp_to_assign.getRegisterSerialNumber());
+		store("$t" + temp_to_assign.getRegisterSerialNumber(), "$s0", 0);
 	}
 
 	/* First cell will contain array size, next cells- array cells
@@ -536,6 +536,18 @@ public class MIPSGenerator
 		/* Set $v0*/
 		li("$v0", 9);
 
+		fileWriter.format("\tsyscall\n");
+	}
+
+	private void printSyscall() {
+		/* Set $v0*/
+		li("$v0", 4);
+		fileWriter.format("\tsyscall\n");
+	}
+
+	private void exitSyscall() {
+		/* Set $v0*/
+		li("$v0", 10);
 		fileWriter.format("\tsyscall\n");
 	}
 
@@ -658,10 +670,8 @@ public class MIPSGenerator
 		label(error_check_oob);
 		/* Print "Access Violation" and then exit*/
 		fileWriter.format("\tla $a0, %s\n",this.access_violation_label);
-		li("$v0", 4);
-		fileWriter.format("\tsyscall\n");
-		li("$v0", 10);
-		fileWriter.format("\tsyscall\n");
+		printSyscall();
+		exitSyscall();
 
 		label(end_check_oob);
 	}
@@ -721,6 +731,12 @@ public class MIPSGenerator
 		fileWriter.format("\tsub t%d, t%d, t%d\n", dstidx, i1, i2);
 	}
 
+	public void subu(String dst,String oprnd,int sub_val)
+	{
+		open_segment(SegmentType.CODE);
+		fileWriter.format("\tsubu %s, %s, %d\n", dst, oprnd, sub_val);
+	}
+
 	public void mul(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
 		open_segment(SegmentType.CODE);
@@ -742,11 +758,29 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
+		check_zero_div(oprnd2);
+
 		int i1 = oprnd1.getRegisterSerialNumber();
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
 
 		fileWriter.format("\tdiv t%d, t%d, t%d\n", dstidx, i1, i2);
+	}
+
+	public void check_zero_div(TEMP temp)
+	{
+		String end_error_handle = IRcommand.getFreshLabel("end_div_error");
+
+		/* if temp != 0 then pass over error handler*/
+		bne("$t" + temp.getRegisterSerialNumber(), zero, end_error_handle);
+
+		/* Error:
+		Print "Illegal Division By Zero" and then exit*/
+		la("$a0", this.div_by_0_label);
+		printSyscall();
+		exitSyscall();
+
+		label(end_error_handle);
 	}
 
 	public void label(String inlabel)

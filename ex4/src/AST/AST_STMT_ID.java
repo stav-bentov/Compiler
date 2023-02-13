@@ -52,7 +52,7 @@ public class AST_STMT_ID extends AST_STMT{
     @Override
     public TEMP IRme() {
 
-        TEMP_LIST temp_list = build_param_list(this.parmeters_list);
+        TEMP_LIST temp_list = this.parmeters_list == null ? null : build_param_list(this.parmeters_list);
 
         if (this.var == null)
         {
