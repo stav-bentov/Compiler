@@ -11,6 +11,8 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 	public AST_VAR var;
 	public T exp;
 
+	public TYPE_VAR typeVar;
+
 	/*******************/
 	/*  CONSTRUCTOR(S) */
 	/*******************/
@@ -54,10 +56,10 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 
 	@Override
 	public TYPE SemantMe() throws SemanticException {
-		TYPE_VAR assignVar = (TYPE_VAR) this.var.SemantMe();
+		typeVar = (TYPE_VAR) this.var.SemantMe();
 		TYPE expType = this.exp.SemantMe();
 
-		if (!checkAssign(assignVar, expType, this.exp))
+		if (!checkAssign(typeVar, expType, this.exp))
 			throw new SemanticException(this);
 
 		return null;
@@ -77,21 +79,21 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		/* Case 1: (var instance of AST_VAR_ID)*/
 		if (var instanceof AST_VAR_ID)
 		{
-			switch (var.var_type)
+			switch (typeVar.var_type)
 			{
 				case GLOBAL:
 					/* Update/Set global variable*/
-					IR.getInstance().Add_IRcommand(new IRcommand_Update_Global_Var(var.global_var_label, exp_temp));
+					IR.getInstance().Add_IRcommand(new IRcommand_Update_Global_Var(typeVar.global_var_label, exp_temp));
 					break;
 				case LOCAL:
 				case ARGUMENT:
 					/* Update/Set argument/local variable*/
-					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(var.var_offset, exp_temp));
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(typeVar.var_offset, exp_temp));
 					break;
 				case FIELD:
 					/* Update/Set class field variable*/
 					// var = this.field
-					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(var.var_offset, exp_temp));
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, exp_temp));
 					break;
 			}
 		}
@@ -100,7 +102,7 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		// var = classInstance.field
 		if (var instanceof AST_VAR_VAR_ID) {
 			TEMP classPtr = ((AST_VAR_VAR_ID)this.var).var.IRme(); // classPtr is the ptr to the runtime obj of classInstance
-			IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(var.var_offset, exp_temp, classPtr));
+			IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, exp_temp, classPtr));
 		}
 
 		/* Case 3: (var instance of AST_VAR_EXP)*/

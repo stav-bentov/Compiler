@@ -5,7 +5,7 @@ import TEMP.TEMP;
 import jdk.nashorn.internal.ir.Symbol;
 
 public class TYPE_VAR extends TYPE{
-    enum VarType{
+    public enum VarType{
         GLOBAL,
         ARGUMENT,
         LOCAL,
@@ -59,25 +59,5 @@ public class TYPE_VAR extends TYPE{
         this.var_offset = 4 + (num_fields * 4); // Offset in the runtime object
         this.var_type = VarType.FIELD;
         this.exp = exp;
-    }
-
-    /* TODO: For Lilach- take care of fields variables*/
-
-    public void set_AST_from_TYPE_VAR(AST_Node curr_ast)
-    {
-        switch(this.var_type) {
-            case GLOBAL:
-                curr_ast.set_global(this.global_var_label);
-                break;
-            case ARGUMENT:
-                curr_ast.set_argument(this.var_offset);
-                break;
-            case LOCAL:
-                curr_ast.set_local(this.var_offset);
-                break;
-            case FIELD:
-                curr_ast.set_field(this.var_offset);
-                break;
-        }
     }
 }

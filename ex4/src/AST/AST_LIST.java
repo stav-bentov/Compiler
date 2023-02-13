@@ -64,7 +64,7 @@ public class AST_LIST<T extends AST_Node> extends AST_Node{
     @Override
     public TEMP IRme()
     {
-        AST_LIST pointer = this;
+        AST_LIST<T> pointer = this;
         while (pointer.head != null)
         {
             pointer.head.IRme();

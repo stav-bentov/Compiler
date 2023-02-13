@@ -48,6 +48,6 @@ public class AST_ARRAY_TYPEDEF extends AST_Node{
     @Override
     public TEMP IRme()
     {
-        return this.type.IRme();
+        return null;
     }
 }

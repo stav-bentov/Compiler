@@ -11,12 +11,8 @@ public class AST_FUNC_DEC extends AST_Node {
     public String name;
     public AST_LIST<AST_ARGUMENT> argList;
     public AST_LIST<AST_STMT> stmtList;
-    public String class_name = "";
-    public String start_func_label;
-    public String after_epilogue_label;
-    public String epilogue_func_label;
+    public TYPE_FUNCTION currTypeFunc;
     private int local_var_num;
-    private int argument_var_num;
 
     public AST_FUNC_DEC(AST_TYPE type, String name, AST_LIST<AST_STMT> stmtList, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -62,7 +58,6 @@ public class AST_FUNC_DEC extends AST_Node {
     public TYPE SemantMe() throws SemanticException
     {
         boolean validName, isMethod, isFunction;
-        TYPE_FUNCTION currTypeFunc;
         ScopeTypeEnum scopeType;
         TYPE_LIST params = null;
 
@@ -98,7 +93,7 @@ public class AST_FUNC_DEC extends AST_Node {
                 params = (TYPE_LIST) this.argList.SemantMe();
 
                 /* Set offsets of params (arguments) */
-                this.argument_var_num = 0;
+                int argument_var_num = 0;
                 TYPE_LIST type_pointer = currTypeFunc.params;
                 while (type_pointer.head != null)
                 {
@@ -114,25 +109,8 @@ public class AST_FUNC_DEC extends AST_Node {
             if (isMethod)
             {
                 isValidMethod(this.name, currTypeFunc);
-                this.class_name = SYMBOL_TABLE.getInstance().getCurrentClass().name;
                 currTypeFunc.offset = 4 * (SYMBOL_TABLE.getInstance().getCurrentClass().numMethods++);
                 currTypeFunc.isMethod = true;
-            }
-
-            /* Set labels */
-            /* Not a main global function */
-            if (!this.name.equals("main"))
-            {
-                /* Set the labels (all method will get a special one)*/
-                this.start_func_label = "start_" + this.name + "_" + this.class_name;
-                this.epilogue_func_label = "epilogue_" + this.name + "_" + this.class_name;
-                this.after_epilogue_label = "end_" + this.name + "_" + this.class_name;
-            }
-            else
-            {
-                this.start_func_label = this.name;
-                this.epilogue_func_label = "epilogue_" + this.name;
-                this.after_epilogue_label = "end_" + this.name;
             }
 
             /* If the return type isn't match or if there is a semantic error inside the scope- SemantMe() will throw an error*/
@@ -152,7 +130,7 @@ public class AST_FUNC_DEC extends AST_Node {
        Throw an error if there is an overloading or a Cfield with this name*/
     public void isValidMethod(String name, TYPE_FUNCTION overrideMethod) throws SemanticException
     {
-        TYPE_CLASS fatherClass = ((TYPE_CLASS) SYMBOL_TABLE.getInstance().getCurrentClass()).father;
+        TYPE_CLASS fatherClass = (SYMBOL_TABLE.getInstance().getCurrentClass()).father;
         TYPE currType = SYMBOL_TABLE.getInstance().findInInheritance(name, fatherClass);
         if (currType != null)
         {
@@ -161,7 +139,6 @@ public class AST_FUNC_DEC extends AST_Node {
                 if (!overrideMethod.equals(currType)) {
                     throw new SemanticException(this);
                 }
-                return;
             } else {
                 /* There is a variable with the same name in a parent class (and it's not a function) */
                 throw new SemanticException(this);
@@ -172,14 +149,9 @@ public class AST_FUNC_DEC extends AST_Node {
     @Override
     public TEMP IRme()
     {
-        /* Because we create a function, it's not part of the running code
-           So we first add a jump instruction to after_epilogue_label (it's a label that set at the end of the func- after the epilogue)
-           and after- start the writing of our function (prolog, body, epilogue), at the end- set after_epilogue_label*/
-        IR.getInstance().Add_IRcommand(new IRcommand_Jump_Label(this.after_epilogue_label));
-        IR.getInstance().Add_IRcommand(new IRcommand_Start_Func(this.start_func_label, this.local_var_num));
+        IR.getInstance().Add_IRcommand(new IRcommand_Start_Func(this.currTypeFunc.func_label, this.local_var_num));
         stmtList.IRme();
-        IR.getInstance().Add_IRcommand(new IRcommand_End_Func(this.epilogue_func_label));
-        IR.getInstance().Add_IRcommand(new IRcommand_Label(this.after_epilogue_label));
+        IR.getInstance().Add_IRcommand(new IRcommand_End_Func(this.currTypeFunc.epilogue_func_label));
         return null;
     }
 }

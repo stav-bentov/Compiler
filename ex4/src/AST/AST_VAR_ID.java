@@ -7,6 +7,7 @@ import SYMBOL_TABLE.*;
 public class AST_VAR_ID extends AST_VAR
 {
 	public String id;
+	public TYPE_VAR typeVar;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -37,7 +38,7 @@ public class AST_VAR_ID extends AST_VAR
 
 		/* Set values to type_var (and label/ offset), according to var from SYMBOL_TABLE*/
 		/* ASSUMPTION!!: var is TYPE_VAR!*/
-		((TYPE_VAR) var).set_AST_from_TYPE_VAR(this);
+		typeVar = (TYPE_VAR) var;
 
 		return var;
 	}
@@ -46,21 +47,21 @@ public class AST_VAR_ID extends AST_VAR
 	public TEMP IRme()
 	{
 		TEMP var_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		switch(this.var_type) {
+		switch(this.typeVar.var_type) {
 			case GLOBAL:
-				IR.getInstance().Add_IRcommand(new IRcommand_Get_Global_Var(this.global_var_label, var_temp));
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Global_Var(this.typeVar.global_var_label, var_temp));
 				break;
 			case LOCAL:
-				IR.getInstance().Add_IRcommand(new IRcommand_Get_Local_Var(this.var_offset, var_temp));
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Local_Var(this.typeVar.var_offset, var_temp));
 				break;
 			case ARGUMENT:
-				IR.getInstance().Add_IRcommand(new IRcommand_Get_Argument_Var(this.var_offset, var_temp));
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Argument_Var(this.typeVar.var_offset, var_temp));
 				break;
 			case FIELD:
 				// var = this.field
-				IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.var_offset, var_temp));
+				IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.typeVar.var_offset, var_temp));
 				break;
 		}
-		return null;
+		return var_temp;
 	}
 }

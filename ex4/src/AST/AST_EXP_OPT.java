@@ -70,7 +70,7 @@ public class AST_EXP_OPT extends AST_EXP
 	public TEMP IRme() {
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
 
-		switch (this.opt)
+		switch (this.opt) // TODO: ask in forum if need to create temp when handling constants
 		{
 			case "MINUS INT":
 				IR.getInstance().Add_IRcommand(new IRcommand_Int(t, (-1) * this.i));

@@ -8,12 +8,13 @@ public abstract class IRcommand_Call_Func extends IRcommand
     protected TEMP_LIST param_list;
     protected TEMP assigned_temp;
 
-    /* This IRcommand represent: assigned_temp = func(param_list); ---- with assigning return value to creation register*/
+    /* With return */
     public IRcommand_Call_Func(TEMP_LIST param_list, TEMP assigned_temp) {
         this(param_list);
         this.assigned_temp = assigned_temp;
     }
 
+    /* No return */
     public IRcommand_Call_Func(TEMP_LIST param_list) {
         this.param_list = param_list;
     }

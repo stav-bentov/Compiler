@@ -8,9 +8,7 @@ public class AST_STMT_ID extends AST_STMT{
     public AST_VAR var;
     public String id;
     public AST_LIST<AST_EXP> parmeters_list;
-    public String func_prologe_label;
-    public int method_offset;
-    public boolean isMethod;
+    public TYPE_FUNCTION func;
 
     public AST_STMT_ID(AST_VAR var, String id, AST_LIST<AST_EXP> l, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -46,22 +44,7 @@ public class AST_STMT_ID extends AST_STMT{
 
     @Override
     public TYPE SemantMe() throws SemanticException {
-        TYPE_FUNCTION func = CheckCallToFunc(id, var, parmeters_list);
-        String class_name = "";
-
-        if (func.isMethod) {
-            this.method_offset = func.offset;
-            this.isMethod = true;
-        }
-
-        else {
-            /* Set func_label*/
-            if (!this.id.equals("main")) {
-                this.func_prologe_label = "start_" + this.id + "_" + class_name; //TODO: handle this label
-            } else {
-                this.func_prologe_label = this.id;
-            }
-        }
+        func = CheckCallToFunc(id, var, parmeters_list);
 
         return null;
     }
@@ -86,13 +69,13 @@ public class AST_STMT_ID extends AST_STMT{
             {
                 IR.getInstance().Add_IRcommand(new IRcommand_Call_Print_Int(temp_list.head));
             }
-            else if (isMethod)
+            else if (func.isMethod)
             {
-                IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, method_offset));
+                IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, func.offset));
             }
-            else
+            else // Global func
             {
-                IR.getInstance().Add_IRcommand(new IRcommand_Call_Global_Func(temp_list, func_prologe_label));
+                IR.getInstance().Add_IRcommand(new IRcommand_Call_Global_Func(temp_list, func.func_label));
             }
         }
         else
@@ -101,7 +84,7 @@ public class AST_STMT_ID extends AST_STMT{
 		       this.var.IRme will return the class pointer, which hase VT ptr in offset 0 */
             TEMP classPtr = this.var.IRme();
 
-            IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, method_offset, classPtr));
+            IR.getInstance().Add_IRcommand(new IRcommand_Call_Class_Method(temp_list, func.offset, classPtr));
         }
         return null;
     }

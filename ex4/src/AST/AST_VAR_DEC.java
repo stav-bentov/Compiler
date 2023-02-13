@@ -9,6 +9,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     public String id;
     public T exp;
     public TYPE expType = null;
+    public TYPE_VAR typeVar;
 
     public AST_VAR_DEC(AST_TYPE type, String id, T exp, int line){
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -105,14 +106,14 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                       2. variable is a global variable (outside a function or a class)
                       3. variable is a class field (in a class, outside a function)
          */
-        TYPE_VAR currVar = new TYPE_VAR(this.id, typeToAssign);
+        typeVar = new TYPE_VAR(this.id, typeToAssign);
 
         /* If in a function, it's a local variable- Set right offsets */
         TYPE_FUNCTION current_func = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc());
         if (current_func != null)
         {
             /* Local variable */
-            currVar.set_local(current_func.num_local_variables);
+            typeVar.set_local(current_func.num_local_variables);
             current_func.num_local_variables ++;
         }
         else
@@ -121,19 +122,18 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             /* Global variable */
             if (current_class == null)
             {
-                currVar.set_global(this.id);
+                typeVar.set_global(this.id);
             }
             /* Class fields variable */
             else
             {
-                currVar.set_field(current_class.numFields, exp);
+                typeVar.set_field(current_class.numFields, exp);
                 current_class.numFields++;
             }
         }
-        currVar.set_AST_from_TYPE_VAR(this);
 
-        SYMBOL_TABLE.getInstance().enter(this.id, currVar, false);
-        return currVar;
+        SYMBOL_TABLE.getInstance().enter(this.id, typeVar, false);
+        return typeVar;
     }
 
     @Override
@@ -141,33 +141,31 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
     {
         TEMP assigned_temp = null;
 
-        switch(this.var_type) {
+        switch(this.typeVar.var_type) {
             case GLOBAL:
                 /* No assignment declaration */
                 if (this.exp == null)
                 {
-                    IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.global_var_label));
+                    IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label));
                 }
                 else
                 {/* "You may assume that if a global variable is initialized, then the initial value is a constant (i.e., string, integer, nil)."*/
-                    /* TODO: make sure that global variables are only strings and integers OR others when they initialized to nil */
-                    /* TODO: Ask if global variables can be arrays and classes?*/
                     if (this.expType instanceof TYPE_INT)
                     {
                         /* If exp is not null and expType is TYPE_INT-> exp is instanceof AST_EXP_OPT*/
                         int int_value = ((AST_EXP_OPT) this.exp).i;
-                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.global_var_label, int_value));
+                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label, int_value));
                     }
                     else if (this.expType instanceof TYPE_STRING)
                     {
                         /* If exp is not null and expType is TYPE_STRING-> exp is instanceof AST_EXP_OPT*/
                         String str_value = ((AST_EXP_OPT) this.exp).s;
-                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.global_var_label, str_value));
+                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label, str_value));
                     }
                     else
                     {
                         /* it's TYPE_NIL */
-                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.global_var_label));
+                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label));
                     }
                 }
                 break;
@@ -176,11 +174,13 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 {/* there is an assignment */
                     assigned_temp = this.exp.IRme();
                 }
-                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.var_offset, assigned_temp));
+                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, assigned_temp));
                 break;
             case FIELD:
-                TEMP val = exp.IRme(); // Assuming that a register that contains this value will be returned
-                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.var_offset, val));
+                if (this.exp != null) {
+                    assigned_temp = exp.IRme(); // Assuming that a register that contains this value will be returned
+                }
+                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.typeVar.var_offset, assigned_temp));
                 break;
         }
         return null;

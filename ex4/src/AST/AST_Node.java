@@ -158,53 +158,6 @@ public abstract class AST_Node
 		}
 	}
 
-	/* In case of AST that represent a variablel*/
-	enum VarType{
-		GLOBAL,
-		ARGUMENT,
-		LOCAL,
-		FIELD
-	}
-
-	/* There are 3 types of var:
-        1. Global variable (In this case we will need to access it from Data area with the correct label)
-        2. Argument variable (In this case we will need to access it from Stack with the correct offset above $fp)
-        3. Local variable (In this case we will need to access it from Stack with the correct offset down $fp)
-        each one of them - can be:
-        1. A "simple" variable - from type String/ Int
-        2. A class variable (with accessing c-fields)
-        3. An array variable
-     */
-	public String global_var_label;
-	public int var_offset;
-	public VarType var_type;
-
-	public void set_global(String global_var_label)
-	{
-		this.global_var_label = global_var_label;
-		this.var_type = VarType.GLOBAL;
-	}
-
-	public void set_argument(int num_var)
-	{
-		/* 8 because we need to pass return address*/
-		this.var_offset = 8 + (num_var * 4);
-		this.var_type = VarType.ARGUMENT;
-	}
-
-	public void set_local(int num_var)
-	{
-		/* -44 because we need to pass prev fp and register backup*/
-		this.var_offset = -44 - (num_var * 4);
-		this.var_type = VarType.LOCAL;
-	}
-
-	public void set_field(int num_fields)
-	{
-		this.var_offset = 4 + (num_fields * 4); // Offset in the runtime object
-		this.var_type = VarType.FIELD;
-	}
-
 	public TEMP_LIST build_param_list(AST_LIST ast_param_list)
 	{
 		AST_LIST pointer = ast_param_list;

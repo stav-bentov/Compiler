@@ -407,7 +407,7 @@ public class MIPSGenerator
 	/* When class_ptr is null, will use "this" instead */
 	public void call_class_method(int method_offset, TEMP class_ptr) {
 		String vt = "$s0";
-		String class_ptr_reg = (class_ptr == null) ? this_reg : ("$t" + class_ptr);
+		String class_ptr_reg = (class_ptr == null) ? this_reg : ("$t" + class_ptr.getRegisterSerialNumber());
 		String method_ptr_reg = "$s1";
 
 		load(vt, class_ptr_reg, 0); // VT at offset 0 in the runtime object
@@ -565,16 +565,16 @@ public class MIPSGenerator
 		/* Pointer to VT at offset 0 */
 		la(s0, VTLabel);
 		store(s0, obj_ptr, offset);
-		offset++;
+		offset += 4;
 
 		for (TEMP t : initialValueTemps) {
 			if (t != null) {
 				store(t, classPtr, offset);
 			}
 			else {
-				store(zero, obj_ptr, offset); //TODO: decide what to do with default values
+				store(zero, obj_ptr, offset);
 			}
-			offset++;
+			offset += 4;
 		}
 	}
 
@@ -591,7 +591,6 @@ public class MIPSGenerator
 
 	public void access_array(TEMP array_temp, TEMP array_index_temp, TEMP array_access_temp)
 	{
-		check_oob(array_temp, array_index_temp);
 		String absolute_address = "$s0";
 		String result_register = "$t" + array_access_temp.getRegisterSerialNumber();
 
@@ -605,7 +604,7 @@ public class MIPSGenerator
 	   Make absolute_address contain the absolute address of the required cell*/
 	public void get_array_cell(TEMP array_temp, TEMP array_index_temp, String absolute_address)
 	{
-		check_oob(array_temp, array_index_temp);check_oob(array_temp, array_index_temp);
+		check_oob(array_temp, array_index_temp);
 		String array_register = "$t" + array_temp.getRegisterSerialNumber();
 		String index_register = "$t" + array_index_temp.getRegisterSerialNumber();
 		String four = "$s1";
@@ -626,7 +625,6 @@ public class MIPSGenerator
 
 	public void update_array(TEMP array_temp, TEMP array_index_temp, TEMP temp_to_assign)
 	{
-		check_oob(array_temp, array_index_temp);
 		String absolute_address = "$s0";
 		String assigned_register = "$t" + temp_to_assign.getRegisterSerialNumber();
 

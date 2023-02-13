@@ -2,6 +2,8 @@ package TYPES;
 
 import AST.AST_EXP;
 import AST.AST_Node;
+import IR.IRcommand;
+import MIPS.MIPSGenerator;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class TYPE_CLASS extends TYPE
 		this.name = name;
 		this.father = father;
 		this.data_members = data_members;
-		this.label_VT = "vt_" + name;
+		this.label_VT = IRcommand.getFreshLabel("vt_" + name);
 		this.numFields = 0;
 	}
 

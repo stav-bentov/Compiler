@@ -2,7 +2,6 @@ package IR;
 
 import MIPS.MIPSGenerator;
 import TEMP.TEMP;
-import TYPES.TYPE;
 
 import java.util.List;
 

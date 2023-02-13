@@ -9,10 +9,7 @@ import java.util.List;
 public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
     public AST_TYPE type;
     public AST_EXP exp;
-
-    /* AST Annotations */
-    public List<AST_Node> fieldExps;
-    public String VTLabel;
+    public TYPE_CLASS typeClass;
 
     public AST_NEW_EXP_NEW_TYPE_EXP(AST_TYPE type, AST_EXP exp, int line) {
         SerialNumber = AST_Node_Serial_Number.getFresh();
@@ -57,11 +54,7 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
 
         /* New instance of a class */
         else if (instanceType instanceof TYPE_CLASS) {
-            TYPE_CLASS typeClass = (TYPE_CLASS) instanceType;
-
-            /* Update AST annotations */
-            this.fieldExps = typeClass.field_exps;
-            this.VTLabel = typeClass.label_VT;
+            typeClass = (TYPE_CLASS) instanceType;
 
             return instanceType;
         }
@@ -110,18 +103,21 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         /* case class */
         else
         {
-            IR.getInstance().Add_IRcommand(new IRcommand_Instantiate_Class(result_temp, IRmeExpList(), VTLabel));
+            IR.getInstance().Add_IRcommand(new IRcommand_Instantiate_Class(result_temp, IRmeExpList(), this.typeClass.label_VT));
         }
         return result_temp;
     }
 
     /* Returns a list of temps. For uninitialized fields, contains null */
-    private List<TEMP> IRmeExpList() {
+    private List<TEMP> IRmeExpList() { // TODO: check if temps are required/allowed
         List<TEMP> temps = new ArrayList<>();
 
-        for (AST_Node exp : this.fieldExps) {
+        for (AST_Node exp : this.typeClass.field_exps) {
             if (exp != null) {
                 temps.add(exp.IRme());
+            }
+            else {
+                temps.add(null);
             }
         }
 

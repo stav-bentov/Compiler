@@ -88,7 +88,9 @@ public class AST_CLASS_DEC extends AST_Node{
         TYPE cFieldTypes = cFieldList.SemantMe();
 
         /* Updates labels and field types for IRme/MIPSme later */
-        extractLabelsAndFieldTypes((TYPE_LIST) cFieldTypes); // assuming it returns a list
+        if (cFieldTypes != null) {
+            extractLabelsAndFieldTypes((TYPE_LIST) cFieldTypes); // assuming it returns a list
+        }
         type_class.field_exps = this.fieldsExps;
         VTLabel = type_class.label_VT; // for IRme
 
