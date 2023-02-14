@@ -11,11 +11,15 @@ public class IRcommand_Get_Class_Var extends IRcommand{
     public IRcommand_Get_Class_Var(int offset, TEMP resReg, TEMP classPtr) {
         this(offset, resReg);
         this.classPtr = classPtr;
+
+        this.depends_on.add(classPtr);
     }
 
     public IRcommand_Get_Class_Var(int offset, TEMP resReg) {
         this.offset = offset;
         this.resReg = resReg;
+
+        this.dest = resReg;
     }
 
     @Override

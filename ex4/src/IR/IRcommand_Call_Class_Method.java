@@ -11,12 +11,16 @@ public class IRcommand_Call_Class_Method extends IRcommand_Call_Func {
     public IRcommand_Call_Class_Method(TEMP_LIST param_list, TEMP assigned_temp, int methodOffset, TEMP classPtr) {
         this(param_list, assigned_temp, methodOffset);
         this.classPtr = classPtr;
+
+        depends_on.add(classPtr);
     }
 
     /* No return, with var */
     public IRcommand_Call_Class_Method(TEMP_LIST param_list, int methodOffset, TEMP classPtr) {
         this(param_list, methodOffset);
         this.classPtr = classPtr;
+
+        depends_on.add(classPtr);
     }
 
     /* With return, no var */

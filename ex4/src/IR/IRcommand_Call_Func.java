@@ -12,11 +12,18 @@ public abstract class IRcommand_Call_Func extends IRcommand
     public IRcommand_Call_Func(TEMP_LIST param_list, TEMP assigned_temp) {
         this(param_list);
         this.assigned_temp = assigned_temp;
+
+        this.dest = assigned_temp;
     }
 
     /* No return */
     public IRcommand_Call_Func(TEMP_LIST param_list) {
         this.param_list = param_list;
+
+        while(param_list != null){
+            this.depends_on.add(param_list.head);
+            param_list = param_list.tail;
+        }
     }
 
     public void MIPSme()

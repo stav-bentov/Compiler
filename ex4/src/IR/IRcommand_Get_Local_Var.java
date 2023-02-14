@@ -24,6 +24,8 @@ public class IRcommand_Get_Local_Var extends IRcommand
 	{
 		this.var_offset = var_offset;
 		this.var_temp = var_temp;
+
+		this.dest = var_temp;
 	}
 
 	public void MIPSme()

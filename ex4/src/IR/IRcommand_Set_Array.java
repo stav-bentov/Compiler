@@ -17,6 +17,9 @@ public class IRcommand_Set_Array extends IRcommand
 	{
 		this.array_temp = array_temp;
 		this.array_size_temp = array_size_temp;
+
+		this.dest = array_temp;
+		this.depends_on.add(array_size_temp);
 	}
 
 	public void MIPSme()

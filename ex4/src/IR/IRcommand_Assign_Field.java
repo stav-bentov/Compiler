@@ -11,11 +11,16 @@ public class IRcommand_Assign_Field extends IRcommand{
     public IRcommand_Assign_Field(int offset, TEMP valueToAssign, TEMP classPtr) {
         this(offset, valueToAssign);
         this.classPtr = classPtr;
+
+        this.depends_on.add(classPtr);
+        this.depends_on.add(valueToAssign);
     }
 
     public IRcommand_Assign_Field(int offset, TEMP valueToAssign) {
         this.offset = offset;
         this.valueToAssign = valueToAssign;
+
+        this.depends_on.add(valueToAssign);
     }
 
     @Override

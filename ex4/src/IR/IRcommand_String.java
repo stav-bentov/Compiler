@@ -24,6 +24,8 @@ public class IRcommand_String extends IRcommand
 		this.t = t;
 		this.str = str;
 		this.str_label = label;
+
+		this.dest = t;
 	}
 
 	public void MIPSme()

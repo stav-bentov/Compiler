@@ -27,6 +27,10 @@ public class IRcommand_Array_Index_Access extends IRcommand
 		this.array_temp = array_temp;
 		this.array_index_temp = array_index_temp;
 		this.array_access_temp = array_access_temp;
+
+		this.dest = array_access_temp;
+		this.depends_on.add(array_temp);
+		this.depends_on.add(array_index_temp);
 	}
 
 	public void MIPSme()

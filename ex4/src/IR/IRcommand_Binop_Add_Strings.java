@@ -25,6 +25,10 @@ public class IRcommand_Binop_Add_Strings extends IRcommand
 		this.dst = dst;
 		this.t1 = t1;
 		this.t2 = t2;
+
+		this.dest = dst;
+		this.depends_on.add(t1);
+		this.depends_on.add(t2);
 	}
 
 	public void MIPSme()
