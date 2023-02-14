@@ -5,7 +5,10 @@ import AST.AST_Node;
 import IR.IRcommand;
 import MIPS.MIPSGenerator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TYPE_CLASS extends TYPE
 {
@@ -20,6 +23,7 @@ public class TYPE_CLASS extends TYPE
 	/* packed together with the class methods         */
 	/**************************************************/
 	public TYPE_LIST data_members;
+	public Map<String, TYPE> data_members_including_inherited;
 
 	/* Accessible for usage when creating a runtime object when instancing a class */
 	public String label_VT;
@@ -35,6 +39,7 @@ public class TYPE_CLASS extends TYPE
 		this.name = name;
 		this.father = father;
 		this.data_members = data_members;
+		this.data_members_including_inherited = new HashMap<>();
 		this.label_VT = IRcommand.getFreshLabel("vt_" + name);
 		this.numFields = 0;
 	}
