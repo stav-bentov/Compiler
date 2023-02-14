@@ -12,7 +12,6 @@ public class IRcommand_Call_Class_Method extends IRcommand_Call_Func {
         this(param_list, assigned_temp, methodOffset);
         this.classPtr = classPtr;
 
-        this.dest = assigned_temp;
         depends_on.add(classPtr);
     }
 
