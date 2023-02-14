@@ -25,9 +25,9 @@ public class IRcommand_Binop_EQ_Integers extends IRcommand
 		this.t1 = t1;
 		this.t2 = t2;
 
-		this.dest = dst.getSerialNumber();
-		this.depends_on.add(t1.getSerialNumber());
-		this.depends_on.add(t2.getSerialNumber());
+		this.dest = dst;
+		this.depends_on.add(t1);
+		this.depends_on.add(t2);
 	}
 	
 	/***************/

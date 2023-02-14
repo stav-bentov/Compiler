@@ -12,9 +12,9 @@ public class IRcommand_Call_Global_Func extends IRcommand_Call_Func
         super(param_list, assigned_temp);
         this.func_prolog_label = func_prolog_label;
 
-        this.dest = assigned_temp.getSerialNumber();
+        this.dest = assigned_temp;
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
     }
@@ -25,7 +25,7 @@ public class IRcommand_Call_Global_Func extends IRcommand_Call_Func
         this.func_prolog_label = func_prolog_label;
 
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
     }

@@ -23,7 +23,7 @@ public class IRcommand_Int extends IRcommand
 		this.t = t;
 		this.value = value;
 
-		this.dest = t.getSerialNumber();
+		this.dest = t;
 	}
 	
 	/***************/

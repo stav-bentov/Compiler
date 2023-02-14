@@ -25,7 +25,7 @@ public class IRcommand_String extends IRcommand
 		this.str = str;
 		this.str_label = label;
 
-		this.dest = t.getSerialNumber();
+		this.dest = t;
 	}
 
 	public void MIPSme()

@@ -12,15 +12,15 @@ public class IRcommand_Get_Class_Var extends IRcommand{
         this(offset, resReg);
         this.classPtr = classPtr;
 
-        this.dest = resReg.getSerialNumber();
-        this.depends_on.add(classPtr.getSerialNumber());
+        this.dest = resReg;
+        this.depends_on.add(classPtr);
     }
 
     public IRcommand_Get_Class_Var(int offset, TEMP resReg) {
         this.offset = offset;
         this.resReg = resReg;
 
-        this.dest = resReg.getSerialNumber();
+        this.dest = resReg;
     }
 
     @Override

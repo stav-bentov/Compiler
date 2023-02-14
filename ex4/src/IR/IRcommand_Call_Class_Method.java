@@ -12,12 +12,12 @@ public class IRcommand_Call_Class_Method extends IRcommand_Call_Func {
         this(param_list, assigned_temp, methodOffset);
         this.classPtr = classPtr;
 
-        this.dest = assigned_temp.getSerialNumber();
+        this.dest = assigned_temp;
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
-        depends_on.add(classPtr.getSerialNumber());
+        depends_on.add(classPtr);
     }
 
     /* No return, with var */
@@ -26,10 +26,10 @@ public class IRcommand_Call_Class_Method extends IRcommand_Call_Func {
         this.classPtr = classPtr;
 
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
-        depends_on.add(classPtr.getSerialNumber());
+        depends_on.add(classPtr);
     }
 
     /* With return, no var */
@@ -37,9 +37,9 @@ public class IRcommand_Call_Class_Method extends IRcommand_Call_Func {
         super(param_list, assigned_temp);
         this.methodOffset = methodOffset;
 
-        this.dest = assigned_temp.getSerialNumber();
+        this.dest = assigned_temp;
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
     }
@@ -50,7 +50,7 @@ public class IRcommand_Call_Class_Method extends IRcommand_Call_Func {
         this.methodOffset = methodOffset;
 
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
     }

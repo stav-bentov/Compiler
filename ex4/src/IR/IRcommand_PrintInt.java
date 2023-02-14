@@ -20,7 +20,7 @@ public class IRcommand_PrintInt extends IRcommand
 	public IRcommand_PrintInt(TEMP t)
 	{
 		this.t = t;
-		this.depends_on.add(t.getSerialNumber());
+		this.depends_on.add(t);
 	}
 	
 	/***************/

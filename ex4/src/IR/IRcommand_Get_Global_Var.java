@@ -24,7 +24,7 @@ public class IRcommand_Get_Global_Var extends IRcommand
 		this.global_var_label = global_var_label;
 		this.global_temp = global_temp;
 
-		this.dest = global_temp.getSerialNumber();
+		this.dest = global_temp;
 	}
 
 	public void MIPSme()

@@ -12,15 +12,15 @@ public class IRcommand_Assign_Field extends IRcommand{
         this(offset, valueToAssign);
         this.classPtr = classPtr;
 
-        this.dest = classPtr.getSerialNumber();
-        this.depends_on.add(valueToAssign.getSerialNumber());
+        this.dest = classPtr;
+        this.depends_on.add(valueToAssign);
     }
 
     public IRcommand_Assign_Field(int offset, TEMP valueToAssign) {
         this.offset = offset;
         this.valueToAssign = valueToAssign;
 
-        this.depends_on.add(valueToAssign.getSerialNumber());
+        this.depends_on.add(valueToAssign);
     }
 
     @Override

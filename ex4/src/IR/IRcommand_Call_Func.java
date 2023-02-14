@@ -13,9 +13,9 @@ public abstract class IRcommand_Call_Func extends IRcommand
         this(param_list);
         this.assigned_temp = assigned_temp;
 
-        this.dest = assigned_temp.getSerialNumber();
+        this.dest = assigned_temp;
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
     }
@@ -25,7 +25,7 @@ public abstract class IRcommand_Call_Func extends IRcommand
         this.param_list = param_list;
 
         while(param_list != null){
-            this.depends_on.add(param_list.head.getSerialNumber());
+            this.depends_on.add(param_list.head);
             param_list = param_list.tail;
         }
     }

@@ -15,10 +15,8 @@ public class IRcommand_Instantiate_Class extends IRcommand{
         this.initialValueTemps = initialValueTemps;
         this.VTLabel = VTLabel;
 
-        this.depends_on.add(classPtr.getSerialNumber());
-        for(TEMP temp : initialValueTemps){
-            this.depends_on.add(temp.getSerialNumber());
-        }
+        this.depends_on.add(classPtr);
+        this.depends_on.addAll(initialValueTemps);
     }
 
     @Override

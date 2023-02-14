@@ -18,7 +18,7 @@ public class IRcommand_Assign_Stack_Var extends IRcommand
 		this.var_offset = var_offset;
 		this.temp_to_assign = temp_to_assign;
 
-		this.depends_on.add(temp_to_assign.getSerialNumber());
+		this.depends_on.add(temp_to_assign);
 	}
 
 	public void MIPSme()

@@ -19,7 +19,7 @@ public class IRcommand_Nil extends IRcommand{
     public IRcommand_Nil(TEMP t) {
         this.t = t;
 
-        this.dest = t.getSerialNumber();
+        this.dest = t;
     }
 
     @Override
