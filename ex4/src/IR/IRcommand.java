@@ -24,7 +24,7 @@ public abstract class IRcommand
 	/*****************/
 	protected static int label_counter=0;
 	public Set<TEMP> depends_on = new HashSet<>();
-	public TEMP dest = new TEMP(-1);
+	public TEMP dest;
 	public static String getFreshLabel(String msg)
 	{
 		return String.format("Label_%d_%s",label_counter++,msg);

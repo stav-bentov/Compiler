@@ -109,7 +109,7 @@ public class FunctionIRList {
                 In.get(i).addAll(Out.get(i));
                 Set<Integer> depends_on = (Set<Integer>) CFG[i].cmd.depends_on.stream().map(temp -> temp.getSerialNumber());
                 In.get(i).addAll(depends_on);//Depends on are the temps which are required for this calculations (a,b in case of y = a + b)
-                if(CFG[i].cmd.dest.getSerialNumber() != -1){//destination is the temp number in which we put the result of the calculation (y in case of y = a + b)
+                if(CFG[i].cmd.dest != null){//destination is the temp number in which we put the result of the calculation (y in case of y = a + b)
                     In.get(i).remove(CFG[i].cmd.dest.getSerialNumber());
                 }
 
