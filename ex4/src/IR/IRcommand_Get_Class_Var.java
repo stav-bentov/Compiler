@@ -12,7 +12,6 @@ public class IRcommand_Get_Class_Var extends IRcommand{
         this(offset, resReg);
         this.classPtr = classPtr;
 
-        this.dest = resReg;
         this.depends_on.add(classPtr);
     }
 

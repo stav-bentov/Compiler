@@ -11,23 +11,12 @@ public class IRcommand_Call_Global_Func extends IRcommand_Call_Func
     public IRcommand_Call_Global_Func(TEMP_LIST param_list, TEMP assigned_temp, String func_prolog_label) {
         super(param_list, assigned_temp);
         this.func_prolog_label = func_prolog_label;
-
-        this.dest = assigned_temp;
-        while(param_list != null){
-            this.depends_on.add(param_list.head);
-            param_list = param_list.tail;
-        }
     }
 
     /* No return */
     public IRcommand_Call_Global_Func(TEMP_LIST param_list, String func_prolog_label) {
         super(param_list);
         this.func_prolog_label = func_prolog_label;
-
-        while(param_list != null){
-            this.depends_on.add(param_list.head);
-            param_list = param_list.tail;
-        }
     }
 
     @Override
