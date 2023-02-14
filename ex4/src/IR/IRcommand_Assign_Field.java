@@ -12,7 +12,7 @@ public class IRcommand_Assign_Field extends IRcommand{
         this(offset, valueToAssign);
         this.classPtr = classPtr;
 
-        this.dest = classPtr;
+        this.depends_on.add(classPtr);
         this.depends_on.add(valueToAssign);
     }
 
