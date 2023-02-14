@@ -1,15 +1,16 @@
 package IR;
 
-import IR.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Analysis {
-    public static FunctionIRList init(){
+    private static List<FunctionIRList> function_list;
+
+    public static void init(){
+        function_list = new ArrayList<>();
         IRcommandList start = null;
         IRcommandList curr = IR.getInstance().tail;
         IRcommand firstCmd = IR.getInstance().head;
-
-        FunctionIRList ret = new FunctionIRList(null, 0);
-        FunctionIRList temp = ret;
 
         int len = 0;
         if((firstCmd instanceof IRcommand_Start_Func)){//IRCommand instance of IRCommandStartFunc
@@ -27,10 +28,7 @@ public class Analysis {
             //here we see a label that marks the end of a function
             if(curr.head instanceof IRcommand_End_Func){
                 //if we also saw a start to that function we create a function ir list object and move to the next one
-                temp.start = start;
-                temp.len = len + 1;//adding one to include IRCommand_End_Func
-                temp.next = new FunctionIRList(null, 0);
-                temp = temp.next;
+                function_list.add(new FunctionIRList(start, len + 1)); //adding one to include IRCommand_End_Func
 
                 start = null;
                 len = 0;
@@ -39,16 +37,12 @@ public class Analysis {
             curr = curr.tail;
             len++;
         }
-
-        temp.next = null;
-        return ret;
     }
 
     public static void AnalyzeMe() throws Exception{
-        FunctionIRList function_IRcommands_list = init();
-        while(function_IRcommands_list != null){
-            function_IRcommands_list.AnalyzeMe();
-            function_IRcommands_list = function_IRcommands_list.next;
+        init();
+        for(FunctionIRList function : function_list){
+            function.AnalyzeMe();
         }
     }
 }

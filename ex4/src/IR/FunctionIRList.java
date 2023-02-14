@@ -9,7 +9,6 @@ import java.util.*;
 public class FunctionIRList {
     public IRcommandList start;
     public int len;
-    public FunctionIRList next;
 
     //private fields for chaitin's algorithm
     private CFG_Node[] CFG;
@@ -108,9 +107,10 @@ public class FunctionIRList {
                 //update the In of Node i
                 old_in = In.get(i);
                 In.get(i).addAll(Out.get(i));
-                In.get(i).addAll(CFG[i].cmd.DependsOn);//Depends on are the temps which are required for this calculations (a,b in case of y = a + b)
-                if(CFG[i].cmd.destination != -1){//destination is the temp number in which we put the result of the calculation (y in case of y = a + b)
-                    In.get(i).remove(CFG[i].cmd.destination);
+                Set<Integer> depends_on = (Set<Integer>) CFG[i].cmd.depends_on.stream().map(temp -> temp.getSerialNumber());
+                In.get(i).addAll(depends_on);//Depends on are the temps which are required for this calculations (a,b in case of y = a + b)
+                if(CFG[i].cmd.dest.getSerialNumber() != -1){//destination is the temp number in which we put the result of the calculation (y in case of y = a + b)
+                    In.get(i).remove(CFG[i].cmd.dest.getSerialNumber());
                 }
 
                 //if something has changed we need to run again
@@ -243,7 +243,7 @@ public class FunctionIRList {
         for(int i = 0; i < len; i++){
             IRcommand cmd = CFG[i].cmd;
             //IRCommand needs to have a field temps - all the temps in the IRCommand x = a + b (x,a,b)
-            for(TEMP temp : cmd.temps){
+            for(TEMP temp : cmd.depends_on){
                 temp.SetRegisterSerialNumber(coloring.getOrDefault(temp.getSerialNumber(), 0));
             }
         }
