@@ -8,6 +8,10 @@ SRC_DIR           = ${BASEDIR}/src
 BIN_DIR           = ${BASEDIR}/bin
 INPUT_DIR         = ${BASEDIR}/input
 OUTPUT_DIR        = ${BASEDIR}/output
+TEST_INPUT_DIR	  = ${BASEDIR}/tests/inputs
+TEST_OUTPUT_DIR   = ${BASEDIR}/tests/outputs
+TEST_EXPECTED_OUTPUT_DIR   = ${BASEDIR}/test/expected_output
+EXPECTED_OUTPUT_DIR 	   = ${BASEDIR}/expected_output
 EXTERNAL_JARS_DIR = ${BASEDIR}/external_jars
 MANIFEST_DIR      = ${BASEDIR}/manifest
 
@@ -56,7 +60,7 @@ CUP_FLAGS =                                \
 #########################
 INPUT    = ${INPUT_DIR}/Input.txt
 OUTPUT   = ${OUTPUT_DIR}/MIPS.txt
-
+LIST = ${shell ls ${INPUT_DIR}}
 ##########
 # TARGET #
 ##########
@@ -196,4 +200,85 @@ everything:
 	@echo "***********************************************************"
 	@echo "\n"
 	# [11] Run spim and redirect its output (un-comment after codegen + register allocation is implemented)
-	spim -f ${OUTPUT_DIR}/MIPS.txt #> ${OUTPUT_DIR}/MIPS_OUTPUT.txt
+	spim -f ${OUTPUT_DIR}/MIPS.txt > ${OUTPUT_DIR}/MIPS_OUTPUT.txt
+
+test:
+	clear
+	@echo "******************************"
+	@echo "*                            *"
+	@echo "*                            *"
+	@echo "* [0] Remove COMPIER program *"
+	@echo "*                            *"
+	@echo "*                            *"
+	@echo "******************************"
+	rm -rf COMPILER
+	@echo "\n"
+	@echo "************************************************************"
+	@echo "*                                                          *"
+	@echo "*                                                          *"
+	@echo "* [1] Remove *.class files and JFlex-CUP generated files:  *"
+	@echo "*                                                          *"
+	@echo "*     Lexer.java                                           *"
+	@echo "*     Parser.java                                          *"
+	@echo "*     TokenNames.java                                      *"
+	@echo "*                                                          *"
+	@echo "************************************************************"
+	rm -rf ${JFlex_CUP_GENERATED_FILES} ${BIN_DIR}/*.class ${BIN_DIR}/AST/*.class
+	@echo "\n"
+	@echo "************************************************************"
+	@echo "*                                                          *"
+	@echo "*                                                          *"
+	@echo "* [2] Use JFlex to synthesize Lexer.java from LEX_FILE.lex *"
+	@echo "*                                                          *"
+	@echo "*                                                          *"
+	@echo "************************************************************"
+	$(JFlex_PROGRAM) ${JFlex_FLAGS} -d ${JFlex_DEST_DIR} ${JFlex_FILE}
+	@echo "\n"
+	@echo "*******************************************************************************"
+	@echo "*                                                                             *"
+	@echo "*                                                                             *"
+	@echo "* [3] Use CUP to synthesize Parser.java and TokenNames.java from CUP_FILE.cup *"
+	@echo "*                                                                             *"
+	@echo "*                                                                             *"
+	@echo "*******************************************************************************"
+	$(CUP_PROGRAM) ${CUP_FLAGS} -destdir ${SRC_DIR} ${CUP_FILE}
+	@echo "\n"
+	@echo "********************************************************"
+	@echo "*                                                      *"
+	@echo "*                                                      *"
+	@echo "* [4] Create *.class files from *.java files + CUP JAR *"
+	@echo "*                                                      *"
+	@echo "*                                                      *"
+	@echo "********************************************************"
+	javac -cp ${EXTERNAL_JAR_FILES} -d ${BIN_DIR} ${SRC_FILES}
+	@echo "\n"
+	@echo "***********************************************************"
+	@echo "*                                                         *"
+	@echo "*                                                         *"
+	@echo "* [5] Create a JAR file from from *.class files + CUP JAR *"
+	@echo "*                                                         *"
+	@echo "*                                                         *"
+	@echo "***********************************************************"
+	jar cfm COMPILER ${MANIFEST_FILE} -C ${BIN_DIR} .
+	@echo "\n"
+	@echo "*****************************"
+	@echo "*                           *"
+	@echo "*                           *"
+	@echo "* [6] Run resulting program *"
+	@echo "*                           *"
+	@echo "*                           *"
+	@echo "*****************************"
+	java -jar COMPILER ${INPUT} ${OUTPUT}
+	@echo "\n"
+	@echo "***********************************************************"
+	@echo "*                                                         *"
+	@echo "*                                                         *"
+	@echo "* [10] Allocate registers (just for this running example) *"
+	@echo "*                                                         *"
+	@echo "*                                                         *"
+	@echo "***********************************************************"
+	@echo "\n"
+	for FILE in $(LIST); do \
+  			echo $${FILE}; java -jar COMPILER ${INPUT_DIR}/$${FILE} ${OUTPUT_DIR}/$${FILE}; spim -f ${OUTPUT_DIR}/$${FILE} > ${TEST_OUTPUT_DIR}/$${FILE}_EXPECTED_OUTPUT.txt; \
+	done
+	diff ${TEST_OUTPUT_DIR} ${EXPECTED_OUTPUT_DIR}
