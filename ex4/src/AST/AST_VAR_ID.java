@@ -38,7 +38,7 @@ public class AST_VAR_ID extends AST_VAR
 
 		/* Set values to type_var (and label/ offset), according to var from SYMBOL_TABLE*/
 		/* ASSUMPTION!!: var is TYPE_VAR!*/
-		typeVar = (TYPE_VAR) var;
+		this.typeVar = (TYPE_VAR) var;
 
 		return var;
 	}

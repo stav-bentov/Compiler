@@ -95,7 +95,7 @@ public class AST_FUNC_DEC extends AST_Node {
                 /* Set offsets of params (arguments) */
                 int argument_var_num = 0;
                 TYPE_LIST type_pointer = currTypeFunc.params;
-                while (type_pointer.head != null)
+                while (type_pointer != null)
                 {
                     ((TYPE_VAR) type_pointer.head).set_argument(argument_var_num);
                     argument_var_num++;
