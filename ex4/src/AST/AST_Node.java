@@ -5,6 +5,9 @@ import TYPES.*;
 import IR.IR;
 import IR.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AST_Node
 {
 	/*******************************************/
@@ -158,30 +161,19 @@ public abstract class AST_Node
 		}
 	}
 
-	public TEMP_LIST build_param_list(AST_LIST ast_param_list)
+	public List<TEMP> build_param_list(AST_LIST ast_param_list)
 	{
 		AST_LIST pointer = ast_param_list;
 		TEMP param_temp;
-		TEMP_LIST temp_list = null;
-		int temp_list_len = 0;
+		List<TEMP> temp_list = new ArrayList<>();
 
 		while (pointer != null)
 		{
 			param_temp = pointer.head.IRme();
-			temp_list = new TEMP_LIST(param_temp, null);
+			temp_list.add(param_temp);
 			pointer = pointer.tail;
-			temp_list_len++;
-
-			while(pointer != null)
-			{
-				param_temp = pointer.head.IRme();
-				temp_list.tail = new TEMP_LIST(param_temp, temp_list.tail);
-				temp_list_len++;
-				pointer = pointer.tail;
-			}
 		}
 
-		temp_list.len = temp_list_len;
 		return temp_list;
 	}
 

@@ -382,19 +382,16 @@ public class MIPSGenerator
 		fileWriter.format("\tjr $ra\n");
 	}
 
-	public void set_arguments(TEMP_LIST param_list)
+	public void set_arguments(List<TEMP> param_list)
 	{
 		open_segment(SegmentType.CODE);
-		TEMP_LIST pointer = param_list;
 
-		subu(sp, sp, 4 * param_list.len);
+		subu(sp, sp, 4 * param_list.size());
 
 		/* set arguments */
-		for (int i = param_list.len - 1; i >= 0; i--)
+		for (int i = param_list.size() - 1; i >= 0; i--)
 		{
-			TEMP current_temp = pointer.head;
-			store("$t" + current_temp.getRegisterSerialNumber(), sp, 4 * i);
-			pointer = pointer.tail;
+			store("$t" + param_list.get(i).getRegisterSerialNumber(), sp, 4 * i);
 		}
 	}
 

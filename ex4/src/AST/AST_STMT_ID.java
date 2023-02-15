@@ -3,6 +3,8 @@ import TYPES.*;
 import TEMP.*;
 import IR.*;
 
+import java.util.List;
+
 
 public class AST_STMT_ID extends AST_STMT{
     public AST_VAR var;
@@ -52,7 +54,7 @@ public class AST_STMT_ID extends AST_STMT{
     @Override
     public TEMP IRme() {
 
-        TEMP_LIST temp_list = this.parmeters_list == null ? null : build_param_list(this.parmeters_list);
+        List<TEMP> temp_list = this.parmeters_list == null ? null : build_param_list(this.parmeters_list);
 
         if (this.var == null)
         {
@@ -63,11 +65,11 @@ public class AST_STMT_ID extends AST_STMT{
              */
             if (this.id.equals("PrintString"))
             {
-                IR.getInstance().Add_IRcommand(new IRcommand_Call_Print_String(temp_list.head));
+                IR.getInstance().Add_IRcommand(new IRcommand_Call_Print_String(temp_list.get(0)));
             }
             else if (this.id.equals("PrintInt"))
             {
-                IR.getInstance().Add_IRcommand(new IRcommand_Call_Print_Int(temp_list.head));
+                IR.getInstance().Add_IRcommand(new IRcommand_Call_Print_Int(temp_list.get(0)));
             }
             else if (func.isMethod)
             {

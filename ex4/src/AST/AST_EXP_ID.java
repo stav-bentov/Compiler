@@ -4,6 +4,8 @@ import SYMBOL_TABLE.SYMBOL_TABLE;
 import TEMP.*;
 import TYPES.*;
 
+import java.util.List;
+
 public class AST_EXP_ID extends AST_EXP
 {
 	public String id;
@@ -62,7 +64,7 @@ public class AST_EXP_ID extends AST_EXP
 	public TEMP IRme()
 	{
 		TEMP result_temp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		TEMP_LIST temp_list = this.parmeters_list == null ? null : build_param_list(this.parmeters_list);
+		List<TEMP> temp_list = this.parmeters_list == null ? null : build_param_list(this.parmeters_list);
 		if (this.var == null)
 		{
 			if (func.isMethod) {
