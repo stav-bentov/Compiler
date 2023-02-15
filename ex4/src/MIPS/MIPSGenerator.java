@@ -54,7 +54,7 @@ public class MIPSGenerator
 		open_segment(SegmentType.CODE);
 
 		int idx=t.getRegisterSerialNumber();
-		fileWriter.format("\tmove $a0,t_%d\n",idx);
+		fileWriter.format("\tmove $a0,$t%d\n",idx);
 		fileWriter.format("\tli $v0,1\n");
 		fileWriter.format("\tsyscall\n");
 	}
@@ -65,7 +65,7 @@ public class MIPSGenerator
 
 		int idx=t.getRegisterSerialNumber();
 		// fileWriter.format("\taddi $a0,Temp_%d,0\n",idx);
-		fileWriter.format("\tmove $a0,t_%d\n",idx);
+		fileWriter.format("\tmove $a0,$t%d\n",idx);
 		fileWriter.format("\tli $v0,1\n");
 		fileWriter.format("\tsyscall\n");
 		/* "When printing an integer, print an additional space at the end"*/
