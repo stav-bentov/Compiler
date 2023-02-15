@@ -1,6 +1,7 @@
 package TYPES;
 
 import AST.AST_Node;
+import IR.IRcommand;
 import TEMP.TEMP;
 import jdk.nashorn.internal.ir.Symbol;
 
@@ -38,7 +39,7 @@ public class TYPE_VAR extends TYPE{
 
     public void set_global(String global_var_label)
     {
-        this.global_var_label = global_var_label;
+        this.global_var_label = IRcommand.getFreshLabel(global_var_label);
         this.var_type = VarType.GLOBAL;
     }
 
