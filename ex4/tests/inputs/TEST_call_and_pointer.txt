@@ -1,0 +1,15 @@
+class A {
+    int i := 530;
+}
+A a;
+void foo(int i) {
+    PrintInt(a.i);
+    a.i := a.i + 1;
+}
+void main() {
+    a := new A;
+    foo(0);
+    foo(0);
+    foo(2);
+    foo(2);
+}

@@ -1,0 +1,18 @@
+array IntArr = int[];
+array Matrix = IntArr[];
+
+class A {
+    Matrix mat;
+    void foo() {
+        mat := new IntArr[5];
+        mat[3] := new int[8];
+        mat[3][4] := 555;
+    }
+}
+
+void main() {
+    A a := new A;
+    a.foo();
+    a.mat[3][2] := 3;
+    PrintString("OKius");
+}

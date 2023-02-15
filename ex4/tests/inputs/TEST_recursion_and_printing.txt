@@ -1,0 +1,9 @@
+int foo(int left) {
+    if (left = 0) { return 0; }
+    PrintInt(left);
+    PrintInt(foo(left - 1));
+    return left;
+}
+void main() {
+    foo(5);
+}

@@ -1,0 +1,20 @@
+array IntArr = int[];
+
+void printArr(IntArr arr, int len) {
+    int i := 0;
+
+    while (i < len) {
+        PrintInt(arr[i]);
+        i := i + 1;
+    }
+}
+
+void main() {
+    int len := 1 + 2;
+    IntArr arr := new int[len];
+    arr[0] := 5;
+    arr[1] := 0;
+    arr[2] := 4;
+    
+    printArr(arr, 3);
+}

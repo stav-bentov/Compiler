@@ -1,0 +1,11 @@
+class A {
+    int x := 1;
+}
+class B extends A {
+    int x := 2;
+}
+
+void main() {
+    B b := new B;
+    PrintInt(b.x);
+}

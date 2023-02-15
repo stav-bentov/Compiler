@@ -1,0 +1,39 @@
+class A {
+    string s := "AField";
+    void bar(string l, int i, A a, int j, int k) {
+            PrintString("shouldBeOverriden");
+        }
+    void foo() {
+        PrintString(s);
+        bar(s, 101, nil, 102, 103);
+    }
+
+    void changeS() {
+        s := "goingThroughChanges";
+    }
+}
+
+class B extends A {
+    string s := "BField";
+    void bar(string s, int d, A a, int b, int c){
+        PrintString(s);
+        PrintInt(d);
+        PrintInt(a = nil);
+        PrintInt(b);
+        PrintInt(c);
+
+        s := "BARBFieldBAR";
+    }
+
+}
+
+void main() {
+    A b := new B;
+    b.foo();
+    PrintString(b.s);
+    b.bar("mat", 402, b, 403, 404);
+
+    b.changeS();
+    PrintString(b.s);
+
+}
