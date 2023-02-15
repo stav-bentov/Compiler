@@ -24,6 +24,6 @@ public class IRcommand_Set_Array extends IRcommand
 
 	public void MIPSme()
 	{
-		MIPSGenerator.getInstance().allocate_array(array_temp, array_size_temp);
+		MIPSGenerator.getInstance().allocate_array(array_size_temp, array_temp);
 	}
 }

@@ -74,11 +74,8 @@ public class MIPSGenerator
 		fileWriter.format("\tsyscall\n");
 	}
 
-	/*==================================== Stav ====================================*/
 	public void lstr(TEMP t,String str, String str_label)
 	{
-		open_segment(SegmentType.CODE);
-
 		/* Create string value as a global variable in data*/
 		open_segment(SegmentType.DATA);
 		fileWriter.format("%s: .asciiz %s\n", str_label, str);
@@ -106,6 +103,8 @@ public class MIPSGenerator
 
 	public void add_strings(TEMP dst,TEMP str1,TEMP str2)
 	{
+		open_segment(SegmentType.CODE);
+
 		String a0 = "$a0";
 		String len_str1 = "$s1";
 		String len_str2 = "$s0";
@@ -149,11 +148,15 @@ public class MIPSGenerator
 	 */
 	public void move(String dst_register, String src_register)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tmove %s, %s\n", dst_register, src_register);
 	}
 
 	public void move(TEMP dst_register, TEMP src_register)
 	{
+		open_segment(SegmentType.CODE);
+
 		String dst = "$t" + dst_register.getRegisterSerialNumber();
 		String src = "$t" + src_register.getRegisterSerialNumber();
 
@@ -165,6 +168,8 @@ public class MIPSGenerator
 	 */
 	public void lb(String dst_register, String src_register, int offset)
 	{
+		open_segment(SegmentType.CODE);
+
 		/* lb: transfers one byte of data from main memory to a register */
 		fileWriter.format("\tlb %s, %d(%s)\n", dst_register, offset, src_register);
 	}
@@ -174,6 +179,8 @@ public class MIPSGenerator
 	 */
 	public void sb(String src_register, String dst_register, int offset)
 	{
+		open_segment(SegmentType.CODE);
+
 		/* lb: transfers one byte of data from main memory to a register */
 		fileWriter.format("\tsb %s, %d(%s)\n", src_register, offset, dst_register);
 	}
@@ -183,6 +190,8 @@ public class MIPSGenerator
 	 */
 	public void beq(String reg1, String reg2, String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tbeq %s, %s, %s\n", reg1, reg2, label);
 	}
 
@@ -191,6 +200,8 @@ public class MIPSGenerator
 	 */
 	public void bne(String reg1, String reg2, String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tbne %s, %s, %s\n", reg1, reg2, label);
 	}
 
@@ -199,6 +210,8 @@ public class MIPSGenerator
 	 */
 	public void addu(String dst_register, String reg, int inc)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\taddu %s, %s, %d\n", dst_register, reg, inc);
 	}
 
@@ -207,6 +220,8 @@ public class MIPSGenerator
 	 */
 	public void add(String dst_register, String reg1, String reg2)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tadd %s, %s, %s\n", dst_register, reg1, reg2);
 	}
 
@@ -326,6 +341,7 @@ public class MIPSGenerator
 
 	public void func_prologue(String prologue_label, int local_var_num)
 	{
+		System.out.println("in func_prologue of " + prologue_label);
 		/* For Us- Based on practice_10 */
 		open_segment(SegmentType.CODE);
 		/* Create the label for the new created function*/
@@ -353,12 +369,16 @@ public class MIPSGenerator
 	/* Receives return register (return_temp) and set $v0 <- return_temp*/
 	public void set_v0(TEMP return_temp)
 	{
+		open_segment(SegmentType.CODE);
+
 		move("$v0", "$t\n" + return_temp.getRegisterSerialNumber());
 	}
 
 	/* Receives return register (assigned_temp) and set assigned_temp <- $v0*/
 	public void get_v0(TEMP assigned_temp)
 	{
+		open_segment(SegmentType.CODE);
+
 		move("$t" + assigned_temp.getRegisterSerialNumber(), "$v0");
 	}
 
@@ -404,12 +424,16 @@ public class MIPSGenerator
 
 	public void del_arguments(int param_nums)
 	{
+		open_segment(SegmentType.CODE);
+
 		/* TODO: ask if it matter to use addi or addu*/
 		addu(sp, sp, 4 * param_nums);
 	}
 
 	/* When class_ptr is null, will use "this" instead */
-	public void call_class_method(int method_offset, TEMP class_ptr) {
+	public void call_class_method(int method_offset, TEMP class_ptr)
+	{
+		open_segment(SegmentType.CODE);
 
 		/* Check pointer's validation  */
 		if (class_ptr != null) check_valid_pointer(class_ptr);
@@ -425,12 +449,15 @@ public class MIPSGenerator
 	}
 
 	private void jalr(String reg) {
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tjalr %s\n", reg);
 	}
 
 	public void global_var_dec(String global_var_label, String str_value, int int_value)
 	{
 		open_segment(SegmentType.DATA);
+
 		if (str_value != null)
 		{
 			fileWriter.format("\t%s: .word %s\n",global_var_label, str_value);
@@ -445,16 +472,20 @@ public class MIPSGenerator
 	public void global_var_dec(String global_var_label)
 	{
 		open_segment(SegmentType.DATA);
+
 		fileWriter.format("\t%s: .word %d\n",global_var_label, 0);
 	}
 
 	public void assign_stack_var(int var_offset, TEMP assigned_temp)
 	{
+		open_segment(SegmentType.CODE);
+
 		var_dec(var_offset, assigned_temp, "$fp");
 	}
 
 	/* When class_ptr is null, will use "this" instead */
 	public void assign_field(int var_offset, TEMP val_to_assign, TEMP class_ptr) {
+		open_segment(SegmentType.CODE);
 
 		/* Check pointer's validation  */
 		if (class_ptr != null) check_valid_pointer(class_ptr);
@@ -482,9 +513,9 @@ public class MIPSGenerator
 		label(end_error_handle);
 	}
 
-
 	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg) {
 		open_segment(SegmentType.CODE);
+
 		if (val_to_assign == null)
 		{
 			/* Assign zero (no assignment)*/
@@ -499,6 +530,7 @@ public class MIPSGenerator
 
 	/* When class_ptr is null, will use "this" instead */
 	public void get_field(int offset, TEMP res, TEMP class_ptr) {
+		open_segment(SegmentType.CODE);
 
 		/* Check pointer's validation  */
 		check_valid_pointer(class_ptr);
@@ -516,6 +548,7 @@ public class MIPSGenerator
 	public void get_var_with_offset(int var_offset, TEMP var_temp)
 	{
 		open_segment(SegmentType.CODE);
+
 		load("$t" + var_temp.getRegisterSerialNumber(), fp, var_offset);
 	}
 
@@ -523,6 +556,7 @@ public class MIPSGenerator
 	public void get_global_var(String global_var_label, TEMP var_temp)
 	{
 		open_segment(SegmentType.CODE);
+
 		la("$s0", global_var_label);
 		load("$t" + var_temp.getRegisterSerialNumber(), "$s0", 0);
 	}
@@ -530,6 +564,7 @@ public class MIPSGenerator
 	public void update_global_var(String global_var_label, TEMP temp_to_assign)
 	{
 		open_segment(SegmentType.CODE);
+
 		/* Load address of global_var_label to %s0 */
 		la("$s0", global_var_label);
 		/* Store temp_to_assign in this address (update global..)*/
@@ -541,6 +576,7 @@ public class MIPSGenerator
 	public void allocate_array(TEMP array_size_temp, TEMP array_temp)
 	{
 		open_segment(SegmentType.CODE);
+
 		String array_size = "$t" + array_size_temp.getRegisterSerialNumber();
 		String array_pointer = "$t" + array_temp.getRegisterSerialNumber();
 		String a0 = "$a0";
@@ -552,6 +588,7 @@ public class MIPSGenerator
 		/* ===========Call malloc syscall============*/
 		/* Set $a0 to the required allocated size*/
 		move(a0, array_size);
+		li(four, 4);
 		mul(a0, a0, four);
 
 		malloc();
@@ -565,6 +602,8 @@ public class MIPSGenerator
 
 	/* Calls malloc syscall, assumes $a0 contains the desired size to allocate */
 	private void malloc() {
+		open_segment(SegmentType.CODE);
+
 		/* Set $v0*/
 		li("$v0", 9);
 
@@ -584,6 +623,8 @@ public class MIPSGenerator
 	}
 
 	private void allocateClassRuntimeObject(TEMP classPtr, int numOfFields) {
+		open_segment(SegmentType.CODE);
+
 		String ptr = "$t" + classPtr.getRegisterSerialNumber();
 		String arg = "$a0";
 		String ret_val = "$v0";
@@ -623,6 +664,8 @@ public class MIPSGenerator
 	}
 
 	public void la(String reg, String label) {
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tla %s, %s\n", reg, label);
 	}
 
@@ -648,6 +691,8 @@ public class MIPSGenerator
 	   Make absolute_address contain the absolute address of the required cell*/
 	public void get_array_cell(TEMP array_temp, TEMP array_index_temp, String absolute_address)
 	{
+		open_segment(SegmentType.CODE);
+
 		check_oob(array_temp, array_index_temp);
 		String array_register = "$t" + array_temp.getRegisterSerialNumber();
 		String index_register = "$t" + array_index_temp.getRegisterSerialNumber();
@@ -669,6 +714,8 @@ public class MIPSGenerator
 
 	public void update_array(TEMP array_temp, TEMP array_index_temp, TEMP temp_to_assign)
 	{
+		open_segment(SegmentType.CODE);
+
 		String absolute_address = "$s0";
 		String assigned_register = "$t" + temp_to_assign.getRegisterSerialNumber();
 
@@ -680,8 +727,6 @@ public class MIPSGenerator
 
 	public void check_oob(TEMP array_temp, TEMP array_index_temp)
 	{
-		open_segment(SegmentType.CODE);
-
 		String start_check_oob = IRcommand.getFreshLabel("start_check_oob");
 		String end_check_oob = IRcommand.getFreshLabel("end_check_oob");
 		String error_check_oob = IRcommand.getFreshLabel("error_check_oob");
@@ -722,6 +767,8 @@ public class MIPSGenerator
 
 	public void store(TEMP src, TEMP dst, int offset)
 	{
+		open_segment(SegmentType.CODE);
+
 		String src_reg = "$t" + src.getRegisterSerialNumber();
 		String dst_reg = "$t" + dst.getRegisterSerialNumber();
 
@@ -738,6 +785,8 @@ public class MIPSGenerator
 	}
 
 	private void li(String register, int value) {
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tli %s, %d\n", register, value);
 	}
 
@@ -815,6 +864,7 @@ public class MIPSGenerator
 		label(end_error_handle);
 	}
 
+	/* This func is for Text (Code) labels */
 	public void label(String inlabel)
 	{
 		if (this.current_segment != SegmentType.CODE)
@@ -826,16 +876,22 @@ public class MIPSGenerator
 
 	public void jump(String inlabel)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tj %s\n",inlabel);
 	}
 
 	public void jal(String inlabel)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tjal %s\n", inlabel);
 	}
 
 	public void blt(TEMP oprnd1,TEMP oprnd2,String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
@@ -844,11 +900,15 @@ public class MIPSGenerator
 
 	public void blt(String register1, String register2, String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tblt %s, %s, %s\n",register1, register2, label);
 	}
 
 	public void bgt(TEMP oprnd1,TEMP oprnd2,String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
@@ -857,6 +917,8 @@ public class MIPSGenerator
 
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
@@ -865,6 +927,8 @@ public class MIPSGenerator
 
 	public void ble(TEMP oprnd1,TEMP oprnd2,String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
@@ -873,6 +937,8 @@ public class MIPSGenerator
 
 	private void bge(String register1, String register2, String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		fileWriter.format("\tbge %s, %s, %s\n", register1, register2, label);
 	}
 
@@ -888,6 +954,8 @@ public class MIPSGenerator
 
 	public void beq(TEMP oprnd1,TEMP oprnd2,String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 		
@@ -896,6 +964,8 @@ public class MIPSGenerator
 
 	public void beqz(TEMP oprnd1,String label)
 	{
+		open_segment(SegmentType.CODE);
+
 		int i1 =oprnd1.getRegisterSerialNumber();
 				
 		fileWriter.format("\tbeq $t%d,$zero,%s\n",i1,label);
@@ -906,6 +976,8 @@ public class MIPSGenerator
 	   In case of underflow, will assign min value.
 	 */
 	public void standardBinopToLBinop(TEMP t) {
+		open_segment(SegmentType.CODE);
+
 		int MAX_VALUE = 32767;
 		int MIN_VALUE = -32768;
 
@@ -936,92 +1008,56 @@ public class MIPSGenerator
 	}
 
 	public void GTIntegers(TEMP dst, TEMP t1, TEMP t2) {
+		open_segment(SegmentType.CODE);
+
 		/*******************************/
 		/* [1] Allocate 2 fresh labels */
 		/*******************************/
 		String label_end        = IRcommand.getFreshLabel("end");
 		String label_assign_one  = IRcommand.getFreshLabel("assign_one");
-		String label_assign_zero = IRcommand.getFreshLabel("assign_zero");
 
 		/******************************************/
 		/* [2] if (t1> t2) goto label_AssignOne;  */
-		/*     if (t1<=t2) goto label_AssignZero; */
+		/*     assign Zero; */
 		/******************************************/
 		bgt(t1,t2,label_assign_one);
-		ble(t1,t2,label_assign_zero);
 
-		/************************/
-		/* [3] label_AssignOne: */
-		/*                      */
-		/*         t3 := 1      */
-		/*         goto end;    */
-		/*                      */
-		/************************/
-		label(label_assign_one);
-		li(dst,1);
-		jump(label_end);
-
-		/*************************/
-		/* [4] label_AssignZero: */
-		/*                       */
-		/*         t3 := 1       */
-		/*         goto end;     */
-		/*                       */
-		/*************************/
-		label(label_assign_zero);
 		li(dst,0);
 		jump(label_end);
 
-		/******************/
-		/* [5] label_end: */
-		/******************/
+		label(label_assign_one);
+		li(dst,1);
+
 		label(label_end);
 	}
 
 	public void LTIntegers(TEMP dst, TEMP t1, TEMP t2) {
+		open_segment(SegmentType.CODE);
+
 		/*******************************/
 		/* [1] Allocate 2 fresh labels */
 		/*******************************/
 		String label_end        = IRcommand.getFreshLabel("end");
 		String label_assign_one  = IRcommand.getFreshLabel("assign_one");
-		String label_assign_zero = IRcommand.getFreshLabel("assign_zero");
 
 		/******************************************/
 		/* [2] if (t1< t2) goto label_AssignOne;  */
-		/*     if (t1>=t2) goto label_AssignZero; */
+		/*     assign zero; */
 		/******************************************/
 		blt(t1,t2,label_assign_one);
-		ble(t1,t2,label_assign_zero);
 
-		/************************/
-		/* [3] label_AssignOne: */
-		/*                      */
-		/*         t3 := 1      */
-		/*         goto end;    */
-		/*                      */
-		/************************/
-		label(label_assign_one);
-		li(dst,1);
-		jump(label_end);
-
-		/*************************/
-		/* [4] label_AssignZero: */
-		/*                       */
-		/*         t3 := 1       */
-		/*         goto end;     */
-		/*                       */
-		/*************************/
-		label(label_assign_zero);
 		li(dst,0);
 		jump(label_end);
 
-		/******************/
-		/* [5] label_end: */
-		/******************/
+		label(label_assign_one);
+		li(dst,1);
+
 		label(label_end);
 	}
 
 	public void EQIntegers(TEMP dst, TEMP t1, TEMP t2) {
+		open_segment(SegmentType.CODE);
+
 		/*******************************/
 		/* [1] Allocate 3 fresh labels */
 		/*******************************/
@@ -1066,8 +1102,7 @@ public class MIPSGenerator
 
 	public void allocateVT(String label_vt, List<String> methodLabels) {
 		open_segment(SegmentType.DATA);
-
-		label(label_vt);
+		fileWriter.format("%s:\n",label_vt);
 
 		for (String l : methodLabels) {
 			globalWord(l);
