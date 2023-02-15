@@ -406,6 +406,10 @@ public class MIPSGenerator
 
 	/* When class_ptr is null, will use "this" instead */
 	public void call_class_method(int method_offset, TEMP class_ptr) {
+
+		/* Check pointer's validation  */
+		if (class_ptr != null) check_valid_pointer(class_ptr);
+
 		String vt = "$s0";
 		String class_ptr_reg = (class_ptr == null) ? this_reg : ("$t" + class_ptr.getRegisterSerialNumber());
 		String method_ptr_reg = "$s1";
@@ -447,12 +451,33 @@ public class MIPSGenerator
 
 	/* When class_ptr is null, will use "this" instead */
 	public void assign_field(int var_offset, TEMP val_to_assign, TEMP class_ptr) {
+
+		/* Check pointer's validation  */
+		if (class_ptr != null) check_valid_pointer(class_ptr);
+
 		/* If field is accessed using an instance of the class, use that instance.
 		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
 		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
 
 		var_dec(var_offset, val_to_assign, base_reg);
 	}
+
+	public void check_valid_pointer(TEMP temp)
+	{
+		String end_error_handle = IRcommand.getFreshLabel("end_pointer_error");
+
+		/* if temp != null (assigned to null or not assigned) then pass over error handler*/
+		bne("$t" + temp.getRegisterSerialNumber(), zero, end_error_handle);
+
+		/* Error:
+		Print "“Invalid Pointer Dereference”" and then exit*/
+		la("$a0", this.access_violation_label);
+		printSyscall();
+		exitSyscall();
+
+		label(end_error_handle);
+	}
+
 
 	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg) {
 		open_segment(SegmentType.CODE);
@@ -470,6 +495,10 @@ public class MIPSGenerator
 
 	/* When class_ptr is null, will use "this" instead */
 	public void get_field(int offset, TEMP res, TEMP class_ptr) {
+
+		/* Check pointer's validation  */
+		check_valid_pointer(class_ptr);
+
 		String res_reg = "$t" + res.getRegisterSerialNumber();
 		/* If field is accessed using an instance of the class, use that instance.
 		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
@@ -478,7 +507,6 @@ public class MIPSGenerator
 		open_segment(SegmentType.CODE);
 		load(res_reg, base_reg, offset);
 	}
-
 	/* Receives variable's offset and register to set the variable data in
 	*  Called on local variable or arguments (all access from stack)*/
 	public void get_var_with_offset(int var_offset, TEMP var_temp)

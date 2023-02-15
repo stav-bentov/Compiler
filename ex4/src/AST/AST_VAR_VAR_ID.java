@@ -75,22 +75,4 @@ public class AST_VAR_VAR_ID extends AST_VAR
 
 		return var_temp;
 	}
-
-//previous implementation. leaving it here in case it is neccesary for future implementation.
-//	public TYPE_VAR GetDataMemberVarType(TYPE_CLASS type_class, String id) throws SemanticException{
-//		//iterate over all datamembers of type_class, check if id exists. if it does, get it from inheritance tree
-//		TYPE_LIST head = type_class.data_members.head;
-//		while(head != null){
-//			if (head.name == id){
-//				//if type_var is not of TYPE_VAR, will fail on SemantMe
-//				TYPE_VAR type_var SYMBOL_TABLE.getInstance().find(id);
-//				return type_var.SemantMe();
-//			}
-//
-//			head = head.tail;
-//		}
-//
-//		throw new SemanticException(this);
-//
-//	}
 }
