@@ -817,6 +817,10 @@ public class MIPSGenerator
 
 	public void label(String inlabel)
 	{
+		if (this.current_segment != SegmentType.CODE)
+		{
+			open_segment(SegmentType.CODE);
+		}
 		fileWriter.format("%s:\n",inlabel);
 	}
 
