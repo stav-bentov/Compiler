@@ -50,6 +50,9 @@ public class MIPSGenerator
 
 	public void print_string(TEMP t)
 	{
+
+		open_segment(SegmentType.CODE);
+
 		int idx=t.getRegisterSerialNumber();
 		fileWriter.format("\tmove $a0,t_%d\n",idx);
 		fileWriter.format("\tli $v0,1\n");
@@ -58,6 +61,8 @@ public class MIPSGenerator
 
 	public void print_int(TEMP t)
 	{
+		open_segment(SegmentType.CODE);
+
 		int idx=t.getRegisterSerialNumber();
 		// fileWriter.format("\taddi $a0,Temp_%d,0\n",idx);
 		fileWriter.format("\tmove $a0,t_%d\n",idx);
@@ -72,6 +77,8 @@ public class MIPSGenerator
 	/*==================================== Stav ====================================*/
 	public void lstr(TEMP t,String str, String str_label)
 	{
+		open_segment(SegmentType.CODE);
+
 		/* Create string value as a global variable in data*/
 		open_segment(SegmentType.DATA);
 		fileWriter.format("%s: .asciiz %s\n", str_label, str);
@@ -87,7 +94,7 @@ public class MIPSGenerator
 		String segment = "data";
 		if (segment_type == SegmentType.CODE)
 		{
-			segment = "code";
+			segment = "text";
 		}
 
 		if (this.current_segment != segment_type)
@@ -742,7 +749,7 @@ public class MIPSGenerator
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
 
-		fileWriter.format("\tadd t%d, t%d, t%d\n", dstidx, i1, i2);
+		fileWriter.format("\tadd $t%d, $t%d, $t%d\n", dstidx, i1, i2);
 	}
 
 	public void sub(TEMP dst,TEMP oprnd1,TEMP oprnd2)
@@ -810,15 +817,7 @@ public class MIPSGenerator
 
 	public void label(String inlabel)
 	{
-		if (inlabel.equals("main"))
-		{
-			fileWriter.format(".text\n");
-			fileWriter.format("%s:\n",inlabel);
-		}
-		else
-		{
-			fileWriter.format("%s:\n",inlabel);
-		}
+		fileWriter.format("%s:\n",inlabel);
 	}
 
 	public void jump(String inlabel)
