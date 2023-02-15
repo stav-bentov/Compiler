@@ -760,7 +760,7 @@ public class MIPSGenerator
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
 
-		fileWriter.format("\tsub t%d, t%d, t%d\n", dstidx, i1, i2);
+		fileWriter.format("\tsub $t%d, $t%d, $t%d\n", dstidx, i1, i2);
 	}
 
 	public void subu(String dst,String oprnd,int sub_val)
@@ -777,7 +777,7 @@ public class MIPSGenerator
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
 
-		fileWriter.format("\tmul t%d, t%d, t%d\n", dstidx, i1, i2);
+		fileWriter.format("\tmul $t%d, $t%d, $t%d\n", dstidx, i1, i2);
 	}
 
 	public void mul(String dst,String oprnd1,String oprnd2)
@@ -796,7 +796,7 @@ public class MIPSGenerator
 		int i2 = oprnd2.getRegisterSerialNumber();
 		int dstidx = dst.getRegisterSerialNumber();
 
-		fileWriter.format("\tdiv t%d, t%d, t%d\n", dstidx, i1, i2);
+		fileWriter.format("\tdiv $t%d, $t%d, $t%d\n", dstidx, i1, i2);
 	}
 
 	public void check_zero_div(TEMP temp)
@@ -835,7 +835,7 @@ public class MIPSGenerator
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
-		fileWriter.format("\tblt t%d, t%d, %s\n",i1,i2,label);
+		fileWriter.format("\tblt $t%d, $t%d, %s\n",i1,i2,label);
 	}
 
 	public void blt(String register1, String register2, String label)
@@ -848,7 +848,7 @@ public class MIPSGenerator
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
-		fileWriter.format("\tbgt t%d, t%d,%s\n",i1,i2,label);
+		fileWriter.format("\tbgt $t%d, $t%d,%s\n",i1,i2,label);
 	}
 
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
@@ -856,7 +856,7 @@ public class MIPSGenerator
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
-		fileWriter.format("\tbge t%d,t%d,%s\n",i1,i2,label);
+		fileWriter.format("\tbge $t%d, $t%d,%s\n",i1,i2,label);
 	}
 
 	public void ble(TEMP oprnd1,TEMP oprnd2,String label)
@@ -864,7 +864,7 @@ public class MIPSGenerator
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 
-		fileWriter.format("\tble t%d,t%d,%s\n",i1,i2,label);
+		fileWriter.format("\tble $t%d,$t%d,%s\n",i1,i2,label);
 	}
 
 	private void bge(String register1, String register2, String label)
@@ -879,7 +879,7 @@ public class MIPSGenerator
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 		
-		fileWriter.format("\tbne t%d,t%d,%s\n", i1, i2, label);
+		fileWriter.format("\tbne $t%d,$t%d,%s\n", i1, i2, label);
 	}
 
 	public void beq(TEMP oprnd1,TEMP oprnd2,String label)
@@ -887,14 +887,14 @@ public class MIPSGenerator
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
 		
-		fileWriter.format("\tbeq t%d,t%d,%s\n",i1,i2,label);
+		fileWriter.format("\tbeq $t%d,$t%d,%s\n",i1,i2,label);
 	}
 
 	public void beqz(TEMP oprnd1,String label)
 	{
 		int i1 =oprnd1.getRegisterSerialNumber();
 				
-		fileWriter.format("\tbeq t%d,$zero,%s\n",i1,label);
+		fileWriter.format("\tbeq $t%d,$zero,%s\n",i1,label);
 	}
 
 	/* Fixes result of binop to match semantics of L language.
