@@ -35,11 +35,14 @@ public class AST_STMT_RET extends AST_STMT {
 
     @Override
     public TYPE SemantMe() throws SemanticException {
-        TYPE expectedReturnType = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc()).returnType;
+        TYPE_FUNCTION curr_func = ((TYPE_FUNCTION)SYMBOL_TABLE.getInstance().getLastFunc());
+        /* NOTE: curr_func has to be not null */
+        TYPE expectedReturnType = curr_func.returnType;
+        this.epilogue_func_label = curr_func.epilogue_func_label;
+
         if (exp == null) { // Returns nothing, return type should be void
              return SemantMeCaseVoid(expectedReturnType);
         }
-
         return SemantMeCaseNonVoid(expectedReturnType);
     }
 
@@ -111,6 +114,7 @@ public class AST_STMT_RET extends AST_STMT {
             return_temp = this.exp.IRme();
             IR.getInstance().Add_IRcommand(new IRcommand_Set_V0(return_temp));
         }
+        System.out.println("END FUNC= "+ this.epilogue_func_label);
         IR.getInstance().Add_IRcommand(new IRcommand_Jump_Label(this.epilogue_func_label)); // contains jump back to prev func
         return null;
     }

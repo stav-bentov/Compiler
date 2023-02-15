@@ -50,13 +50,11 @@ public class MIPSGenerator
 
 	public void print_string(TEMP t)
 	{
-
 		open_segment(SegmentType.CODE);
 
 		int idx=t.getRegisterSerialNumber();
 		fileWriter.format("\tmove $a0,$t%d\n",idx);
-		fileWriter.format("\tli $v0,1\n");
-		fileWriter.format("\tsyscall\n");
+		printSyscall();
 	}
 
 	public void print_int(TEMP t)
@@ -80,7 +78,6 @@ public class MIPSGenerator
 		open_segment(SegmentType.DATA);
 		fileWriter.format("%s: .asciiz %s\n", str_label, str);
 
-		/* TODO: if t!= null */
 		/* Point to the seted string*/
 		open_segment(SegmentType.CODE);
 		fileWriter.format("\tla $t%d, %s\n", t.getRegisterSerialNumber(), str_label);
@@ -238,13 +235,15 @@ public class MIPSGenerator
 		/* Set registers */
 		String str_register = "$t" + str.getRegisterSerialNumber();
 		String len = "$v0";
-		String str_pointer = "$s0";
+		String str_char = "$s0";
+		String str_pointer = "$s3";
 
 		move(len, zero);
+		move(str_pointer, str_register);
 		/* Add start label and check term for end loop */
 		label(start_label);
-		lb(str_pointer, str_register, 0);
-		beq(str_pointer, zero, end_label);
+		lb(str_char, str_pointer, 0);
+		beq(str_char, zero, end_label);
 
 		/* Loop body: len += 1, str_pointer += 1 */
 		addu(len, len, 1);
@@ -273,7 +272,6 @@ public class MIPSGenerator
 		String copied_str_pointer = "$s2";
 
 		move(copied_str_pointer, str_register);
-
 		/* Add start label and check term for end loop */
 		label(start_label);
 		lb(copied_str_char, copied_str_pointer, 0);
@@ -371,7 +369,7 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
-		move("$v0", "$t\n" + return_temp.getRegisterSerialNumber());
+		move("$v0", "$t" + return_temp.getRegisterSerialNumber());
 	}
 
 	/* Receives return register (assigned_temp) and set assigned_temp <- $v0*/
@@ -460,11 +458,11 @@ public class MIPSGenerator
 
 		if (str_value != null)
 		{
-			fileWriter.format("\t%s: .word %s\n",global_var_label, str_value);
+			fileWriter.format("\t%s: .asciiz %s\n",global_var_label, str_value);
 		}
 		else
 		{
-			fileWriter.format("\t%s: .word %d\n",global_var_label, int_value);
+			fileWriter.format("\t%s: .asciiz %d\n",global_var_label, int_value);
 		}
 	}
 
@@ -557,8 +555,12 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
+		/* BEFORE CHANGE:
 		la("$s0", global_var_label);
-		load("$t" + var_temp.getRegisterSerialNumber(), "$s0", 0);
+		load("$t" + var_temp.getRegisterSerialNumber(), "$s0", 0);*/
+
+		/* AFTER CHANGE:*/
+		la("$t" + var_temp.getRegisterSerialNumber(), global_var_label);
 	}
 
 	public void update_global_var(String global_var_label, TEMP temp_to_assign)
