@@ -127,7 +127,8 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             /* Class fields variable */
             else
             {
-                if (exp != null && exp instanceof AST_EXP_OPT constExp) {
+                if (exp != null && exp instanceof AST_EXP_OPT) {
+                    AST_EXP_OPT constExp = (AST_EXP_OPT) exp;
                     switch (constExp.opt) {
                         case "INT":
                             typeVar.set_field(current_class.numFields, ((AST_EXP_OPT) exp).i);
