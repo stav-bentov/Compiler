@@ -8,7 +8,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 {
 	public AST_VAR var;
 	public String id;
-	public TYPE_VAR typeVar;
+	public TYPE_VAR type_field;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -41,7 +41,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 	public TYPE SemantMe() throws SemanticException{
 		// first var should represent a var of a class. second should be a datamember of that class.
 		// SemantMe checks that this var exists, and it is indeed of TYPE_VAR
-		typeVar = (TYPE_VAR)var.SemantMe();
+		TYPE_VAR typeVar = (TYPE_VAR)var.SemantMe();
 		//first_var_type.type is the desired class
 		if(!typeVar.type.isClass()){
 			throw new SemanticException(this);
@@ -59,6 +59,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		if(!type.isVar()){
 			throw new SemanticException(this);
 		}
+		this.type_field = (TYPE_VAR) type;
 
 		//return the TYPE_VAR type
 		return type;
@@ -70,8 +71,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		/* this.var is a class instance, were trying to assign a value to a field of that instance
 		   this.var.IRme will return the class pointer */
 		TEMP classPtr = this.var.IRme();
-
-		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.typeVar.var_offset, var_temp, classPtr));
+		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.type_field.var_offset, var_temp, classPtr));
 
 		return var_temp;
 	}
