@@ -658,7 +658,7 @@ public class MIPSGenerator
 
 		for (TYPE_VAR field : fields) {
 			/* Field is initialized with a constant int */
-			if (field.initial_cfield_int_value > -1) {
+			if (field.initial_cfield_int_value != null) {
 				li(constToStore, field.initial_cfield_int_value);
 				store(constToStore, obj_ptr, offset);
 			}

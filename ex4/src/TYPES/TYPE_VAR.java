@@ -27,7 +27,7 @@ public class TYPE_VAR extends TYPE{
     public int var_offset;
     public VarType var_type;
     public TYPE type;
-    public int initial_cfield_int_value = -1;
+    public Integer initial_cfield_int_value = null;
     public String initial_cfield_str_value = null;
 
     public TYPE_VAR(String name, TYPE type){

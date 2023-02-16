@@ -128,14 +128,19 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             else
             {
                 if (exp != null && exp instanceof AST_EXP_OPT constExp) {
-                    if (constExp.opt.equals("INT") || constExp.opt.equals("MINUS INT")) {
-                        typeVar.set_field(current_class.numFields, ((AST_EXP_OPT) exp).i);
-                    }
-                    else if (constExp.opt.equals("STRING")) {
-                        typeVar.set_field(current_class.numFields, ((AST_EXP_OPT) exp).s);
-                    }
-                    else { // Null
-                        typeVar.set_field(current_class.numFields);
+                    switch (constExp.opt) {
+                        case "INT":
+                            typeVar.set_field(current_class.numFields, ((AST_EXP_OPT) exp).i);
+                            break;
+                        case "MINUS INT":
+                            typeVar.set_field(current_class.numFields, (-1) * ((AST_EXP_OPT) exp).i);
+                            break;
+                        case "STRING":
+                            typeVar.set_field(current_class.numFields, ((AST_EXP_OPT) exp).s);
+                            break;
+                        case "NIL":
+                            typeVar.set_field(current_class.numFields);
+                            break;
                     }
                 }
                 else { // Not initialized
