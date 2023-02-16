@@ -103,24 +103,8 @@ public class AST_NEW_EXP_NEW_TYPE_EXP extends AST_NEW_EXP {
         /* case class */
         else
         {
-            IR.getInstance().Add_IRcommand(new IRcommand_Instantiate_Class(result_temp, IRmeExpList(), this.typeClass.label_VT));
+            IR.getInstance().Add_IRcommand(new IRcommand_Instantiate_Class(result_temp, this.typeClass.fields, this.typeClass.label_VT));
         }
         return result_temp;
-    }
-
-    /* Returns a list of temps. For uninitialized fields, contains null */
-    private List<TEMP> IRmeExpList() { // TODO: check if temps are required/allowed
-        List<TEMP> temps = new ArrayList<>();
-
-        for (AST_Node exp : this.typeClass.field_exps) {
-            if (exp != null) {
-                temps.add(exp.IRme());
-            }
-            else {
-                temps.add(null);
-            }
-        }
-
-        return temps;
     }
 }

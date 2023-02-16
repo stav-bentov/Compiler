@@ -127,7 +127,25 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
             /* Class fields variable */
             else
             {
-                typeVar.set_field(current_class.numFields, exp);
+                if (exp != null && exp instanceof AST_EXP_OPT constExp) {
+                    switch (constExp.opt) {
+                        case "INT":
+                            typeVar.set_field(current_class.numFields, ((AST_EXP_OPT) exp).i);
+                            break;
+                        case "MINUS INT":
+                            typeVar.set_field(current_class.numFields, (-1) * ((AST_EXP_OPT) exp).i);
+                            break;
+                        case "STRING":
+                            typeVar.set_field(current_class.numFields, ((AST_EXP_OPT) exp).s);
+                            break;
+                        case "NIL":
+                            typeVar.set_field(current_class.numFields);
+                            break;
+                    }
+                }
+                else { // Not initialized
+                    typeVar.set_field(current_class.numFields);
+                }
                 current_class.numFields++;
             }
         }
@@ -175,12 +193,6 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                     assigned_temp = this.exp.IRme();
                 }
                 IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, assigned_temp));
-                break;
-            case FIELD:
-                if (this.exp != null) {
-                    assigned_temp = exp.IRme(); // Assuming that a register that contains this value will be returned
-                }
-                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.typeVar.var_offset, assigned_temp));
                 break;
         }
         return null;
