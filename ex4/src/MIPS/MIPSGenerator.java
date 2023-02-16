@@ -128,14 +128,15 @@ public class MIPSGenerator
 		/* Allocate space for concatenated string, the pointer will be at syscall_num*/
 		malloc();
 
-		/* Make dst point to the beginning of the concatenated string.*/
-		move(dst_register,return_register);
-
 		/* Now we need to build it- copy str1 and then str2,
 		* the copy_pointer will help us to copy each str's char in the right place */
-		move(copy_pointer, dst_register);
+		move(copy_pointer, return_register);
+
 		copy(str1, copy_pointer);
 		copy(str2, copy_pointer);
+
+		//save outcome of string addition to dst_register
+		move(dst_register, return_register);
 
 		/* Now copy_pointer points to the end of the string- add null terminator*/
 		sb(zero, copy_pointer, 0);
@@ -648,6 +649,7 @@ public class MIPSGenerator
 		String obj_ptr = "$t" + classPtr.getRegisterSerialNumber();
 		String s0 = "$s0";
 		String constToStore = "$s1";
+		String initial_string_value_label = IRcommand.getFreshLabel("str");
 
 		int offset = 0;
 
@@ -664,7 +666,9 @@ public class MIPSGenerator
 			}
 			/* Field is initialized with a constant string */
 			else if (field.initial_cfield_str_value != null) {
-				// TODO: when we figure out how to use strings
+				global_var_dec(initial_string_value_label, field.initial_cfield_str_value, 0); // Int value doesn't matter
+				la(constToStore, initial_string_value_label);
+				store(constToStore, obj_ptr, offset);
 			}
 			/* Field is not initialized/ is initialized to nil */
 			else {

@@ -194,12 +194,6 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 }
                 IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, assigned_temp));
                 break;
-            case FIELD:
-                if (this.exp != null) {
-                    assigned_temp = exp.IRme(); // Assuming that a register that contains this value will be returned
-                }
-                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.typeVar.var_offset, assigned_temp));
-                break;
         }
         return null;
     }

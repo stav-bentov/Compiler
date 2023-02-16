@@ -4,6 +4,7 @@ import TEMP.*;
 import TYPES.*;
 import SYMBOL_TABLE.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AST_CLASS_DEC extends AST_Node{
@@ -11,7 +12,7 @@ public class AST_CLASS_DEC extends AST_Node{
     public String extendsName;
     public AST_LIST<AST_CFIELD> cFieldList;
 
-    public List<String> methodLabels;
+    public List<String> methodLabels = new ArrayList<>();
 
     public TYPE_CLASS typeClass;
 

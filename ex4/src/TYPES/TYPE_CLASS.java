@@ -27,7 +27,7 @@ public class TYPE_CLASS extends TYPE
 
 	/* Accessible for usage when creating a runtime object when instancing a class */
 	public String label_VT;
-	public List<TYPE_VAR> fields;
+	public List<TYPE_VAR> fields = new ArrayList<>();
 	public int numFields;
 	public int numMethods;
 
