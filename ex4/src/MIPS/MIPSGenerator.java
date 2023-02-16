@@ -14,6 +14,7 @@ import java.util.List;
 /*******************/
 import IR.IRcommand;
 import TEMP.*;
+import TYPES.TYPE_VAR;
 
 enum SegmentType{
 	NONE,
@@ -643,9 +644,10 @@ public class MIPSGenerator
 		move(ptr, ret_val);
 	}
 
-	private void fillClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+	private void fillClassRuntimeObject(TEMP classPtr, List<TYPE_VAR> fields, String VTLabel) {
 		String obj_ptr = "$t" + classPtr.getRegisterSerialNumber();
 		String s0 = "$s0";
+		String constToStore = "$s1";
 
 		int offset = 0;
 
@@ -654,10 +656,17 @@ public class MIPSGenerator
 		store(s0, obj_ptr, offset);
 		offset += 4;
 
-		for (TEMP t : initialValueTemps) {
-			if (t != null) {
-				store(t, classPtr, offset);
+		for (TYPE_VAR field : fields) {
+			/* Field is initialized with a constant int */
+			if (field.initial_cfield_int_value > -1) {
+				li(constToStore, field.initial_cfield_int_value);
+				store(constToStore, obj_ptr, offset);
 			}
+			/* Field is initialized with a constant string */
+			else if (field.initial_cfield_str_value != null) {
+				// TODO: when we figure out how to use strings
+			}
+			/* Field is not initialized/ is initialized to nil */
 			else {
 				store(zero, obj_ptr, offset);
 			}
@@ -671,11 +680,11 @@ public class MIPSGenerator
 		fileWriter.format("\tla %s, %s\n", reg, label);
 	}
 
-	public void createClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+	public void createClassRuntimeObject(TEMP classPtr, List<TYPE_VAR> fields, String VTLabel) {
 		open_segment(SegmentType.CODE);
 
-		allocateClassRuntimeObject(classPtr, initialValueTemps.size());
-		fillClassRuntimeObject(classPtr, initialValueTemps, VTLabel);
+		allocateClassRuntimeObject(classPtr, fields.size());
+		fillClassRuntimeObject(classPtr, fields, VTLabel);
 	}
 
 	public void access_array(TEMP array_temp, TEMP array_index_temp, TEMP array_access_temp)
