@@ -641,12 +641,15 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
-		String array_size = "$t" + array_size_temp.getRegisterSerialNumber();
+		String array_size_real = "$t" + array_size_temp.getRegisterSerialNumber();
 		String array_pointer = "$t" + array_temp.getRegisterSerialNumber();
 		String a0 = "$a0";
 		String v0 = "$v0";
 		String four = "$s0";
+		String array_size = "$s1";
+		String s1 = "$s1";
 
+		move(array_size, array_size_real);
 		addu(array_size, array_size, 1);
 
 		/* ===========Call malloc syscall============*/
@@ -656,12 +659,13 @@ public class MIPSGenerator
 		mul(a0, a0, four);
 
 		malloc();
-
-		/* Set array_pointer ($v0 points to the allocated space)*/
-		move(array_pointer, v0);
+		move(s1, v0);
 
 		/* Set array size in first cell */
-		store(array_size, array_pointer, 0);
+		store(array_size_real, s1, 0);
+
+		/* Set array_pointer ($v0 points to the allocated space)*/
+		move(array_pointer, s1);
 	}
 
 	/* Calls malloc syscall, assumes $a0 contains the desired size to allocate */
@@ -772,9 +776,13 @@ public class MIPSGenerator
 		String array_register = "$t" + array_temp.getRegisterSerialNumber();
 		String index_register = "$t" + array_index_temp.getRegisterSerialNumber();
 		String four = "$s1";
+		String array_pointer = "$s2";
 
 		/* Array cells are located one cell next (because first cell saves array size */
 		move(absolute_address, index_register);
+
+		move(array_pointer, array_register);
+
 		/* absolute_address will contain the address of the required cell:
 		 		1. add 1 to the required index
 		 		2. multiply by 4
@@ -784,7 +792,7 @@ public class MIPSGenerator
 		/* absolute_address*=4 */
 		mul(absolute_address, absolute_address, four);
 		/* absolute_address = absolute_address + array address */
-		add(absolute_address, absolute_address, array_register);
+		add(absolute_address, absolute_address, array_pointer);
 	}
 
 	public void update_array(TEMP array_temp, TEMP array_index_temp, TEMP temp_to_assign, int int_to_assign, String str_to_assign)
@@ -792,10 +800,10 @@ public class MIPSGenerator
 		open_segment(SegmentType.CODE);
 
 		String absolute_address = "$s0";
-		if(temp_to_assign.getRegisterSerialNumber() == -1){
+		String value_register = "$s1";
+		if(temp_to_assign != null && temp_to_assign.getRegisterSerialNumber() == -1){
 			System.out.println("IT'S IN UPDATE_ARRAY!");
 		}
-		String assigned_register = "$t" + temp_to_assign.getRegisterSerialNumber();
 
 		get_array_cell(array_temp, array_index_temp, absolute_address);
 
@@ -809,16 +817,17 @@ public class MIPSGenerator
 				/* Add str in data */
 				add_str_label(str_to_assign, str_label);
 				/* Set string value in $s1*/
-				la("$s0", str_label);
+				la(value_register, str_label);
 			}
 			else {
-				li("$s0", int_to_assign);
+				li(value_register, int_to_assign);
 			}
 			/* update arr cell var with string*/
-			store("$s0", absolute_address, 0);
+			store(value_register, absolute_address, 0);
 		}
 		else {
 			/* assign temp*/
+			String assigned_register = "$t" + temp_to_assign.getRegisterSerialNumber();
 			store(assigned_register, absolute_address, 0);
 		}
 	}

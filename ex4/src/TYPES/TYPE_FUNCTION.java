@@ -30,7 +30,7 @@ public class TYPE_FUNCTION extends TYPE
 		this.returnType = returnType;
 		this.params = params;
 		this.num_local_variables = 0;
-		this.func_label = IRcommand.getFreshLabel("start_" + name); // TODO: check what to do in case of main
+		this.func_label = IRcommand.getFreshLabel("start_" + name);
 		this.epilogue_func_label = IRcommand.getFreshLabel("epilogue_" + this.name);
 		if (name.equals("main"))
 		{

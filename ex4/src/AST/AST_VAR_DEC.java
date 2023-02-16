@@ -226,7 +226,7 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                 else
                 {
                     /* exp = null then assign 0 to it
-                    * TODO: check if need to initial vaules in this case*/
+                    * TODO: check if need to initial values in this case*/
                     IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, 0));
                 }
                 break;

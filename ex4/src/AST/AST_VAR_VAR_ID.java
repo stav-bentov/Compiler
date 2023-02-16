@@ -71,7 +71,7 @@ public class AST_VAR_VAR_ID extends AST_VAR
 		   this.var.IRme will return the class pointer */
 		TEMP classPtr = this.var.IRme();
 
-		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.typeVar.var_offset, classPtr, var_temp));
+		IR.getInstance().Add_IRcommand(new IRcommand_Get_Class_Var(this.typeVar.var_offset, var_temp, classPtr));
 
 		return var_temp;
 	}

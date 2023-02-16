@@ -21,9 +21,7 @@ public class IRcommand_Update_Array_Var extends IRcommand
 		this.index_temp = index_temp;
 		this.temp_to_assign = temp_to_assign;
 
-		this.depends_on.add(array_temp);
-		this.depends_on.add(index_temp);
-		this.depends_on.add(temp_to_assign);
+		assign_depends();
 	}
 
 	public IRcommand_Update_Array_Var(TEMP array_temp, TEMP index_temp, int i)
@@ -31,6 +29,8 @@ public class IRcommand_Update_Array_Var extends IRcommand
 		this.array_temp = array_temp;
 		this.index_temp = index_temp;
 		this.int_to_assign = i;
+
+		assign_depends();
 	}
 
 	public IRcommand_Update_Array_Var(TEMP array_temp, TEMP index_temp, String str)
@@ -38,6 +38,18 @@ public class IRcommand_Update_Array_Var extends IRcommand
 		this.array_temp = array_temp;
 		this.index_temp = index_temp;
 		this.str_to_assign = str;
+
+		assign_depends();
+	}
+
+	public void assign_depends()
+	{
+		this.depends_on.add(this.array_temp);
+		this.depends_on.add(this.index_temp);
+		if (this.temp_to_assign != null)
+		{
+			this.depends_on.add(this.temp_to_assign);
+		}
 	}
 
 	public void MIPSme()

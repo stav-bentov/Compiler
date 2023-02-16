@@ -25,11 +25,22 @@ public class IRcommand_Assign_Field extends IRcommand{
         this.depends_on.add(valueToAssign);
     }
 
+    public IRcommand_Assign_Field(int offset, String str) {
+        this.offset = offset;
+        this.str_to_assign = str;
+    }
+
+    public IRcommand_Assign_Field(int offset, int i) {
+        this.offset = offset;
+        this.int_to_assign = i;
+    }
+
     public IRcommand_Assign_Field(int offset, TEMP classPtr, String str)
     {
         this.offset = offset;
         this.str_to_assign = str;
         this.classPtr = classPtr;
+        this.depends_on.add(classPtr);
     }
 
     public IRcommand_Assign_Field(int offset, TEMP classPtr, int i)
@@ -37,6 +48,7 @@ public class IRcommand_Assign_Field extends IRcommand{
         this.offset = offset;
         this.int_to_assign = i;
         this.classPtr = classPtr;
+        this.depends_on.add(classPtr);
     }
 
     @Override
