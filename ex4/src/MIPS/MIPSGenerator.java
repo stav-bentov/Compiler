@@ -440,10 +440,16 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
-
-
 		String vt = "$s0";
-		String class_ptr_reg = (class_ptr == null) ? this_reg : ("$t" + class_ptr.getRegisterSerialNumber());
+
+		String class_ptr_reg;
+		if (class_ptr != null) {
+			class_ptr_reg = "$t" + class_ptr.getRegisterSerialNumber();
+			move(this_reg, class_ptr_reg);
+		}
+		else {
+			class_ptr_reg = this_reg;
+		} //TODO: need to fix implementation, this is just for now
 
 		/* Check pointer's validation  */
 		check_valid_pointer(class_ptr_reg);
