@@ -165,22 +165,51 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                     else
                     {
                         /* it's TYPE_NIL */
-                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label));
+                        IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label, 0));
                     }
                 }
                 break;
             case LOCAL:
                 if (this.exp != null)
                 {/* there is an assignment */
-                    assigned_temp = this.exp.IRme();
+                    /* Constant*/
+                    if(this.exp instanceof AST_EXP_OPT)
+                    {
+                        if (this.expType instanceof TYPE_INT)
+                        {
+                            /* If exp is not null and expType is TYPE_INT-> exp is instanceof AST_EXP_OPT*/
+                            int int_value = ((AST_EXP_OPT) this.exp).i;
+                            if (((AST_EXP_OPT)this.exp).opt.equals("MINUS INT"))
+                            {
+                                int_value = -int_value;
+                            }
+                            IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, int_value));
+                        }
+                        else if (this.expType instanceof TYPE_STRING)
+                        {
+                            /* If exp is not null and expType is TYPE_STRING-> exp is instanceof AST_EXP_OPT*/
+                            String str_value = ((AST_EXP_OPT) this.exp).s;
+                            IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, str_value));
+                        }
+                        else
+                        {
+                            /* it's TYPE_NIL */
+                            IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, 0));
+                        }
+                    }
+                    else
+                    {
+                        /* Not a Constant -> Run IRme()*/
+                        assigned_temp = this.exp.IRme();
+                        IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, assigned_temp));
+                    }
                 }
-                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, assigned_temp));
-                break;
-            case FIELD:
-                if (this.exp != null) {
-                    assigned_temp = exp.IRme(); // Assuming that a register that contains this value will be returned
+                else
+                {
+                    /* exp = null then assign 0 to it
+                    * TODO: check if need to initial vaules in this case*/
+                    IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(this.typeVar.var_offset, 0));
                 }
-                IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(this.typeVar.var_offset, assigned_temp));
                 break;
         }
         return null;

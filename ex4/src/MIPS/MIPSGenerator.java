@@ -75,12 +75,17 @@ public class MIPSGenerator
 	public void lstr(TEMP t,String str, String str_label)
 	{
 		/* Create string value as a global variable in data*/
-		open_segment(SegmentType.DATA);
-		fileWriter.format("%s: .asciiz %s\n", str_label, str);
+		add_str_label(str, str_label);
 
-		/* Point to the seted string*/
 		open_segment(SegmentType.CODE);
 		fileWriter.format("\tla $t%d, %s\n", t.getRegisterSerialNumber(), str_label);
+	}
+
+	public void add_str_label(String str, String str_label)
+	{
+		/* Create string value as a global variable in data*/
+		open_segment(SegmentType.DATA);
+		fileWriter.format("%s: .asciiz %s\n", str_label, str);
 	}
 
 	public void open_segment(SegmentType segment_type)
@@ -128,7 +133,7 @@ public class MIPSGenerator
 		malloc();
 
 		/* Now we need to build it- copy str1 and then str2,
-		* the copy_pointer will help us to copy each str's char in the right place */
+		 * the copy_pointer will help us to copy each str's char in the right place */
 		move(copy_pointer, return_register);
 
 		copy(str1, copy_pointer);
@@ -459,11 +464,16 @@ public class MIPSGenerator
 
 		if (str_value != null)
 		{
-			fileWriter.format("\t%s: .asciiz %s\n",global_var_label, str_value);
+			String str_label = IRcommand.getFreshLabel("str");
+			/* Add str in data */
+			add_str_label(str_value, str_label);
+			/* make a pointer*/
+			fileWriter.format("\t%s: .word %s\n",global_var_label, str_label);
 		}
 		else
 		{
-			fileWriter.format("\t%s: .asciiz %d\n",global_var_label, int_value);
+			/* Int or null*/
+			fileWriter.format("\t%s: .word %d\n",global_var_label, int_value);
 		}
 	}
 
@@ -475,15 +485,30 @@ public class MIPSGenerator
 		fileWriter.format("\t%s: .word %d\n",global_var_label, 0);
 	}
 
-	public void assign_stack_var(int var_offset, TEMP assigned_temp)
+	public void assign_stack_var(int var_offset, TEMP assigned_temp, int int_to_assign, String str_to_assign)
 	{
 		open_segment(SegmentType.CODE);
-
-		var_dec(var_offset, assigned_temp, "$fp");
+		var_dec(var_offset, assigned_temp, "$fp", int_to_assign, str_to_assign);
 	}
 
+	/*public void assign_stack_var(int var_offset, int int_to_assign)
+	{
+		li("$s0", int_to_assign);
+		store("$s0", fp, var_offset);
+	}
+
+	public void assign_stack_var(int var_offset, String str_value)
+	{
+		String str_label = IRcommand.getFreshLabel("str");
+		// Add str in data
+		add_str_label(str_value, str_label);
+		//update stack
+		la("$s0", str_label);
+		store("$s0", fp, var_offset);
+	}*/
+
 	/* When class_ptr is null, will use "this" instead */
-	public void assign_field(int var_offset, TEMP val_to_assign, TEMP class_ptr) {
+	public void assign_field(int var_offset, TEMP val_to_assign, TEMP class_ptr, int int_to_assign, String str_to_assign) {
 		open_segment(SegmentType.CODE);
 
 		/* Check pointer's validation  */
@@ -493,7 +518,7 @@ public class MIPSGenerator
 		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
 		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
 
-		var_dec(var_offset, val_to_assign, base_reg);
+		var_dec(var_offset, val_to_assign, base_reg, int_to_assign, str_to_assign);
 	}
 
 	public void check_valid_pointer(TEMP temp)
@@ -505,26 +530,53 @@ public class MIPSGenerator
 
 		/* Error:
 		Print "“Invalid Pointer Dereference”" and then exit*/
-		la("$a0", this.access_violation_label);
+		la("$a0", this.invalid_ptr_label);
 		printSyscall();
 		exitSyscall();
 
 		label(end_error_handle);
 	}
 
-	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg) {
+	private void var_dec(int var_offset, TEMP val_to_assign, String base_reg, int int_to_assign, String str_to_assign) {
 		open_segment(SegmentType.CODE);
 
 		if (val_to_assign == null)
 		{
-			/* Assign zero (no assignment)*/
+			/* Assign int or string*/
+			if (str_to_assign != null)
+			{
+				/* String*/
+				String str_label = IRcommand.getFreshLabel("str");
+				/* Add str in data */
+				add_str_label(str_to_assign, str_label);
+				/*update stack*/
+				la("$s0", str_label);
+				store("$s0", base_reg, var_offset);
+			}
+			else
+			{
+				/* Int (or Nil -- int_to_assign = 0)*/
+				li("$s0", int_to_assign);
+				store("$s0", base_reg, var_offset);
+			}
+		}
+		else
+		{
+			/* value in TEMP*/
+			String val = "$t" + val_to_assign.getRegisterSerialNumber();
+			store(val, base_reg, var_offset);
+		}
+
+		/*if (val_to_assign == null)
+		{
+			// Assign zero (no assignment)
 			store(zero, base_reg, var_offset);
 		}
 		else
 		{
 			String val = "$t" + val_to_assign.getRegisterSerialNumber();
 			store(val, base_reg, var_offset);
-		}
+		}*/
 	}
 
 	/* When class_ptr is null, will use "this" instead */
@@ -543,7 +595,7 @@ public class MIPSGenerator
 		load(res_reg, base_reg, offset);
 	}
 	/* Receives variable's offset and register to set the variable data in
-	*  Called on local variable or arguments (all access from stack)*/
+	 *  Called on local variable or arguments (all access from stack)*/
 	public void get_var_with_offset(int var_offset, TEMP var_temp)
 	{
 		open_segment(SegmentType.CODE);
@@ -556,12 +608,9 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
-		/* BEFORE CHANGE:
 		la("$s0", global_var_label);
-		load("$t" + var_temp.getRegisterSerialNumber(), "$s0", 0);*/
+		load("$t" + var_temp.getRegisterSerialNumber(), "$s0", 0);
 
-		/* AFTER CHANGE:*/
-		la("$t" + var_temp.getRegisterSerialNumber(), global_var_label);
 	}
 
 	public void update_global_var(String global_var_label, TEMP temp_to_assign)
@@ -571,7 +620,40 @@ public class MIPSGenerator
 		/* Load address of global_var_label to %s0 */
 		la("$s0", global_var_label);
 		/* Store temp_to_assign in this address (update global..)*/
-		store("$t" + temp_to_assign.getRegisterSerialNumber(), "$s0", 0);
+		if (temp_to_assign != null)
+		{
+			store("$t" + temp_to_assign.getRegisterSerialNumber(), "$s0", 0);
+		}
+		else
+		{
+			store(zero, "$s0", 0);
+		}
+	}
+
+	public void update_global_var(String global_var_label, int i)
+	{
+		open_segment(SegmentType.CODE);
+
+		/* load address of global_var_label*/
+		la("$s0", global_var_label);
+		/* Set int value in $s1*/
+		li("$s1", i);
+		/* update global var with int*/
+		store("$s1", "$s0", 0);
+	}
+
+	public void update_global_var(String global_var_label, String str_value)
+	{
+		String str_label = IRcommand.getFreshLabel("str");
+		/* Add str in data */
+		add_str_label(str_value, str_label);
+
+		/* load address of global_var_label*/
+		la("$s0", global_var_label);
+		/* Set string value in $s1*/
+		la("$s1", str_label);
+		/* update global var with string*/
+		store("$s1", "$s0", 0);
 	}
 
 	/* First cell will contain array size, next cells- array cells
@@ -715,7 +797,7 @@ public class MIPSGenerator
 		add(absolute_address, absolute_address, array_register);
 	}
 
-	public void update_array(TEMP array_temp, TEMP array_index_temp, TEMP temp_to_assign)
+	public void update_array(TEMP array_temp, TEMP array_index_temp, TEMP temp_to_assign, int int_to_assign, String str_to_assign)
 	{
 		open_segment(SegmentType.CODE);
 
@@ -725,7 +807,27 @@ public class MIPSGenerator
 		get_array_cell(array_temp, array_index_temp, absolute_address);
 
 		/* Access - Save the value in result_register*/
-		store(assigned_register, absolute_address, 0);
+		if (temp_to_assign == null)
+		{
+			/* String or Int*/
+			if (str_to_assign != null)
+			{
+				String str_label = IRcommand.getFreshLabel("str");
+				/* Add str in data */
+				add_str_label(str_to_assign, str_label);
+				/* Set string value in $s1*/
+				la("$s0", str_label);
+			}
+			else {
+				li("$s0", int_to_assign);
+			}
+			/* update arr cell var with string*/
+			store("$s0", absolute_address, 0);
+		}
+		else {
+			/* assign temp*/
+			store(assigned_register, absolute_address, 0);
+		}
 	}
 
 	public void check_oob(TEMP array_temp, TEMP array_index_temp)
@@ -787,7 +889,7 @@ public class MIPSGenerator
 		fileWriter.format("\tli $t%d,%d\n", idx, value);
 	}
 
-	private void li(String register, int value) {
+	public void li(String register, int value) {
 		open_segment(SegmentType.CODE);
 
 		fileWriter.format("\tli %s, %d\n", register, value);
@@ -951,7 +1053,7 @@ public class MIPSGenerator
 
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
-		
+
 		fileWriter.format("\tbne $t%d,$t%d,%s\n", i1, i2, label);
 	}
 
@@ -961,7 +1063,7 @@ public class MIPSGenerator
 
 		int i1 =oprnd1.getRegisterSerialNumber();
 		int i2 =oprnd2.getRegisterSerialNumber();
-		
+
 		fileWriter.format("\tbeq $t%d,$t%d,%s\n",i1,i2,label);
 	}
 
@@ -970,7 +1072,7 @@ public class MIPSGenerator
 		open_segment(SegmentType.CODE);
 
 		int i1 =oprnd1.getRegisterSerialNumber();
-				
+
 		fileWriter.format("\tbeq $t%d,$zero,%s\n",i1,label);
 	}
 
@@ -1115,7 +1217,7 @@ public class MIPSGenerator
 	private void globalWord(String s) {
 		fileWriter.format("\t.word %s\n", s);
 	}
-	
+
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */
 	/**************************************/

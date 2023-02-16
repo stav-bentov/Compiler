@@ -69,53 +69,132 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 	public TEMP IRme()
 	{
 		/* ASSUMPTION: this.exp != null*/
-		TEMP exp_temp = this.exp.IRme();
+		TEMP exp_temp = null;
+
+		if (this.exp instanceof AST_EXP_OPT)
+		{
+			/* Constant*/
+			AST_EXP_OPT exp_opt = (AST_EXP_OPT)this.exp;
+			switch (exp_opt.opt) {
+				case "MINUS INT":
+				case "INT":
+					int int_value = ((AST_EXP_OPT) this.exp).i;
+					if (exp_opt.opt.equals("MINUS INT"))
+					{
+						int_value = -int_value;
+					}
+					/* Add IR Command*/
+					run_IRme(null, int_value, null, true, false);
+					break;
+				case "STRING":
+					String str_value = ((AST_EXP_OPT) this.exp).s;
+					/* Add IR Command*/
+					run_IRme(str_value, 0, null, false, true);
+					break;
+				case "NIL": /*(pass zero as null)*/
+					run_IRme(null, 0, null, true, false);
+			}
+		}
+		else
+		{
+			/* Not a constant -> run IRme()*/
+			exp_temp = this.exp.IRme();
+			run_IRme(null, 0, exp_temp, false, false);
+
+		}
+		return null;
+	}
+
+	public void run_IRme(String str, int i, TEMP temp, Boolean is_int, Boolean is_str)
+	{
+		TEMP classPtr, array_temp, index_temp;
+		classPtr = array_temp = index_temp = null;
+
+		if (this.var instanceof AST_VAR_VAR_ID) {
+			classPtr = ((AST_VAR_VAR_ID) this.var).var.IRme(); // classPtr is the ptr to the runtime obj of classInstance
+		}
+		if (this.var instanceof AST_VAR_EXP) {
+				/* Need to get the array (var.var.IRme()) and index (var.exp.IRme())
+			   because we need to CHANGE them (not to get their value..)*/
+			AST_VAR_EXP var_exp = (AST_VAR_EXP) this.var;
+			array_temp = var_exp.var.IRme();
+			index_temp = var_exp.exp.IRme();
+		}
 
 		/*  Case 1: var = new exp (Only for class or array) or var = exp
 		 *  Case 2: var.id = new exp (Only for class or array) or var = exp
 		 *  Case 3: var[exp] = new exp (Only for class or array) or var = exp
 		 *  SemantMe on var will return TYPE_VAR */
 
-		/* Case 1: (var instance of AST_VAR_ID)*/
-		if (var instanceof AST_VAR_ID)
+		if (is_str)
 		{
-			switch (typeVar.var_type)
-			{
-				case GLOBAL:
+			/* Case 1: (var instance of AST_VAR_ID)*/
+			if (this.var instanceof AST_VAR_ID) {
+				if (typeVar.var_type == TYPE_VAR.VarType.GLOBAL) {
 					/* Update/Set global variable*/
-					IR.getInstance().Add_IRcommand(new IRcommand_Update_Global_Var(typeVar.global_var_label, exp_temp));
-					break;
-				case LOCAL:
-				case ARGUMENT:
+					IR.getInstance().Add_IRcommand(new IRcommand_Update_Global_Var(typeVar.global_var_label, str));
+				} else {
 					/* Update/Set argument/local variable*/
-					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(typeVar.var_offset, exp_temp));
-					break;
-				case FIELD:
-					/* Update/Set class field variable*/
-					// var = this.field
-					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, exp_temp));
-					break;
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(typeVar.var_offset, str));
+					/* TODO: Field*/
+				}
+			}
+			/* Case 2: (var instance of AST_VAR_VAR_ID) */
+			if (this.var instanceof AST_VAR_VAR_ID)
+			{
+				IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, classPtr, str));
+			}
+			/* Case 3: (var instance of AST_VAR_EXP)*/
+			if (this.var instanceof AST_VAR_EXP)
+			{
+				IR.getInstance().Add_IRcommand(new IRcommand_Update_Array_Var(array_temp, index_temp, str));
 			}
 		}
-
-		/* Case 2: (var instance of AST_VAR_VAR_ID) */
-		// var = classInstance.field
-		if (var instanceof AST_VAR_VAR_ID) {
-			TEMP classPtr = ((AST_VAR_VAR_ID)this.var).var.IRme(); // classPtr is the ptr to the runtime obj of classInstance
-			IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, exp_temp, classPtr));
-		}
-
-		/* Case 3: (var instance of AST_VAR_EXP)*/
-		if (var instanceof AST_VAR_EXP)
+		else if (is_int)
 		{
-			/* Need to get the array (var.var.IRme()) and index (var.exp.IRme())
-			   because we need to CHANGE them (not to get their value..)*/
-			AST_VAR_EXP var_exp = (AST_VAR_EXP) this.var;
-			TEMP array_temp = var_exp.var.IRme();
-			TEMP index_temp = var_exp.exp.IRme();
-			IR.getInstance().Add_IRcommand(new IRcommand_Update_Array_Var(array_temp, index_temp, exp_temp));
+			/* Case 1: (var instance of AST_VAR_ID)*/
+			if (this.var instanceof AST_VAR_ID) {
+				if (typeVar.var_type == TYPE_VAR.VarType.GLOBAL) {
+					/* Update/Set global variable*/
+					IR.getInstance().Add_IRcommand(new IRcommand_Update_Global_Var(typeVar.global_var_label, i));
+				} else {
+					/* Update/Set argument/local variable*/
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(typeVar.var_offset, i));
+				}
+			}
+			/* Case 2: (var instance of AST_VAR_VAR_ID) */
+			if (this.var instanceof AST_VAR_VAR_ID)
+			{
+				IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, classPtr, i));
+			}
+			/* Case 3: (var instance of AST_VAR_EXP)*/
+			if (this.var instanceof AST_VAR_EXP)
+			{
+				IR.getInstance().Add_IRcommand(new IRcommand_Update_Array_Var(array_temp, index_temp, i));
+			}
 		}
-
-		return null;
+		else
+		{
+			/* Case 1: (var instance of AST_VAR_ID)*/
+			if (this.var instanceof AST_VAR_ID) {
+				if (typeVar.var_type == TYPE_VAR.VarType.GLOBAL) {
+					/* Update/Set global variable*/
+					IR.getInstance().Add_IRcommand(new IRcommand_Update_Global_Var(typeVar.global_var_label, temp));
+				} else {
+					/* Update/Set argument/local variable*/
+					IR.getInstance().Add_IRcommand(new IRcommand_Assign_Stack_Var(typeVar.var_offset, temp));
+				}
+			}
+			/* Case 2: (var instance of AST_VAR_VAR_ID) */
+			if (this.var instanceof AST_VAR_VAR_ID)
+			{
+				IR.getInstance().Add_IRcommand(new IRcommand_Assign_Field(typeVar.var_offset, temp, classPtr));
+			}
+			/* Case 3: (var instance of AST_VAR_EXP)*/
+			if (this.var instanceof AST_VAR_EXP)
+			{
+				IR.getInstance().Add_IRcommand(new IRcommand_Update_Array_Var(array_temp, index_temp, temp));
+			}
+		}
 	}
 }
