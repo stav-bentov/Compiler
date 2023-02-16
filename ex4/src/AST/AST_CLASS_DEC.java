@@ -115,7 +115,7 @@ public class AST_CLASS_DEC extends AST_Node{
 
             /* case field */
             else if (type instanceof TYPE_VAR) {
-                this.typeClass.field_exps.add(((TYPE_VAR) type).exp);
+                this.typeClass.fields.add(((TYPE_VAR) type));
             }
         }
     }

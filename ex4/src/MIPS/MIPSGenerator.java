@@ -14,6 +14,7 @@ import java.util.List;
 /*******************/
 import IR.IRcommand;
 import TEMP.*;
+import TYPES.TYPE_VAR;
 
 enum SegmentType{
 	NONE,
@@ -33,7 +34,7 @@ public class MIPSGenerator
 	private String invalid_ptr_label = "string_invalid_ptr_dref";
 	private String access_violation_label = "string_access_violation";
 	private String div_by_0_label = "string_illegal_div_by_0";
-	private String this_reg = "$s9";
+	private String this_reg = "$s7";
 	private String sp = "$sp";
 	private String ra = "$ra";
 	private String fp = "$fp";
@@ -439,11 +440,14 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
-		/* Check pointer's validation  */
-		if (class_ptr != null) check_valid_pointer(class_ptr);
+
 
 		String vt = "$s0";
 		String class_ptr_reg = (class_ptr == null) ? this_reg : ("$t" + class_ptr.getRegisterSerialNumber());
+
+		/* Check pointer's validation  */
+		check_valid_pointer(class_ptr_reg);
+
 		String method_ptr_reg = "$s1";
 
 		load(vt, class_ptr_reg, 0); // VT at offset 0 in the runtime object
@@ -491,42 +495,25 @@ public class MIPSGenerator
 		var_dec(var_offset, assigned_temp, "$fp", int_to_assign, str_to_assign);
 	}
 
-	/*public void assign_stack_var(int var_offset, int int_to_assign)
-	{
-		li("$s0", int_to_assign);
-		store("$s0", fp, var_offset);
-	}
-
-	public void assign_stack_var(int var_offset, String str_value)
-	{
-		String str_label = IRcommand.getFreshLabel("str");
-		// Add str in data
-		add_str_label(str_value, str_label);
-		//update stack
-		la("$s0", str_label);
-		store("$s0", fp, var_offset);
-	}*/
-
 	/* When class_ptr is null, will use "this" instead */
 	public void assign_field(int var_offset, TEMP val_to_assign, TEMP class_ptr, int int_to_assign, String str_to_assign) {
 		open_segment(SegmentType.CODE);
-
-		/* Check pointer's validation  */
-		if (class_ptr != null) check_valid_pointer(class_ptr);
 
 		/* If field is accessed using an instance of the class, use that instance.
 		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
 		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
 
+		/* Check pointer's validation  */
+		check_valid_pointer(base_reg);
 		var_dec(var_offset, val_to_assign, base_reg, int_to_assign, str_to_assign);
 	}
 
-	public void check_valid_pointer(TEMP temp)
+	public void check_valid_pointer(String register)
 	{
 		String end_error_handle = IRcommand.getFreshLabel("end_pointer_error");
 
 		/* if temp != null (assigned to null or not assigned) then pass over error handler*/
-		bne("$t" + temp.getRegisterSerialNumber(), zero, end_error_handle);
+		bne(register, zero, end_error_handle);
 
 		/* Error:
 		Print "“Invalid Pointer Dereference”" and then exit*/
@@ -566,40 +553,32 @@ public class MIPSGenerator
 			String val = "$t" + val_to_assign.getRegisterSerialNumber();
 			store(val, base_reg, var_offset);
 		}
-
-		/*if (val_to_assign == null)
-		{
-			// Assign zero (no assignment)
-			store(zero, base_reg, var_offset);
-		}
-		else
-		{
-			String val = "$t" + val_to_assign.getRegisterSerialNumber();
-			store(val, base_reg, var_offset);
-		}*/
 	}
 
 	/* When class_ptr is null, will use "this" instead */
 	public void get_field(int offset, TEMP res, TEMP class_ptr) {
 		open_segment(SegmentType.CODE);
 
-		/* Check pointer's validation  */
-		check_valid_pointer(class_ptr);
-
 		String res_reg = "$t" + res.getRegisterSerialNumber();
 		/* If field is accessed using an instance of the class, use that instance.
 		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
 		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
 
+		/* Check pointer's validation  */
+		check_valid_pointer(base_reg);
+
 		open_segment(SegmentType.CODE);
+
 		load(res_reg, base_reg, offset);
 	}
 	/* Receives variable's offset and register to set the variable data in
-	 *  Called on local variable or arguments (all access from stack)*/
+	*  Called on local variable or arguments (all access from stack)*/
 	public void get_var_with_offset(int var_offset, TEMP var_temp)
 	{
 		open_segment(SegmentType.CODE);
-
+		if(var_temp.getRegisterSerialNumber() == -1){
+			System.out.println("var_temp:" + var_temp.getSerialNumber());
+		}
 		load("$t" + var_temp.getRegisterSerialNumber(), fp, var_offset);
 	}
 
@@ -726,9 +705,11 @@ public class MIPSGenerator
 		move(ptr, ret_val);
 	}
 
-	private void fillClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+	private void fillClassRuntimeObject(TEMP classPtr, List<TYPE_VAR> fields, String VTLabel) {
 		String obj_ptr = "$t" + classPtr.getRegisterSerialNumber();
 		String s0 = "$s0";
+		String constToStore = "$s1";
+		String initial_string_value_label = IRcommand.getFreshLabel("str");
 
 		int offset = 0;
 
@@ -737,10 +718,19 @@ public class MIPSGenerator
 		store(s0, obj_ptr, offset);
 		offset += 4;
 
-		for (TEMP t : initialValueTemps) {
-			if (t != null) {
-				store(t, classPtr, offset);
+		for (TYPE_VAR field : fields) {
+			/* Field is initialized with a constant int */
+			if (field.initial_cfield_int_value != null) {
+				li(constToStore, field.initial_cfield_int_value);
+				store(constToStore, obj_ptr, offset);
 			}
+			/* Field is initialized with a constant string */
+			else if (field.initial_cfield_str_value != null) {
+				add_str_label(field.initial_cfield_str_value, initial_string_value_label);
+				la(constToStore, initial_string_value_label);
+				store(constToStore, obj_ptr, offset);
+			}
+			/* Field is not initialized/ is initialized to nil */
 			else {
 				store(zero, obj_ptr, offset);
 			}
@@ -754,11 +744,11 @@ public class MIPSGenerator
 		fileWriter.format("\tla %s, %s\n", reg, label);
 	}
 
-	public void createClassRuntimeObject(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+	public void createClassRuntimeObject(TEMP classPtr, List<TYPE_VAR> fields, String VTLabel) {
 		open_segment(SegmentType.CODE);
 
-		allocateClassRuntimeObject(classPtr, initialValueTemps.size());
-		fillClassRuntimeObject(classPtr, initialValueTemps, VTLabel);
+		allocateClassRuntimeObject(classPtr, fields.size());
+		fillClassRuntimeObject(classPtr, fields, VTLabel);
 	}
 
 	public void access_array(TEMP array_temp, TEMP array_index_temp, TEMP array_access_temp)
@@ -802,6 +792,9 @@ public class MIPSGenerator
 		open_segment(SegmentType.CODE);
 
 		String absolute_address = "$s0";
+		if(temp_to_assign.getRegisterSerialNumber() == -1){
+			System.out.println("IT'S IN UPDATE_ARRAY!");
+		}
 		String assigned_register = "$t" + temp_to_assign.getRegisterSerialNumber();
 
 		get_array_cell(array_temp, array_index_temp, absolute_address);

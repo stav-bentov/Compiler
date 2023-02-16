@@ -2,25 +2,25 @@ package IR;
 
 import MIPS.MIPSGenerator;
 import TEMP.TEMP;
+import TYPES.TYPE_VAR;
 
 import java.util.List;
 
 public class IRcommand_Instantiate_Class extends IRcommand{
     public TEMP classPtr;
-    public List<TEMP> initialValueTemps;
+    public List<TYPE_VAR> fields;
     public String VTLabel;
 
-    public IRcommand_Instantiate_Class(TEMP classPtr, List<TEMP> initialValueTemps, String VTLabel) {
+    public IRcommand_Instantiate_Class(TEMP classPtr, List<TYPE_VAR> fields, String VTLabel) {
         this.classPtr = classPtr;
-        this.initialValueTemps = initialValueTemps;
+        this.fields = fields;
         this.VTLabel = VTLabel;
 
         this.dest = classPtr;
-        this.depends_on.addAll(initialValueTemps);
     }
 
     @Override
     public void MIPSme() {
-        MIPSGenerator.getInstance().createClassRuntimeObject(classPtr, initialValueTemps, VTLabel);
+        MIPSGenerator.getInstance().createClassRuntimeObject(classPtr, fields, VTLabel);
     }
 }

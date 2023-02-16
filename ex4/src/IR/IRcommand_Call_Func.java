@@ -22,9 +22,11 @@ public abstract class IRcommand_Call_Func extends IRcommand
     public IRcommand_Call_Func(List<TEMP> param_list) {
         this.param_list = param_list;
 
-        for (TEMP t : param_list)
-        {
-            this.depends_on.add(t);
+        if(param_list != null){
+            for (TEMP t : param_list)
+            {
+                this.depends_on.add(t);
+            }
         }
     }
 

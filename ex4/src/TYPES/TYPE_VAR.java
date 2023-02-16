@@ -24,10 +24,11 @@ public class TYPE_VAR extends TYPE{
         3. An array variable
      */
     public String global_var_label;
-    public AST_Node exp; // For fields. Can be AST_NEW_EXP or AST_EXP
     public int var_offset;
     public VarType var_type;
     public TYPE type;
+    public Integer initial_cfield_int_value = null;
+    public String initial_cfield_str_value = null;
 
     public TYPE_VAR(String name, TYPE type){
         this.name = name;
@@ -55,10 +56,21 @@ public class TYPE_VAR extends TYPE{
         this.var_type = VarType.LOCAL;
     }
 
-    public void set_field(int num_fields, AST_Node exp)
+    public void set_field(int num_fields, int initial_cfield_int_value)
+    {
+        set_field(num_fields);
+        this.initial_cfield_int_value = initial_cfield_int_value;
+    }
+
+    public void set_field(int num_fields, String initial_cfield_str_value)
+    {
+        set_field(num_fields);
+        this.initial_cfield_str_value = initial_cfield_str_value;
+    }
+
+    public void set_field(int num_fields)
     {
         this.var_offset = 4 + (num_fields * 4); // Offset in the runtime object
         this.var_type = VarType.FIELD;
-        this.exp = exp;
     }
 }
