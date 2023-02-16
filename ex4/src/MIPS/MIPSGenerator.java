@@ -127,14 +127,15 @@ public class MIPSGenerator
 		/* Allocate space for concatenated string, the pointer will be at syscall_num*/
 		malloc();
 
-		/* Make dst point to the beginning of the concatenated string.*/
-		move(dst_register,return_register);
-
 		/* Now we need to build it- copy str1 and then str2,
 		* the copy_pointer will help us to copy each str's char in the right place */
-		move(copy_pointer, dst_register);
+		move(copy_pointer, return_register);
+
 		copy(str1, copy_pointer);
 		copy(str2, copy_pointer);
+
+		//save outcome of string addition to dst_register
+		move(dst_register, return_register);
 
 		/* Now copy_pointer points to the end of the string- add null terminator*/
 		sb(zero, copy_pointer, 0);
