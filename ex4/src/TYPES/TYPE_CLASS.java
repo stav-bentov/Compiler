@@ -4,11 +4,9 @@ import AST.AST_EXP;
 import AST.AST_Node;
 import IR.IRcommand;
 import MIPS.MIPSGenerator;
+import org.omg.Messaging.SyncScopeHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TYPE_CLASS extends TYPE
 {
@@ -39,13 +37,18 @@ public class TYPE_CLASS extends TYPE
 		this.name = name;
 		this.father = father;
 		this.data_members = data_members;
-		this.data_members_including_inherited = new HashMap<>();
+		this.label_VT = IRcommand.getFreshLabel("vt_" + name);
+		this.numFields = 0;
+	}
+
+	public void SetDataMembersIncludingInherited(){
+		this.data_members_including_inherited = new LinkedHashMap<>();
 		/* Initialize to father's data members including inherited */
 		if (this.father != null) {
 			this.data_members_including_inherited.putAll(this.father.data_members_including_inherited);
+			this.numFields = this.father.numFields;
+			this.numMethods = this.father.numMethods;
 		}
-		this.label_VT = IRcommand.getFreshLabel("vt_" + name);
-		this.numFields = 0;
 	}
 
 	/********************************************************/

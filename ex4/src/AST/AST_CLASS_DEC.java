@@ -81,6 +81,7 @@ public class AST_CLASS_DEC extends AST_Node{
 
             typeClass.father = (TYPE_CLASS) father;
         }
+        typeClass.SetDataMembersIncludingInherited();
 
         SYMBOL_TABLE.getInstance().enter(className, typeClass, true);
         SYMBOL_TABLE.getInstance().beginScope(ScopeTypeEnum.CLASS, typeClass);
@@ -108,6 +109,7 @@ public class AST_CLASS_DEC extends AST_Node{
 
     private void extractLabelsAndFieldTypes() {
         for (TYPE type : this.typeClass.data_members_including_inherited.values()) {
+            System.out.println("in class " + this.className + "data members including inherited: " + this.typeClass.data_members_including_inherited);
             /* case class method */
             if (type instanceof TYPE_FUNCTION) { // add it's label to labels list
                 this.methodLabels.add(((TYPE_FUNCTION) type).func_label);
