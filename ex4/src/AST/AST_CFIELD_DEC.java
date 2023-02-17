@@ -49,6 +49,18 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         // If inherited, the member's name is already in the map but will be overridden according to put's contract
         // If not inherited, will be added to the map according to puts implementation
         System.out.println("adding " + dataMemberToAdd.name + " to " + currClass.name);
+
+        if(currClass.data_members_including_inherited.containsKey(dataMemberToAdd.name)){
+            TYPE parentDataMember = currClass.data_members_including_inherited.get(dataMemberToAdd.name);
+            if(parentDataMember instanceof TYPE_VAR && dataMemberToAdd instanceof TYPE_VAR){
+                ((TYPE_VAR) dataMemberToAdd).var_offset = ((TYPE_VAR) parentDataMember).var_offset;
+            }
+            if(parentDataMember instanceof TYPE_FUNCTION && dataMemberToAdd instanceof TYPE_FUNCTION){
+                ((TYPE_FUNCTION) dataMemberToAdd).offset = ((TYPE_FUNCTION) parentDataMember).offset;
+            }
+            //according to SemantMe rest of cases are not possible
+        }
+
         currClass.data_members_including_inherited.put(dataMemberToAdd.name, dataMemberToAdd);
         System.out.println(currClass.name + ": " + currClass.data_members_including_inherited);
 
