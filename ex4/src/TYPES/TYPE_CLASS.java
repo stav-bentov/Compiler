@@ -40,6 +40,10 @@ public class TYPE_CLASS extends TYPE
 		this.father = father;
 		this.data_members = data_members;
 		this.data_members_including_inherited = new HashMap<>();
+		/* Initialize to father's data members including inherited */
+		if (this.father != null) {
+			this.data_members_including_inherited.putAll(this.father.data_members_including_inherited);
+		}
 		this.label_VT = IRcommand.getFreshLabel("vt_" + name);
 		this.numFields = 0;
 	}

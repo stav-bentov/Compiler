@@ -3,6 +3,7 @@ import SYMBOL_TABLE.*;
 import TEMP.TEMP;
 import TYPES.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
@@ -36,13 +37,20 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
     public TYPE SemantMe() throws SemanticException {
         TYPE dataMemberToAdd = dec.SemantMe();
 
-        /* Add new data member to data_members of current class */
-        TYPE_LIST dataMembers = SYMBOL_TABLE.getInstance().getCurrentClass().data_members;
-        SYMBOL_TABLE.getInstance().getCurrentClass().data_members = new TYPE_LIST(dataMemberToAdd, dataMembers);
+        TYPE_CLASS currClass = SYMBOL_TABLE.getInstance().getCurrentClass();
 
-        /* If inherited, the member's name is already in the map but will be overridden according to put's contract
-           If not inherited, will be added to the map according to puts implementation */
-        SYMBOL_TABLE.getInstance().getCurrentClass().data_members_including_inherited.put(dataMemberToAdd.name, dataMemberToAdd);
+        /* Add new data member to data_members of current class */
+        TYPE_LIST dataMembers = currClass.data_members;
+        currClass.data_members = new TYPE_LIST(dataMemberToAdd, dataMembers);
+
+
+        /* Updates data members including inherited for VT purposes later */
+        /* Add new data members/overrides */
+        // If inherited, the member's name is already in the map but will be overridden according to put's contract
+        // If not inherited, will be added to the map according to puts implementation
+        System.out.println("adding " + dataMemberToAdd.name + " to " + currClass.name);
+        currClass.data_members_including_inherited.put(dataMemberToAdd.name, dataMemberToAdd);
+        System.out.println(currClass.name + ": " + currClass.data_members_including_inherited);
 
         return null;
     }
