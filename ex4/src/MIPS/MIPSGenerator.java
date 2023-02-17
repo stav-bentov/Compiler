@@ -315,9 +315,10 @@ public class MIPSGenerator
 		String char_str1 = "$s1";
 		String pointer_str2 = "$s2";
 		String char_str2 = "$s3";
+		String res = "$s4";
 
 		/* Set the value of dst to 1, if we will find out a non matching letter- will set it to 0 and exit*/
-		li(dst_register, 1);
+		li(res, 1);
 
 		/* Set pointers for loops */
 		move(pointer_str1, str1_register);
@@ -338,10 +339,11 @@ public class MIPSGenerator
 
 		/* Add set_dst_0 label and set dst to 0 */
 		label(set_dst_0);
-		li(dst_register, 0);
+		li(res, 0);
 
 		/* Add end label */
 		label(end_label);
+		move(dst_register, res);
 	}
 
 	public void func_prologue(String prologue_label, int local_var_num)

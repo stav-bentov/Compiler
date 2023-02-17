@@ -98,6 +98,9 @@ public class AST_EXP_BINOP extends AST_EXP
 		TYPE left_type = this.left.SemantMe();
 		TYPE right_type = this.right.SemantMe();
 
+		// for IRme later
+		type = left_type;
+
 		boolean are_same_type = left_type.getClass().equals(right_type.getClass());
 		switch (this.sOP){
 			case "+":
@@ -110,8 +113,7 @@ public class AST_EXP_BINOP extends AST_EXP
 					throw new SemanticException(this);
 
 				// So left_type is the type we wanna return. if he is TYPE_INT we wil return TYPE_INT and same for TYPE_STRING
-				type = left_type;
-				break;
+				return left_type;
 
 			case "=":
 
@@ -142,8 +144,7 @@ public class AST_EXP_BINOP extends AST_EXP
 				}
 
 				//equality always returns TYPE_INT
-				type = TYPE_INT.getInstance();
-				break;
+				return TYPE_INT.getInstance();
 
 			default:
 				//the rest of binary operations (-, *, /, >, <) can happen only between two ints
@@ -154,12 +155,8 @@ public class AST_EXP_BINOP extends AST_EXP
 				if(sOP.equals("/") && right instanceof AST_EXP_OPT && ((AST_EXP_OPT) right).i == 0)
 					throw new SemanticException(this);
 
-				type = TYPE_INT.getInstance();
-				break;
+				return TYPE_INT.getInstance();
 		}
-
-		return type;
-
 	}
 
 	@Override
@@ -198,6 +195,7 @@ public class AST_EXP_BINOP extends AST_EXP
 				}
 				else { // TYPE_INT, object, array (when comparing obj/array we're comparing the addresses (= int cmp)
 					IR.getInstance().Add_IRcommand(new IRcommand_Binop_EQ_Integers(dst, t1, t2));
+
 				}
 				break;
 		}
