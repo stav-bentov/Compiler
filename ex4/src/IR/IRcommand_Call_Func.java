@@ -23,20 +23,25 @@ public abstract class IRcommand_Call_Func extends IRcommand
         this.param_list = param_list;
 
         if(param_list != null){
-            for (TEMP t : param_list)
-            {
-                this.depends_on.add(t);
-            }
+            this.depends_on.addAll(param_list);
         }
     }
 
     public void MIPSme()
     {
-        if (param_list != null) MIPSGenerator.getInstance().set_arguments(this.param_list);
+        set_arguments();
         call();
         if (assigned_temp != null) MIPSGenerator.getInstance().get_v0(this.assigned_temp);
-        if (param_list != null) MIPSGenerator.getInstance().del_arguments(this.param_list.size());
+        del_arguments();
     }
 
     public abstract void call();
+
+    public void set_arguments() {
+        if (param_list != null) MIPSGenerator.getInstance().set_arguments(this.param_list);
+    }
+
+    public void del_arguments() {
+        if (param_list != null) MIPSGenerator.getInstance().del_arguments(this.param_list.size());
+    }
 }

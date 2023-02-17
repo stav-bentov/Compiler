@@ -40,6 +40,18 @@ public class IRcommand_Call_Class_Method extends IRcommand_Call_Func {
     @Override
     public void call() {
         /* When class_ptr is null, will use "this" instead */
-        MIPSGenerator.getInstance().call_class_method(methodOffset, classPtr);
+        MIPSGenerator.getInstance().call_class_method(methodOffset);
+    }
+
+    @Override
+    public void set_arguments() {
+        super.set_arguments();
+        MIPSGenerator.getInstance().set_class_ptr(this.classPtr);
+    }
+
+    @Override
+    public void del_arguments(){
+        MIPSGenerator.getInstance().del_arguments(1); // Del class ptr (first arg)
+        super.del_arguments();
     }
 }
