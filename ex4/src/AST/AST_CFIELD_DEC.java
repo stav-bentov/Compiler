@@ -48,7 +48,6 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         /* Add new data members/overrides */
         // If inherited, the member's name is already in the map but will be overridden according to put's contract
         // If not inherited, will be added to the map according to puts implementation
-        System.out.println("adding " + dataMemberToAdd.name + " to " + currClass.name);
 
         if(currClass.data_members_including_inherited.containsKey(dataMemberToAdd.name)){
             TYPE parentDataMember = currClass.data_members_including_inherited.get(dataMemberToAdd.name);
@@ -62,7 +61,6 @@ public class AST_CFIELD_DEC<T extends AST_Node> extends AST_CFIELD{
         }
 
         currClass.data_members_including_inherited.put(dataMemberToAdd.name, dataMemberToAdd);
-        System.out.println(currClass.name + ": " + currClass.data_members_including_inherited);
 
         return null;
     }
