@@ -803,11 +803,14 @@ public class MIPSGenerator
 	{
 		open_segment(SegmentType.CODE);
 
-		check_oob(array_temp, array_index_temp);
+
 		String array_register = "$t" + array_temp.getRegisterSerialNumber();
 		String index_register = "$t" + array_index_temp.getRegisterSerialNumber();
 		String four = "$s1";
 		String array_pointer = "$s2";
+
+		check_valid_pointer(array_register);
+		check_oob(array_temp, array_index_temp);
 
 		/* Array cells are located one cell next (because first cell saves array size */
 		move(absolute_address, index_register);
