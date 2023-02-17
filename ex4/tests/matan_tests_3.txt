@@ -1,0 +1,141 @@
+/// call_and_pointer
+class A {
+    int i := 530;
+}
+A a;
+void foo(int i) {
+    PrintInt(a.i);
+    a.i := a.i + 1;
+}
+void main() {
+    a := new A;
+    foo(0);
+    foo(0);
+    foo(2);
+    foo(2);
+}
+*** 530 531 532 533
+
+
+/// recursion_and_printing
+int foo(int left) {
+    if (left = 0) { return 0; }
+    PrintInt(left);
+    PrintInt(foo(left - 1));
+    return left;
+}
+void main() {
+    foo(5);
+}
+*** 5 4 3 2 1 0 1 2 3 4
+
+
+/// derefrence_error_1
+array IntArr = int[];
+array Matrix = IntArr[];
+
+class A {
+    Matrix mat;
+}
+
+void main() {
+    A a := new A;
+    a.mat[2][3] := 3;
+    PrintString("shouldnt");
+}
+
+*** Invalid Pointer Dereference
+
+
+/// derefrence_error_2
+array IntArr = int[];
+array Matrix = IntArr[];
+
+class A {
+    Matrix mat;
+    void foo() {
+        mat := new IntArr[5];
+        mat[3] := new int[8];
+        mat[3][4] := 555;
+    }
+}
+
+void main() {
+    A a := new A;
+    a.foo();
+    a.mat[4][2] := 3;
+    PrintString("shouldnt");
+}
+*** Invalid Pointer Dereference
+
+
+/// derefrence_error_3
+array IntArr = int[];
+array Matrix = IntArr[];
+
+class A {
+    Matrix mat;
+    void foo() {
+        mat := new IntArr[5];
+        mat[3] := new int[8];
+        mat[3][4] := 555;
+    }
+}
+
+void main() {
+    A a := new A;
+    a.foo();
+    a.mat[3][2] := 3;
+    PrintString("OKius");
+}
+*** OKius
+
+
+/// inc_hardcore_1
+array IntArr = int[];
+array Matrix = IntArr[];
+int i := 0;
+
+int inc() {
+    i := i + 1;
+    return i;
+}
+
+class A {
+    Matrix mat;
+    void init() {
+        mat := new IntArr[5];
+        mat[3] := new int[8];
+        mat[3][4] := 555;
+    }
+}
+
+void main() {
+    A a := new A;
+    a.init();
+    inc(); inc();
+    int res := a.mat[inc()][inc()];
+    PrintInt(res);
+}
+
+*** 555
+
+
+/// out_of_boundaries_matan
+array IntArr = int[];
+array Matrix = IntArr[];
+
+class A {
+    Matrix mat;
+    void init() {
+        mat := new IntArr[5];
+        mat[6] := nil;
+    }
+}
+
+void main() {
+    A a := new A;
+    a.init();
+}
+
+*** Access Violation

@@ -1,10 +1,13 @@
 import os.path
 from typing import Dict
 
-TEST_GENERATOR_FILE_PATH = "./input/tests.txt"
+TEST_GENERATOR_FILE_PATH = "./tests/tests.txt"
 TEST_GENERATOR_FILE_PATHS_LIST = [
     "./tests/tests.txt",
     "./tests/matan_tests_1.txt",
+    "./tests/matan_tests_2.txt",
+    "./tests/omer_tests_v2.txt",
+    "./tests/matan_tests_3.txt"
 ]
 TEST_INPUT_DIR = "./input"
 TEST_OUTPUT_DIR = "./expected_output"
@@ -33,8 +36,8 @@ def parse_single_test(test: str) -> Dict[str, str]:
 
 def generate_single_test(parsed_test: Dict[str, str], input_dir: str, output_dir: str):
     test_name = parsed_test["name"]
-    input_test_name = f"TEST_{test_name}.txt"
-    output_test_name = f"TEST_{test_name}_EXPECTED_OUTPUT.txt"
+    input_test_name = "TEST_"+test_name+".txt"
+    output_test_name = "TEST_"+test_name+"_EXPECTED_OUTPUT.txt"
 
     full_input_test_name = os.path.join(TEST_INPUT_DIR, input_test_name)
     full_output_test_name = os.path.join(TEST_OUTPUT_DIR, output_test_name)

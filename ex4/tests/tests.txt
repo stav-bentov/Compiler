@@ -1,0 +1,652 @@
+/// binop_add_min
+void main() {
+    int a := -32767;
+    int b := -10;
+    int c := a + b;
+    PrintInt(c);
+}
+
+*** -32768
+
+///binop_add_range_1
+void main() {
+    int a := -1000;
+    int b := -10;
+    int c := a + b;
+    PrintInt(c);
+}
+
+*** -1010
+
+///binop_add_range_2
+void main() {
+    int a := 32765;
+    int b := 1;
+    int c := a + b;
+    PrintInt(c);
+}
+
+*** 32766
+
+///binop_add_range_3
+void main() {
+    int a := 32766;
+    int b := 1;
+    int c := a + b;
+    PrintInt(c);
+}
+
+*** 32767
+
+///binop_add_max
+void main() {
+    int a := 32767;
+    int b := 1;
+    int c := a + b;
+    PrintInt(c);
+}
+
+*** 32767
+
+/// binop_div_1
+void main() {
+    int a := 10;
+    int b := 2;
+    int c := a / b;
+    PrintInt(c);
+}
+
+*** 5
+
+/// binop_div_2
+void main() {
+    int a := 11;
+    int b := 2;
+    int c := a / b;
+    PrintInt(c);
+}
+
+*** 5
+
+/// binop_concat_normal
+void main() {
+    string s1 := "Hello";
+    string s2 := "World";
+    string s3 := s1 + s2;
+    PrintString(s3);
+}
+
+*** HelloWorld
+
+/// binop_concat_empty_string
+void main() {
+    string s1 := "Hello";
+    string s2 := "";
+    string s3 := s1 + s2;
+    PrintString(s3);
+}
+
+*** Hello
+
+/// eq_str_1
+void main() {
+    string s1 := "Hello";
+    string s2 := "Not";
+    PrintInt(s1 = s2);
+}
+
+*** 0
+
+/// eq_str_2
+void main() {
+    string s1 := "Hello";
+    string s2 := "Hello";
+    PrintInt(s1 = s2);
+}
+
+*** 1
+
+/// eq_str_3
+void main() {
+    string s1 := "Hello";
+    string s2 := s1;
+    PrintInt(s1 = s2);
+}
+
+*** 1
+
+/// eq_arr_1
+array IntArray = int[];
+void main() {
+    IntArray a1 := new int[3];
+    IntArray a2 := new int[3];
+    PrintInt(a1 = a2);
+}
+
+*** 0
+
+/// eq_arr_2
+array IntArray = int[];
+void main() {
+    IntArray a1 := new int[3];
+    a1[0] := 0;
+    a1[1] := 1;
+    a1[2] := 2;
+    IntArray a2 := new int[3];
+    a2[0] := 0;
+    a2[1] := 1;
+    a2[2] := 2;
+    PrintInt(a1 = a2);
+}
+
+*** 0
+
+/// eq_arr_3
+array IntArray = int[];
+void main() {
+    IntArray a1 := new int[3];
+    IntArray a2 := a1;
+    PrintInt(a1 = a2);
+}
+
+*** 1
+
+/// eq_arr_4
+array IntArray = int[];
+void main() {
+    IntArray a1 := new int[3];
+    IntArray a2 := nil;
+    PrintInt(a1 = a2);
+}
+
+*** 0
+
+/// eq_arr_5
+array IntArray = int[];
+void main() {
+    IntArray a1 := nil;
+    IntArray a2 := nil;
+    PrintInt(a1 = a2);
+}
+
+*** 1
+
+/// eq_arr_4
+array IntArray = int[];
+void main() {
+    IntArray a1 := nil;
+    IntArray a2 := a1;
+    PrintInt(a1 = a2);
+}
+
+*** 1
+
+/// eval_order_pdf_example
+class counter { int i := 32767; }
+counter c := nil;
+int inc() { c.i := c.i + 1; return 0; }
+int dec() { c.i := c.i - 1; return 9; }
+int foo(int m, int n) { return c.i; }
+
+void main() {
+    c := new counter;
+    PrintInt(foo(inc(), dec()));
+}
+
+*** 32766
+
+/// runtime_div_by_zero
+void main() {
+    int a := 6;
+    int b := 1 - 1;
+    int c := a / b;
+}
+
+*** Division By Zero
+
+/// runtime_invalid_deref_1
+class Classy { int a; }
+void main() {
+    Classy a;
+    PrintInt(a.a);
+}
+
+*** Invalid Pointer Dereference
+
+/// runtime_invalid_deref_2
+class Classy { int a; }
+void main() {
+    Classy a := nil;
+    PrintInt(a.a);
+}
+
+*** Invalid Pointer Dereference
+
+/// runtime_invalid_deref_3
+array IntArray = int[];
+
+class Classy { IntArray a; }
+void main() {
+    Classy a := new Classy;
+    PrintInt(a.a[0]);
+}
+
+*** Invalid Pointer Dereference
+
+/// runtime_oob_1
+array IntArray = int[];
+void main() {
+    IntArray a := new int[3];
+    a[1] := 1;
+    a[2] := 2;
+    a[3] := 3;
+}
+
+*** Access Violation
+
+/// runtime_oob_2
+array IntArray = int[];
+void main() {
+    IntArray a := new int[3];
+    int b := a[4];
+}
+
+*** Access Violation
+
+/// example_test
+void main() {
+    PrintInt(3);
+}
+
+*** 3
+
+/// binop_add_upper_bound_1
+int i := 32767;
+void main() {
+    PrintInt(i);
+}
+
+*** 32767
+
+/// binop_add_upper_bound_2
+int i := 32766;
+void main() {
+    PrintInt(i + 5);
+}
+
+*** 32767
+
+/// binop_sub_lower_bound_1
+int i := -32767;
+void main() {
+    PrintInt(i - 5);
+}
+
+*** -32768
+
+/// binop_add_lower_bound_1
+int i := -32766;
+int j := -10;
+void main() {
+    PrintInt(i + j);
+}
+
+*** -32768
+
+/// binop_add_1
+int i := -32767;
+void main() {
+    PrintInt(i + 5);
+}
+
+*** -32762
+
+/// div_by_0_runtime_check
+int i:= 6;
+void main() {
+	while (i+1) {
+		int j := 8/i;
+		i := i-1;
+	}
+}
+
+*** Division By Zero
+
+/// class_dec_var_int
+class A {
+	int i := 10;
+}
+
+void main() {
+    A a := new A;
+    PrintInt(a.i);
+}
+
+*** 10
+
+/// class_dec_var_nil
+class A {
+	A i := nil;
+}
+void main() {
+    A a := new A;
+    PrintInt(a.i = nil);
+}
+
+*** 1
+
+/// func_dec_var_int
+void f() {
+	int i := 4500;
+	PrintInt(i);
+}
+
+void main() {
+	f();
+}
+
+*** 4500
+
+/// func_dec_var_string
+void f() {
+	string i := "abcde";
+	PrintString(i);
+}
+
+void main() {
+	f();
+}
+
+*** abcde
+
+/// field_access_1
+class A {
+	int i := 5;
+}
+
+class B extends A {
+	void f() {
+        i := 2;
+		PrintInt(i);
+	}
+}
+
+void main() {
+	B b := new B;
+	b.f();
+}
+
+*** 2
+
+/// field_access_2
+class A {
+    int i := 5;
+}
+class B extends A {
+    void f() {
+        PrintInt(i);
+        i := 2;
+        PrintInt(i);
+    }
+}
+
+void main() {
+    B b := new B;
+    b.f();
+}
+
+*** 5 2
+
+/// field_access_3
+class A {
+	int i := 5;
+	void f() {
+		PrintInt(i);
+	}
+}
+
+class B extends A {
+	void f() {
+		PrintInt(i);
+		i := 11112;
+		PrintInt(i);
+	}
+}
+
+void main() {
+	A b := new B;
+	b.f();
+
+	A a := new A;
+	a.f();
+}
+
+*** 5 11112 5
+
+/// global_access_in_class
+int t := 6;
+class A {
+	int i := 5;
+	void print() {
+		PrintInt(i);
+	}
+	void add() {
+		PrintInt(i);
+		i := t + i;
+		PrintInt(i);
+	}
+}
+
+void main() {
+	A a := new A;
+	a.print();
+	a.add();
+}
+
+*** 5 5 11
+
+/// field_access_outside_class
+string coco := "coooo";
+class A {
+	int coco;
+	void print() {
+			PrintInt(coco);
+	}
+}
+
+void main() {
+	A a := new A;
+	a.coco := 34;
+	a.print();
+}
+
+*** 34
+
+/// field_access_uninitialized_instance
+class A {
+	int coco;
+	void print() {
+			PrintInt(coco);
+	}
+}
+
+void main() {
+	A a;
+	a.coco := 34;
+}
+
+*** Invalid Pointer Dereference
+
+/// method_access_uninitialized_instance
+class A {
+	int coco := 4;
+	void print() {
+			PrintInt(coco);
+	}
+}
+
+void main() {
+	A a;
+	a.print();
+}
+
+*** Invalid Pointer Dereference
+
+/// Access_Violation_1
+array IntArray = int[];
+void main() {
+	IntArray A := new int[6];
+	int i := A[18];
+}
+
+*** Access Violation
+
+/// Access_Violation_2
+array IntArray = int[];
+void main() {
+	IntArray A := new int[6];
+	A[18] := 89;
+}
+
+*** Access Violation
+
+/// Access_Violation_3
+array IntArray = int[];
+void main() {
+	IntArray A := new int[6];
+	A[-1] := 89;
+}
+
+*** Access Violation
+
+/// ptr_uninit_feild_call
+class A {
+	A a;
+	void f() {
+		return;
+	}
+}
+void main() {
+	A a := new A;
+	a.a.f();
+}
+
+***Invalid Pointer Dereference
+
+/// ptr_uninit_feild_field
+class A {
+	A a;
+	int i;
+	void f() {
+		return;
+	}
+}
+void main() {
+	A a := new A;
+	a.a.i := 2;
+}
+
+***Invalid Pointer Dereference
+
+/// ptr_uninit_global_field
+class A {
+	int i;
+	void f() {
+		return;
+	}
+}
+A a;
+void main() {
+	a.i := 2;
+}
+
+***Invalid Pointer Dereference
+
+/// ptr_uninit_global_call
+class A {
+	int i;
+	void f() {
+		return;
+	}
+}
+A a;
+void main() {
+	a.f();
+}
+
+***Invalid Pointer Dereference
+
+/// ptr_uninit_local_call
+class A {
+	int i;
+	void f() {
+		return;
+	}
+}
+void main() {
+	A a;
+	a.f();
+}
+
+***Invalid Pointer Dereference
+
+/// ptr_uninit_local_field
+class A {
+	int i;
+	void f() {
+		return;
+	}
+}
+void main() {
+	A a;
+	a.i := 1;
+}
+
+***Invalid Pointer Dereference
+
+/// ptr_uninit_arr_call
+class A {
+	int i;
+	void f() {
+		return;
+	}
+}
+
+array arrA = A[];
+
+void main() {
+	arrA arri := new A[13];
+	arri[0].f();
+}
+
+***Invalid Pointer Dereference
+
+/// ptr_uninit_arr_field
+class A {
+	int i;
+	void f() {
+		return;
+	}
+}
+
+array arrA = A[];
+
+void main() {
+	arrA arri := new A[13];
+	arri[0].i := 4;
+}
+
+***Invalid Pointer Dereference
+
+/// shir666
+string ssssss := "";
+string coco := "ko";
+string lolo := "po";
+
+void main() {
+	int i := 7+2+1-2*6;
+	PrintString(coco+ssssss+ssssss+lolo+lolo+ssssss);
+	PrintInt(i);
+	i := i * (i +i);
+	PrintInt(i);
+}

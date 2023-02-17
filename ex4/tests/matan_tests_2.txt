@@ -1,0 +1,415 @@
+/// some_calculations
+void main() {
+	int i := 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1;
+
+	PrintInt(i);
+
+	if((i * 2) = 60) {
+		PrintString("ONE");
+	}
+	if((i / 2) = 15) {
+		PrintString("TWO");
+	}
+
+	int c;
+	c := 1 * 2 + 3;
+	PrintInt(c);
+
+	c := 6 - (4 + 2) / 6;
+	PrintInt(c);
+
+	c := (6 - 4 + 2) / 6;
+    PrintInt(c);
+}
+***30 ONETWO5 5 0
+
+
+/// instructions_example_3_3
+class counter { int i := 32767; }
+counter c := nil;
+int inc(){ c.i := c.i + 1; return 0;}
+int dec(){ c.i := c.i - 1; return 9;}
+int foo(int m, int n){ return c.i; }
+void main()
+{
+	c := new counter;
+	PrintInt(foo(inc(),dec()));
+}
+***32766
+
+/// inst_example_3_4
+int i := 6;
+void main() {
+	while (i + 1) { int j := 8/i; i := i-1; }
+	PrintString("shouldntGetHere");
+}
+***Division By Zero
+
+
+/// the_lena_games
+
+class A {
+	void foo() {
+		PrintString("fooA");
+	}
+
+ 	void bar(A a) {
+ 		a.foo();
+ 		foo();
+ 	}
+
+ 	void moreFoo() {
+ 		PrintString("moreFooA");
+ 	}
+}
+
+class B extends A {
+	void foo() {
+		PrintString("fooB");
+	}
+}
+
+class C extends A {
+	void moreFoo() {
+		PrintString("moreFooC");
+	}
+}
+
+class D extends B {
+    int dummy := 3;
+}
+
+void foo() {PrintString("wrongFoo");}
+
+void main() {
+	A a := new A;
+	B b := new B;
+	a.bar(b);
+	PrintString("P");
+	b.bar(a);
+	PrintString("P");
+	C c := new C;
+	a.bar(c);
+	PrintString("P");
+	c.bar(b);
+	PrintString("P");
+	c.moreFoo();
+
+	A castedC := c;
+	c.moreFoo();
+
+    PrintString("P");
+    A d := new D;
+    a.bar(d);
+    d.bar(a);
+}
+***fooBfooAPfooAfooBPfooAfooAPfooBfooAPmoreFooCmoreFooCPfooBfooAfooAfooB
+
+/// insertion_algo
+array IntArr = int[];
+
+int continueInnerLoop(int key, IntArr arr, int j) {
+    if (j < 0) {return 0;}
+    return (key < arr[j]);
+}
+
+void sort(IntArr arr, int n){
+	int i := 1;
+	while (i < n) {
+		int key := arr[i];
+		int j := i - 1;
+
+		while (continueInnerLoop(key, arr, j)) {
+			arr[j + 1] := arr[j];
+			j := j - 1;
+		}
+		arr[j + 1] := key;
+		i := i + 1;
+	}
+}
+void fillArrOfFive(IntArr arr, int a, int b, int c, int d, int e) {
+	arr[0] := a;
+	arr[1] := b;
+	arr[2] := c;
+	arr[3] := d;
+	arr[4] := e;
+}
+
+void printArr(IntArr arr, int len) {
+    int i := 0;
+
+    while (i < len) {
+        PrintInt(arr[i]);
+        i := i + 1;
+    }
+}
+
+void main() {
+	int len := 5;
+	IntArr arr := new int[len];
+	fillArrOfFive(arr, 1, 2, 3, 5, 4);
+	printArr(arr, len);
+	PrintString("SEP");
+	sort(arr, len);
+	printArr(arr, len);
+    printArr(arr, len);
+
+	// ones more time
+	fillArrOfFive(arr, 5, 1240, 150, 100, -530);
+    PrintString("SEP");
+	printArr(arr, len);
+	PrintString("SEP");
+	sort(arr, len);
+	printArr(arr, len);
+
+	// another one
+    PrintString("SEP");
+	fillArrOfFive(arr, -1, -2, -3, -4, -5);
+    sort(arr, len);
+    printArr(arr, len);
+}
+***1 2 3 5 4 SEP1 2 3 4 5 1 2 3 4 5 SEP5 1240 150 100 -530 SEP-530 5 100 150 1240 SEP-5 -4 -3 -2 -1
+
+/// many_field_access
+array IntArr = int[];
+
+class A {
+	IntArr arr := nil;
+	string s := "inA";
+	void init() {arr := new int[3]; arr[1] := 8907;}
+}
+class B { A a := nil; string s:= "inB"; void init() {a := new A; a.init();} }
+class C { B b := nil; void init() {b := new B; b.init();} }
+class D { C c := nil; void init() {c := new C; c.init();} }
+
+void main() {
+	D d := new D;
+	B b := new B;
+	d.init(); b.init();
+	int i := d.c.b.a.arr[1] + 3;
+	PrintInt(i);
+	b.s := "anotherInB";
+	PrintString(d.c.b.s);
+	PrintString(b.s);
+	PrintString(b.a.s);
+}
+***8910 inBanotherInBinA
+
+/// array_of_classes_with_array
+array IntArr = int[];
+class A {
+	IntArr arr;
+	void init(int num) {arr := new int[1]; arr[0] := num;}
+}
+array AArray = A[];
+
+void main() {
+	AArray arr := new A[3];
+	arr[0] := new A;
+	arr[0].init(123);
+	arr[2] := new A;
+	arr[2].init(456);
+
+	PrintInt(arr[0].arr[0]);
+	PrintInt(arr[2].arr[0]);
+
+	PrintInt(arr[0] = arr[2]);
+	PrintInt(arr[0].arr = arr[2].arr);
+
+	IntArr pointer := arr[0].arr;
+	pointer[0] := 789;
+	PrintInt(arr[0].arr[0]);
+
+	A pointerToA := arr[2];
+	PrintInt(pointerToA.arr[0]);
+	pointerToA.arr := pointer;
+	pointerToA.arr[0] := 159;
+
+	PrintInt(arr[0].arr[0]);
+	PrintInt(arr[2].arr[0]);
+}
+
+***123 456 0 0 789 456 159 159
+
+/// a_lot_instances_same_func
+int counter := 0;
+class A {
+	void inc() {counter := counter + 1;}
+}
+
+void main() {
+    A a := new A;
+	a.inc();
+    a := new A;
+	a.inc();
+    a := new A;
+	a.inc();
+	PrintInt(counter);
+}
+***3
+
+/// cfield_or_global
+string s := "global";
+
+class A {
+	void printVarS() {
+		PrintString(s);
+	}
+	string s := "cfield";
+}
+
+void main() {
+	A a := new A;
+	a.printVarS(); // ?
+	PrintString(a.s);
+	PrintString(s);
+}
+***globalcfieldglobal
+
+
+/// runtime_error_1
+int foo(int j) {
+	return 8 / j;
+}
+void main() {
+	int i;
+	i := 9;
+	if(8) {
+		i := 0;
+	}
+	PrintInt(foo(i));
+	PrintString("shouldntGetHere");
+
+}
+***Division By Zero
+
+
+/// not_entering_while
+
+void main() {
+	int i;
+	i := 1 - 1;
+	while(i) {
+		PrintString("inWhile");
+	}
+	PrintString("Done");
+	return;
+	PrintString("shouldntGetHere");
+}
+***Done
+
+/// inst_example_3_4_2
+class Father
+{ int i; int j; }
+void main(){
+	Father f; int i := f.i;
+	PrintString("shouldntGetHere");
+}
+***Invalid Pointer Dereference
+
+
+/// inst_example_3_4_3
+class Father { int i; int j; } Father f := nil;
+void main() {
+	int i := f.i;
+	PrintString("shouldntGetHere");
+}
+
+***Invalid Pointer Dereference
+
+
+/// inst_example_3_4_4
+array IntArray = int[];
+void main() {
+	IntArray A := new int[6];
+	int i := A[18];
+	PrintString("shouldntGetHere");
+}
+***Access Violation
+
+
+///multi_returns
+
+string foo(int i) {
+	if(i = 1) {return "One";}
+	if(i = 2) {return "Two";}
+	if(i = 3) {return "Tres";}
+	if ("hello" = "goodbye") {return "Paul";}
+	if (("hello" = "goodbye") - i) {return "George";}
+	return "Default";
+}
+
+void main() {
+    string s;
+
+    s := foo(1);
+    PrintString(s);
+
+    s := foo(0);
+    PrintString(s);
+
+    s := foo(-1);
+    PrintString(s);
+
+    s := foo(101);
+    PrintString(s);
+
+}
+***OneDefaultGeorgeGeorge
+
+/// eval_order_2
+int i := 1;
+int inc() {i := i + 1; return i;}
+void main() {
+    int j := inc() + inc() * inc();  // 2 + 3 * 4
+    PrintInt(j);
+    j := inc() + inc() + inc(); // 5 + 6 + 7
+    PrintInt(j);
+    PrintInt(i);
+
+}
+*** 14 18 7
+
+
+
+/// stuffed_methods
+class A {
+    string s := "AField";
+    void bar(string l, int i, A a, int j, int k) {
+            PrintString("shouldBeOverriden");
+        }
+    void foo() {
+        PrintString(s);
+        bar(s, 101, nil, 102, 103);
+    }
+
+    void changeS() {
+        s := "goingThroughChanges";
+    }
+}
+
+class B extends A {
+    string s := "BField";
+    void bar(string s, int d, A a, int b, int c){
+        PrintString(s);
+        PrintInt(d);
+        PrintInt(a = nil);
+        PrintInt(b);
+        PrintInt(c);
+
+        s := "BARBFieldBAR";
+    }
+
+}
+
+void main() {
+    A b := new B;
+    b.foo();
+    PrintString(b.s);
+    b.bar("mat", 402, b, 403, 404);
+
+    b.changeS();
+    PrintString(b.s);
+
+}
+*** BFieldBField101 1 102 103 BFieldmat402 0 403 404 goingThroughChanges
