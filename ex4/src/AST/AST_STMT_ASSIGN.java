@@ -71,6 +71,23 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		/* ASSUMPTION: this.exp != null*/
 		TEMP exp_temp = null;
 
+		/* Set var values*/
+		TEMP classPtr, array_temp, index_temp;
+		classPtr = array_temp = index_temp = null;
+
+		if (this.var instanceof AST_VAR_VAR_ID) {
+			classPtr = ((AST_VAR_VAR_ID) this.var).var.IRme(); // classPtr is the ptr to the runtime obj of classInstance
+		}
+
+		if (this.var instanceof AST_VAR_EXP) {
+			/* Need to get the array (var.var.IRme()) and index (var.exp.IRme())
+			   because we need to CHANGE them (not to get their value..)*/
+			System.out.println("IN HERE...");
+			AST_VAR_EXP var_exp = (AST_VAR_EXP) this.var;
+			array_temp = var_exp.var.IRme();
+			index_temp = var_exp.exp.IRme();
+		}
+
 		if (this.exp instanceof AST_EXP_OPT)
 		{
 			/* Constant*/
@@ -84,49 +101,34 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 						int_value = -int_value;
 					}
 					/* Add IR Command*/
-					run_IRme(null, int_value, null, true, false);
+					run_IRme(null, int_value, null, true, false, classPtr, array_temp, index_temp);
 					break;
 				case "STRING":
 					String str_value = ((AST_EXP_OPT) this.exp).s;
 					/* Add IR Command*/
-					run_IRme(str_value, 0, null, false, true);
+					run_IRme(str_value, 0, null, false, true, classPtr, array_temp, index_temp);
 					break;
 				case "NIL": /*(pass zero as null)*/
-					run_IRme(null, 0, null, true, false);
+					run_IRme(null, 0, null, true, false, classPtr, array_temp, index_temp);
 			}
 		}
 		else
 		{
 			/* Not a constant -> run IRme()*/
 			exp_temp = this.exp.IRme();
-			run_IRme(null, 0, exp_temp, false, false);
+			run_IRme(null, 0, exp_temp, false, false, classPtr, array_temp, index_temp);
 
 		}
 		return null;
 	}
 
-	public void run_IRme(String str, int i, TEMP temp, Boolean is_int, Boolean is_str)
+	public void run_IRme(String str, int i, TEMP temp, Boolean is_int, Boolean is_str, TEMP classPtr, TEMP array_temp, TEMP index_temp)
 	{
-		TEMP classPtr, array_temp, index_temp;
-		classPtr = array_temp = index_temp = null;
-
-		if (this.var instanceof AST_VAR_VAR_ID) {
-			classPtr = ((AST_VAR_VAR_ID) this.var).var.IRme(); // classPtr is the ptr to the runtime obj of classInstance
-		}
-		if (this.var instanceof AST_VAR_EXP) {
-				/* Need to get the array (var.var.IRme()) and index (var.exp.IRme())
-			   because we need to CHANGE them (not to get their value..)*/
-			System.out.println("IN HERE...");
-			AST_VAR_EXP var_exp = (AST_VAR_EXP) this.var;
-			array_temp = var_exp.var.IRme();
-			index_temp = var_exp.exp.IRme();
-		}
 
 		/*  Case 1: var = new exp (Only for class or array) or var = exp
 		 *  Case 2: var.id = new exp (Only for class or array) or var = exp
 		 *  Case 3: var[exp] = new exp (Only for class or array) or var = exp
 		 *  SemantMe on var will return TYPE_VAR */
-
 		if (is_str)
 		{
 			/* Case 1: (var instance of AST_VAR_ID)*/
