@@ -108,10 +108,7 @@ public class FunctionIRList {
                 //update the In of Node i
                 old_in = In.get(i);
                 In.get(i).addAll(Out.get(i));
-                System.out.println("CFG[i].cmd "+ CFG[i].cmd);
-                System.out.println("CFG[i].cmd.depends_on "+ CFG[i].cmd.depends_on);
                 Set<Integer> depends_on = CFG[i].cmd.depends_on.stream().map(temp -> temp.getSerialNumber()).collect(Collectors.toSet());
-                System.out.println("Depends on = "+ depends_on);
                 In.get(i).addAll(depends_on);//Depends on are the temps which are required for this calculations (a,b in case of y = a + b)
                 if(CFG[i].cmd.dest != null){//destination is the temp number in which we put the result of the calculation (y in case of y = a + b)
                     In.get(i).remove(CFG[i].cmd.dest.getSerialNumber());
