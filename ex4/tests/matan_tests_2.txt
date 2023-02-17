@@ -1,8 +1,8 @@
 /// some_calculations
 void main() {
-	int i := 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1;
+	int i := 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1; 
 
-	PrintInt(i);
+	PrintInt(i); 
 
 	if((i * 2) = 60) {
 		PrintString("ONE");
@@ -173,7 +173,7 @@ void main() {
 /// many_field_access
 array IntArr = int[];
 
-class A {
+class A { 
 	IntArr arr := nil;
 	string s := "inA";
 	void init() {arr := new int[3]; arr[1] := 8907;}
@@ -216,7 +216,7 @@ void main() {
 	PrintInt(arr[0] = arr[2]);
 	PrintInt(arr[0].arr = arr[2].arr);
 
-	IntArr pointer := arr[0].arr;
+	IntArr pointer := arr[0].arr; 
 	pointer[0] := 789;
 	PrintInt(arr[0].arr[0]);
 
@@ -299,8 +299,8 @@ void main() {
 ***Done
 
 /// inst_example_3_4_2
-class Father
-{ int i; int j; }
+class Father 
+{ int i; int j; } 
 void main(){
 	Father f; int i := f.i;
 	PrintString("shouldntGetHere");
@@ -319,9 +319,9 @@ void main() {
 
 
 /// inst_example_3_4_4
-array IntArray = int[];
+array IntArray = int[]; 
 void main() {
-	IntArray A := new int[6];
+	IntArray A := new int[6]; 
 	int i := A[18];
 	PrintString("shouldntGetHere");
 }

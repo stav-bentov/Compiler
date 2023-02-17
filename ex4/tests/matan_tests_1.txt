@@ -1,0 +1,213 @@
+/// field_overriding_1
+class A {
+    int x := 1;
+}
+class B extends A {
+    int x := 2;
+}
+
+void main() {
+    B b := new B;
+    PrintInt(b.x);
+}
+
+*** 2
+
+
+/// field_overriding_2
+class A {
+    int x := 1;
+    void f() {
+        PrintInt(x);
+    }
+}
+class B extends A {
+    int x := 2;
+}
+
+void main() {
+    B b := new B;
+    b.f();
+}
+
+*** 2
+
+
+/// calling_method_from_class
+
+class A {
+    void foo() {PrintString("foo");}
+    void bar() {
+        foo();
+        PrintString("bar");
+    }
+}
+
+void main() {
+    A a := new A;
+    a.bar();
+}
+*** foobar
+
+/// my_test_string_eq_1
+void main() {
+    string s1 := "matan";
+    string s2 := "odmatan";
+
+    PrintInt(s1 = s2);
+    if(s1 = s2) {PrintString("NOTLEGIT");}
+    if((s1 + s2) = "matanodmatan") {PrintString("legiti");}
+    if(s1 = "matan")   {PrintString("legito");}
+    if(s2 = "odmatap") {PrintString("NOTLEGIT");}
+    if(s2 = "odmata")  {PrintString("NOTLEGIT");}
+    if(s2 = "dmatan")  {PrintString("NOTLEGIT");}
+    if(s2 = "admatan")  {PrintString("NOTLEGIT");}
+
+    PrintString(s1 + s2 + s1);
+
+}
+***0 legitilegitomatanodmatanmatan
+
+
+/// inc_in_a_class
+
+class A {
+    int i := 0;
+    void inc() {i := i + 1;}
+    void bar() {
+        inc();
+        PrintInt(i);
+    }
+}
+
+void main() {
+    A a := new A;
+    PrintInt(a.i);
+    a.inc();
+
+    A b := new A;
+    b.inc();
+
+    PrintInt(a.i);
+    a.bar();
+    PrintInt(a.i);
+    PrintInt(b.i);
+
+    b.i := -1;
+    PrintInt(b.i);
+    PrintInt(a.i);
+    a.bar();
+    b.bar();
+}
+***0 1 2 2 1 -1 2 3 0
+
+/// messing_around_with_vars_1
+string s := "global";
+
+class A {
+    string s := "cfield";
+    void foo() {
+        PrintString(s);
+    }
+}
+
+void foo(string s) {
+    PrintString(s);
+    s := "garbage";
+}
+
+void bar() {
+    PrintString(s);
+    s := "changedGlobal";
+}
+
+void main() {
+    A a := new A;
+    PrintString(s);
+    a.foo();
+    if (1) {
+        PrintString(s);
+        string s := "innerScope";
+        PrintString(s);
+        foo("arg");
+        foo(s);
+    }
+    foo(s);
+    PrintString(s);
+    PrintString(a.s);
+    string s := "moving";
+    a.s := s;
+    a.foo();
+    bar();
+    bar();
+    PrintString(s);
+
+    //global cfield global innerScope arg innerScope global global cfield moving global changedGlobal moving
+}
+***globalcfieldglobalinnerScopearginnerScopeglobalglobalcfieldmovingglobalchangedGlobalmoving
+
+/// array_printing
+array IntArr = int[];
+
+void printArr(IntArr arr, int len) {
+    int i := 0;
+
+    while (i < len) {
+        PrintInt(arr[i]);
+        i := i + 1;
+    }
+}
+
+void main() {
+    int len := 1 + 2;
+    IntArr arr := new int[len];
+    arr[0] := 5;
+    arr[1] := 0;
+    arr[2] := 4;
+    
+    printArr(arr, 3);
+}
+
+*** 5 0 4
+
+
+/// Array_out_of_bound_1
+array IntArr = int[];
+
+void main() {
+    IntArr arr := new int[4];
+    arr[0] := 5;
+    arr[5] := 1;
+}
+
+***Access Violation
+
+
+/// Array_out_of_bound_2
+array IntArr = int[];
+
+void main() {
+    IntArr arr := new int[4];
+    arr[0] := 5;
+    if(arr[-1] = 0 + 2) {
+        return;
+    }
+}
+*** Access Violation
+
+/// function_args_eval_order
+int i;
+int inc() {
+    i := i + 1;
+    return i;
+}
+
+void printAll (int a, int b, int c, int d) {
+    PrintInt(a); PrintInt(b); PrintInt(c); PrintInt(d);
+}
+
+void main() {
+    i := 0;
+    printAll(inc(), inc(), inc(), inc() + 3);
+}
+***1 2 3 7

@@ -266,7 +266,7 @@ void main() {
     PrintInt(i);
 }
 
-*** 32767
+*** 32767 
 
 /// binop_add_upper_bound_2
 int i := 32766;
@@ -274,7 +274,7 @@ void main() {
     PrintInt(i + 5);
 }
 
-*** 32767
+*** 32767 
 
 /// binop_sub_lower_bound_1
 int i := -32767;
@@ -299,14 +299,14 @@ void main() {
     PrintInt(i + 5);
 }
 
-*** -32762
+*** -32762 
 
 /// div_by_0_runtime_check
-int i:= 6;
+int i:= 6; 
 void main() {
-	while (i+1) {
-		int j := 8/i;
-		i := i-1;
+	while (i+1) { 
+		int j := 8/i; 
+		i := i-1; 
 	}
 }
 
@@ -322,7 +322,7 @@ void main() {
     PrintInt(a.i);
 }
 
-*** 10
+*** 10 
 
 /// class_dec_var_nil
 class A {
@@ -333,7 +333,7 @@ void main() {
     PrintInt(a.i = nil);
 }
 
-*** 1
+*** 1 
 
 /// func_dec_var_int
 void f() {
@@ -345,7 +345,7 @@ void main() {
 	f();
 }
 
-*** 4500
+*** 4500 
 
 /// func_dec_var_string
 void f() {
@@ -376,7 +376,7 @@ void main() {
 	b.f();
 }
 
-*** 2
+*** 2 
 
 /// field_access_2
 class A {
@@ -395,7 +395,7 @@ void main() {
     b.f();
 }
 
-*** 5 2
+*** 5 2 
 
 /// field_access_3
 class A {
@@ -421,7 +421,7 @@ void main() {
 	a.f();
 }
 
-*** 5 11112 5
+*** 5 11112 5 
 
 /// global_access_in_class
 int t := 6;
@@ -460,7 +460,7 @@ void main() {
 	a.print();
 }
 
-*** 34
+*** 34 
 
 /// field_access_uninitialized_instance
 class A {
@@ -493,27 +493,27 @@ void main() {
 *** Invalid Pointer Dereference
 
 /// Access_Violation_1
-array IntArray = int[];
+array IntArray = int[]; 
 void main() {
-	IntArray A := new int[6];
+	IntArray A := new int[6]; 
 	int i := A[18];
 }
 
 *** Access Violation
 
 /// Access_Violation_2
-array IntArray = int[];
+array IntArray = int[]; 
 void main() {
-	IntArray A := new int[6];
+	IntArray A := new int[6]; 
 	A[18] := 89;
 }
 
 *** Access Violation
 
 /// Access_Violation_3
-array IntArray = int[];
+array IntArray = int[]; 
 void main() {
-	IntArray A := new int[6];
+	IntArray A := new int[6]; 
 	A[-1] := 89;
 }
 
@@ -650,3 +650,5 @@ void main() {
 	i := i * (i +i);
 	PrintInt(i);
 }
+***kopopo-2 8
+
