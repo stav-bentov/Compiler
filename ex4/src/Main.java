@@ -30,6 +30,8 @@ public class Main
 			/* [2] Initialize a file writer */
 			/********************************/
 			file_writer = new PrintWriter(outputFilename);
+
+			MIPSGenerator.fileWriter = file_writer;
 			
 			/******************************/
 			/* [3] Initialize a new lexer */

@@ -28,7 +28,7 @@ public class MIPSGenerator
 	/***********************/
 	/* The file writer ... */
 	/***********************/
-	private PrintWriter fileWriter;
+	public static PrintWriter fileWriter;
 	private SegmentType current_segment = SegmentType.NONE;
 	private String zero = "$zero";
 	private String invalid_ptr_label = "string_invalid_ptr_dref";
@@ -1272,24 +1272,6 @@ public class MIPSGenerator
 			/* [0] The instance itself ... */
 			/*******************************/
 			instance = new MIPSGenerator();
-
-			try
-			{
-				/*********************************************************************************/
-				/* [1] Open the MIPS text file and write data section with error message strings */
-				/*********************************************************************************/
-				String dirname="./output/";
-				String filename=String.format("MIPS.txt");
-
-				/***************************************/
-				/* [2] Open MIPS text file for writing */
-				/***************************************/
-				instance.fileWriter = new PrintWriter(dirname+filename);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
 
 			/*****************************************************/
 			/* [3] Print data section with error message strings */
