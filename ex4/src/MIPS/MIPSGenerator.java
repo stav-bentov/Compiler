@@ -439,10 +439,9 @@ public class MIPSGenerator
 	public void call_class_method(int method_offset)
 	{
 		open_segment(SegmentType.CODE);
-
 		String vt = "$s0";
 
-		get_class_ptr();
+		load(this_reg, sp, 0); // set class ptr is called just before this func, 0($sp) still contains class ptr
 
 		/* Check pointer's validation  */
 		check_valid_pointer(this_reg);
