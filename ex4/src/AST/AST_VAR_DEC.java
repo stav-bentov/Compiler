@@ -173,6 +173,10 @@ public class AST_VAR_DEC<T extends AST_Node> extends AST_Node{
                     {
                         /* If exp is not null and expType is TYPE_INT-> exp is instanceof AST_EXP_OPT*/
                         int int_value = ((AST_EXP_OPT) this.exp).i;
+                        if (((AST_EXP_OPT) this.exp).opt.equals("MINUS INT"))
+                        {
+                            int_value = - int_value;
+                        }
                         IR.getInstance().Add_IRcommand(new IRcommand_Global_Var_Dec(this.typeVar.global_var_label, int_value));
                     }
                     else if (this.expType instanceof TYPE_STRING)
