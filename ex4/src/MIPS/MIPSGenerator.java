@@ -436,30 +436,42 @@ public class MIPSGenerator
 	}
 
 	/* When class_ptr is null, will use "this" instead */
-	public void call_class_method(int method_offset, TEMP class_ptr)
+	public void call_class_method(int method_offset)
 	{
 		open_segment(SegmentType.CODE);
 
 		String vt = "$s0";
 
-		String class_ptr_reg;
-		if (class_ptr != null) {
-			class_ptr_reg = "$t" + class_ptr.getRegisterSerialNumber();
-			move(this_reg, class_ptr_reg);
-		}
-		else {
-			class_ptr_reg = this_reg;
-		} //TODO: need to fix implementation, this is just for now
+		get_class_ptr();
 
 		/* Check pointer's validation  */
-		check_valid_pointer(class_ptr_reg);
+		check_valid_pointer(this_reg);
 
 		String method_ptr_reg = "$s1";
 
-		load(vt, class_ptr_reg, 0); // VT at offset 0 in the runtime object
+		load(vt, this_reg, 0); // VT at offset 0 in the runtime object
 		load(method_ptr_reg, vt, method_offset);
 
 		jalr(method_ptr_reg);
+	}
+
+	/* Updates this_reg to the curr class ptr */
+	public void get_class_ptr() {
+		load(this_reg, fp, 8);
+	}
+
+	public void set_class_ptr(TEMP classPtr) {
+		String class_ptr_reg = "$s0";
+
+		if (classPtr == null) {
+			load(class_ptr_reg, fp, 8); // First arg of the calling func, last class ptr
+		}
+		else {
+			move(class_ptr_reg, "$t" + classPtr.getRegisterSerialNumber());
+		}
+
+		subu(sp, sp, 4);
+		store(class_ptr_reg, sp, 0);
 	}
 
 	private void jalr(String reg) {
@@ -507,7 +519,14 @@ public class MIPSGenerator
 
 		/* If field is accessed using an instance of the class, use that instance.
 		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
-		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
+		String base_reg;
+		if (class_ptr == null) {
+			get_class_ptr();
+			base_reg = this_reg;
+		}
+		else {
+			base_reg = "$t" + class_ptr.getRegisterSerialNumber();
+		}
 
 		/* Check pointer's validation  */
 		check_valid_pointer(base_reg);
@@ -568,7 +587,14 @@ public class MIPSGenerator
 		String res_reg = "$t" + res.getRegisterSerialNumber();
 		/* If field is accessed using an instance of the class, use that instance.
 		   Otherwise, it's being accessed from within the class, hence we use "this", which is stored in this_reg (aka $s9) */
-		String base_reg = class_ptr == null ? this_reg : "$t" + class_ptr.getRegisterSerialNumber();
+		String base_reg;
+		if (class_ptr == null) {
+			get_class_ptr();
+			base_reg = this_reg;
+		}
+		else {
+			base_reg = "$t" + class_ptr.getRegisterSerialNumber();
+		}
 
 		/* Check pointer's validation  */
 		check_valid_pointer(base_reg);

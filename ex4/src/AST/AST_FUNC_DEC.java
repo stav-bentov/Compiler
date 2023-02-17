@@ -93,7 +93,7 @@ public class AST_FUNC_DEC extends AST_Node {
                 params = (TYPE_LIST) this.argList.SemantMe();
 
                 /* Set offsets of params (arguments) */
-                int argument_var_num = 0;
+                int argument_var_num = isMethod ? 1 : 0; // First argument of a method is its class ptr
                 TYPE_LIST type_pointer = params;
                 while (type_pointer != null)
                 {
