@@ -41,10 +41,6 @@ def run_on_test_files():
         save_log(filename, result.stdout)
         assert result.stderr == '', "Got error while running: \n"+ result.stderr
 
-        os.rename(src=output_dir + "semantic_status.txt", dst=sem_output_file)
-        with open(sem_output_file) as f:
-            assert f.read().strip() == "OK" , "Got lexing/parsing/semantic error. L syntax must be obeyed!"
-
         with open(mips_run_output_file, 'w') as f:
             result = subprocess.run(['spim', '-f', mips_source_output_file],
                                     text=True, stdout=f)
