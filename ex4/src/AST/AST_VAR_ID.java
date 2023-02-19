@@ -52,11 +52,9 @@ public class AST_VAR_ID extends AST_VAR
 				IR.getInstance().Add_IRcommand(new IRcommand_Get_Global_Var(this.typeVar.global_var_label, var_temp));
 				break;
 			case LOCAL:
-				System.out.println("IN LOCALLLLLL + "+ this.id);
 				IR.getInstance().Add_IRcommand(new IRcommand_Get_Local_Var(this.typeVar.var_offset, var_temp));
 				break;
 			case ARGUMENT:
-				System.out.println("in argument!!!");
 				IR.getInstance().Add_IRcommand(new IRcommand_Get_Argument_Var(this.typeVar.var_offset, var_temp));
 				break;
 			case FIELD:

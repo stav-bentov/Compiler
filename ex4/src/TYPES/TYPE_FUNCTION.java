@@ -1,6 +1,7 @@
 package TYPES;
 
 import IR.IRcommand;
+import MIPS.MIPSGenerator;
 
 public class TYPE_FUNCTION extends TYPE
 {
@@ -34,8 +35,8 @@ public class TYPE_FUNCTION extends TYPE
 		this.epilogue_func_label = IRcommand.getFreshLabel("epilogue_" + this.name);
 		if (name.equals("main"))
 		{
-			this.func_label = "main";
-			this.epilogue_func_label = "epilogue_main";
+			this.func_label = MIPSGenerator.user_main;
+			this.epilogue_func_label = "epilogue_" + MIPSGenerator.user_main;
 		}
 	}
 

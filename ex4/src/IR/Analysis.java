@@ -19,17 +19,14 @@ public class Analysis {
         }
 
         while(curr != null){
-            System.out.println(String.format("cmd #%d is: %s", len, curr.head.getClass()));
             //if we go into this if clause we know we found a label that starts a function
             if(curr.head instanceof IRcommand_Start_Func){//IRCommand instance of IRCommandStartFunc
-                System.out.println(String.format("found start_func command!!! len is: %d", len));
                 start = curr;
                 len = 1;
             }
 
             //here we see a label that marks the end of a function
             else if(curr.head instanceof IRcommand_End_Func){
-                System.out.println(String.format("found end_func command!!! len is: %d", len));
                 //if we also saw a start to that function we create a function ir list object and move to the next one
                 function_list.add(new FunctionIRList(start, len + 1)); //adding one to include IRCommand_End_Func
 

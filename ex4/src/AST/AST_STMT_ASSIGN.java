@@ -82,7 +82,6 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 		if (this.var instanceof AST_VAR_EXP) {
 			/* Need to get the array (var.var.IRme()) and index (var.exp.IRme())
 			   because we need to CHANGE them (not to get their value..)*/
-			System.out.println("IN HERE...");
 			AST_VAR_EXP var_exp = (AST_VAR_EXP) this.var;
 			array_temp = var_exp.var.IRme();
 			index_temp = var_exp.exp.IRme();
@@ -181,7 +180,6 @@ public class AST_STMT_ASSIGN<T extends AST_Node> extends AST_STMT
 			/* Case 3: (var instance of AST_VAR_EXP)*/
 			if (this.var instanceof AST_VAR_EXP)
 			{
-				System.out.println("HERE!!!!!");
 				IR.getInstance().Add_IRcommand(new IRcommand_Update_Array_Var(array_temp, index_temp, i));
 			}
 		}

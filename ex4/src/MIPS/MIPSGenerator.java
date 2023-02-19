@@ -29,6 +29,7 @@ public class MIPSGenerator
 	/* The file writer ... */
 	/***********************/
 	public static PrintWriter fileWriter;
+	public static String user_main = "user_main";
 	private SegmentType current_segment = SegmentType.NONE;
 	private String zero = "$zero";
 	private String invalid_ptr_label = "string_invalid_ptr_dref";
@@ -348,7 +349,6 @@ public class MIPSGenerator
 
 	public void func_prologue(String prologue_label, int local_var_num)
 	{
-		System.out.println("in func_prologue of " + prologue_label);
 		/* For Us- Based on practice_10 */
 		open_segment(SegmentType.CODE);
 		/* Create the label for the new created function*/
@@ -432,8 +432,6 @@ public class MIPSGenerator
 	public void del_arguments(int param_nums)
 	{
 		open_segment(SegmentType.CODE);
-
-		/* TODO: ask if it matter to use addi or addu*/
 		addu(sp, sp, 4 * param_nums);
 	}
 
@@ -609,9 +607,6 @@ public class MIPSGenerator
 	public void get_var_with_offset(int var_offset, TEMP var_temp)
 	{
 		open_segment(SegmentType.CODE);
-		if(var_temp.getRegisterSerialNumber() == -1){
-			System.out.println("var_temp:" + var_temp.getSerialNumber());
-		}
 		load("$t" + var_temp.getRegisterSerialNumber(), fp, var_offset);
 	}
 
@@ -837,9 +832,6 @@ public class MIPSGenerator
 
 		String absolute_address = "$s0";
 		String value_register = "$s1";
-		if(temp_to_assign != null && temp_to_assign.getRegisterSerialNumber() == -1){
-			System.out.println("IT'S IN UPDATE_ARRAY!");
-		}
 
 		get_array_cell(array_temp, array_index_temp, absolute_address);
 
@@ -1027,7 +1019,6 @@ public class MIPSGenerator
 	public void jal(String inlabel)
 	{
 		open_segment(SegmentType.CODE);
-
 		fileWriter.format("\tjal %s\n", inlabel);
 	}
 
@@ -1285,7 +1276,19 @@ public class MIPSGenerator
 			instance.fileWriter.print("string_access_violation: .asciiz \"Access Violation\"\n");
 			instance.fileWriter.print("string_illegal_div_by_0: .asciiz \"Illegal Division By Zero\"\n");
 			instance.fileWriter.print("string_invalid_ptr_dref: .asciiz \"Invalid Pointer Dereference\"\n");
+
+			add_main_call();
 		}
 		return instance;
+	}
+
+	public static void add_main_call()
+	{
+		/* Calling main as in ex10*/
+		fileWriter.format(".text\n");
+		fileWriter.format("main:\n");
+		fileWriter.format("\tjal %s\n", user_main);
+		fileWriter.format("\tli $v0, 10\n");
+		fileWriter.format("\tsyscall\n");
 	}
 }

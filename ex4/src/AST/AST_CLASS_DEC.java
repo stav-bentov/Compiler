@@ -72,7 +72,6 @@ public class AST_CLASS_DEC extends AST_Node{
         if(this.extendsName != null){
             TYPE father = SYMBOL_TABLE.getInstance().find(this.extendsName);
             if(father == null){
-                System.out.println(this.line);
                 throw new SemanticException(this);
             }
             if(!father.isClass()) {
@@ -109,7 +108,6 @@ public class AST_CLASS_DEC extends AST_Node{
 
     private void extractLabelsAndFieldTypes() {
         for (TYPE type : this.typeClass.data_members_including_inherited.values()) {
-            System.out.println("in class " + this.className + "data members including inherited: " + this.typeClass.data_members_including_inherited);
             /* case class method */
             if (type instanceof TYPE_FUNCTION) { // add it's label to labels list
                 this.methodLabels.add(((TYPE_FUNCTION) type).func_label);

@@ -36,7 +36,6 @@ public class AST_EXP_EXP extends AST_EXP
 		return this.exp.SemantMe();
 	}
 
-	/*TODO: I'm not sure what to do with this IRME*/
 	@Override
 	public TEMP IRme()
 	{

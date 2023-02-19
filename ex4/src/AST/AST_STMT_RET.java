@@ -114,7 +114,6 @@ public class AST_STMT_RET extends AST_STMT {
             return_temp = this.exp.IRme();
             IR.getInstance().Add_IRcommand(new IRcommand_Set_V0(return_temp));
         }
-        System.out.println("END FUNC= "+ this.epilogue_func_label);
         IR.getInstance().Add_IRcommand(new IRcommand_Jump_Label(this.epilogue_func_label)); // contains jump back to prev func
         return null;
     }

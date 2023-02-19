@@ -4,7 +4,6 @@ import TEMP.TEMP;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class FunctionIRList {
@@ -12,7 +11,7 @@ public class FunctionIRList {
     public int len;
 
     //private fields for chaitin's algorithm
-    private CFG_Node[] CFG;
+    private IR_Node[] CFG;
     private List<Set<Integer>> In;
     private List<Set<Integer>> Out;
     private Map<Integer, Set<Integer>> graph;
@@ -35,15 +34,15 @@ public class FunctionIRList {
     }
 
     private void Create_CFG(){
-        CFG_Node[] arr = new CFG_Node[len];
+        IR_Node[] arr = new IR_Node[len];
         IRcommandList curr = start;
 
         //init all nodes with their relevant command
         for(int i = 0; i < len; i++){
             //what if there is a return in the middle of a function?
-            //should CFG_node be created for a label cmd?
+            //should IR_node be created for a label cmd?
             if(curr.head != null){//removed: !(curr.head instanceof IRcommand_Label)
-                arr[i] = new CFG_Node(i, curr.head);
+                arr[i] = new IR_Node(i, curr.head);
             }
             curr = curr.tail;
         }
@@ -98,7 +97,7 @@ public class FunctionIRList {
 
                 //update the Out of Node i
                 old_out = Out.get(i);
-                for (CFG_Node son : CFG[i].sons){
+                for (IR_Node son : CFG[i].sons){
                     Out.get(i).addAll(In.get(son.node_num));
                 }
 

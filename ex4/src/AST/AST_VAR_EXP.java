@@ -58,19 +58,6 @@ public class AST_VAR_EXP extends AST_VAR
 			throw new SemanticException(this);
 		}
 
-		/*
-		TODO: check if access to negative index to array is legal
-		if this.exp is a constant integer, check if the given index to the array is non-negative
-		if(this.exp instanceof AST_EXP_OPT) {
-
-			AST_EXP_OPT constExp = (AST_EXP_OPT) this.exp;
-			if (!(constExp.opt.equals("INT"))) {
-				throw new SemanticException(this);
-			}
-
-		}
-		*/
-
 		//type_var.type is TYPE_ARRAY - which should have a field called type - which is why type of array it is.
 		//after speaking to lilach we realized the name does not matter. returning name null.
 		return new TYPE_VAR(null, arrayType);
