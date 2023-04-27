@@ -1,5 +1,5 @@
 # Compiler Implementation
-This is a compiler for the object-oriented language L. It was implemented as part of the course "Compilation" at [University Name].
+This is a compiler for the object-oriented language L. It was implemented as part of the course "Compilation" at TAU.
 
 The compiler consists of four phases: lexical analysis, parsing, semantic analysis, and code generation.
 
